@@ -7,11 +7,12 @@ parameters:
   default: $(Build.Repository.LocalPath)
 
 
-- script: |
-    terragrunt run-all validate --terragrunt-include-external-dependencies
-  displayName: Terragrunt Validate
-  env:
-    TERRAGRUNT_WORKING_DIR: ${{ parameters.workingDirectory }}
-    TF_INPUT: false
-    ${{ each var in parameters.environmentVariables }}:
-      ${{ var.key }}: ${{ var.value }}
+steps:
+  - script: |
+      terragrunt run-all validate --terragrunt-include-external-dependencies
+    displayName: Terragrunt Validate
+    env:
+      TERRAGRUNT_WORKING_DIR: ${{ parameters.workingDirectory }}
+      TF_INPUT: false
+      ${{ each var in parameters.environmentVariables }}:
+        ${{ var.key }}: ${{ var.value }}
