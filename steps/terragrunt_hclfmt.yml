@@ -1,0 +1,10 @@
+parameters:
+  - name: condition
+    type: string
+    default: succeededOrFailed()
+
+steps:
+  - script: |
+      terragrunt hclfmt --terragrunt-check
+    condition: ${{ parameters.condition }}
+    displayName: Terragrunt HCL Format

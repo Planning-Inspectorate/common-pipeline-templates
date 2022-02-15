@@ -1,0 +1,13 @@
+parameters:
+  - name: condition
+    type: string
+    default: succeededOrFailed()
+
+steps:
+  - script: |
+      terraform fmt -recursive -check
+      if [ $? -ne 0 ]; then
+        exit 1
+      fi
+    condition: ${{ parameters.condition }}
+    displayName: Terraform Format
