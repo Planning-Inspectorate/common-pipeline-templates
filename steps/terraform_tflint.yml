@@ -18,7 +18,7 @@ steps:
 
       errors=false
       working_dir=$PWD
-      module_directories=${{ join(' ', parameters.moduleDirectories) }}
+      module_directories=(${{ join(' ', parameters.moduleDirectories) }})
 
       # Run TFLint in the working directory, if there is no terraform configuration code to scan, we still get an exit code 0
       tflint --config ${{ parameters.tflintConfigPath }}
