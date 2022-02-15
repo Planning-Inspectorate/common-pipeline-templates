@@ -47,6 +47,6 @@ steps:
       if [[ $errors == true ]]; then
         exit 1
       fi
-    condition: succeededOrFailed()
+    condition: ${{ parameter.condition }}
     displayName: Run TFLint
     workingDirectory: ${{ parameters.workingDirectory }}
