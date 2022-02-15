@@ -5,6 +5,9 @@ parameters:
   - name: moduleDirectories
     type: object
     default: []
+  - name: tflintConfigPath
+    type: string
+    default: $(Build.Repository.LocalPath)/.tflint.hcl
   - name: workingDirectory
     type: string
     default: $(Build.Repository.LocalPath)
@@ -18,7 +21,7 @@ steps:
       module_directories=${{ join(" ", parameters.moduleDirectories) }}
 
       # Run TFLint in the working directory, if there is no terraform configuration code to scan, we still get an exit code 0
-      tflint --config $(Build.Repository.LocalPath)/.tflint.hcl
+      tflint --config ${{ parameters.tflintConfigPath }}
       if [[ $? -ne 0 ]]; then
         errors=true
       fi
@@ -30,7 +33,7 @@ steps:
           cd $d
 
           for m in *; do
-            cd $m; tflint --config $(Build.Repository.LocalPath)/.tflint.hcl
+            cd $m; tflint --config ${{ parameters.tflintConfigPath }}
             if [[ $? -ne 0 ]]; then
               errors=true
             fi
