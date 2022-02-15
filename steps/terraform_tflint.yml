@@ -14,7 +14,7 @@ parameters:
 
 steps:
   - script: |
-      tflint --init
+      tflint --init --config ${{ parameters.tflintConfigPath }}
 
       errors=false
       working_dir=$PWD
