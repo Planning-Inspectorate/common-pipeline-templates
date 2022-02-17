@@ -1,0 +1,16 @@
+parameters:
+  - name: environmentVariables
+    type: object
+    default: []
+  - name: workingDirectory
+    type: string
+
+steps:
+  - script: |
+      terraform init -backend=false
+      terraform validate
+    env:
+      ${{ each var in parameters.environmentVariables }}:
+        ${{ var.key }}: ${{ var.value }}
+    displayName: Terraform Validate
+    workingDirectory: ${{ parameters.workingDirectory }}
