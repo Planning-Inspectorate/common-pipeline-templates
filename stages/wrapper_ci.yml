@@ -33,6 +33,8 @@ stages:
             - ${{ each validationStep in parameters.validationSteps }}:
               - ${{ validationStep }}
             - template: ../steps/git_tagging.yml
+              parameters:
+                tagPrefix: $(Build.Repository.Name)
     name: ${{ parameters.validateName }}
     variables:
       - ${{ each variable in parameters.variables }}:
