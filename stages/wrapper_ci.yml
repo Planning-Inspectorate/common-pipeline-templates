@@ -1,0 +1,41 @@
+parameters:
+  - name: azureLogin
+    type: boolean
+    default: false
+  - name: azureServiceConnection
+    type: string
+    default: ''
+  - name: validateName
+    type: string
+  - name: validationSteps
+    type: stepList
+    default: []
+  - name: variables
+    type: object
+    default: []
+  - name: workingDirectory
+    type: string
+    default: $(System.DefaultWorkingDirectory)
+
+stages:
+- template: ./wrapper_stage.yml
+  parameters:
+    jobs:
+      - template: ../jobs/wrapper_job.yml
+        parameters:
+          azureLogin: ${{ parameters.azureLogin }}
+          azureServiceConnection: ${{ parameters.azureServiceConnection }}
+          name: ${{ parameters.validateName }}  
+          steps:
+            - checkout: self
+              clean: true
+              persistCredentials: true
+            - ${{ each validationStep in parameters.validationSteps }}:
+              - ${{ validationStep }}
+            - template: ../steps/git_tagging.yml
+              parameters:
+                tagPrefix: $(Build.Repository.Name)
+    name: ${{ parameters.validateName }}
+    variables:
+      - ${{ each variable in parameters.variables }}:
+        - ${{ variable }}

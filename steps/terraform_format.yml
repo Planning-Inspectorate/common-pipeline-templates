@@ -5,9 +5,12 @@ parameters:
 
 steps:
   - script: |
+      echo "Running terraform fmt..."
       terraform fmt -recursive -check
-      if [ $? -ne 0 ]; then
+      if [[ $? -ne 0 ]]; then
         exit 1
+      else
+        echo "No issues found!"
       fi
     condition: ${{ parameters.condition }}
     displayName: Terraform Format

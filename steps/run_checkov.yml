@@ -14,13 +14,13 @@ parameters:
 
 steps:
 - script: |
-    echo Running checkov version `checkov -v` in `pwd`
+    echo "Running checkov version `checkov -v` in `pwd`"
     checkov -d . \
      --skip-check '${{ join(',',parameters.checksToSkip) }}' \
      --framework terraform \
      -o junitxml > checkov.xml
 
-     if [ $? -ne 0 ]; then
+     if [[ $? -ne 0 ]]; then
        echo "##vso[task.logissue type=error]Checkov Test Reported Failures"
      fi
   condition: ${{ parameters.condition }}

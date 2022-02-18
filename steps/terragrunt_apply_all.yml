@@ -1,0 +1,23 @@
+parameters:
+  - name: environmentVariables
+    type: object
+    default: []
+  - name: subscriptionId
+    type: string
+  - name: workingDirectory
+    type: string
+    default: $(Build.Repository.LocalPath)
+
+steps:
+  - script: |
+      terragrunt run-all plan --terragrunt-include-external-dependencies
+    displayName: Terragrunt Plan
+    env:
+      ARM_CLIENT_ID: $(azureClientId)
+      ARM_CLIENT_SECRET: $(azureClientSecret)
+      ARM_SUBSCRIPTION_ID: ${{ parameters.subscriptionId }}
+      ARM_TENANT_ID: $(azureTenantId)
+      TERRAGRUNT_WORKING_DIR: ${{ parameters.workingDirectory }}
+      TF_INPUT: false
+      ${{ each var in parameters.environmentVariables }}:
+        ${{ var.key }}: ${{ var.value }}

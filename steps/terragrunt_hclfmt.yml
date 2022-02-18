@@ -5,6 +5,11 @@ parameters:
 
 steps:
   - script: |
+      echo "Running terragrunt hclfmt..."
       terragrunt hclfmt --terragrunt-check
+
+      if [[ $? -eq 0 ]]; then
+        echo "No issues found!"
+      fi
     condition: ${{ parameters.condition }}
     displayName: Terragrunt HCL Format
