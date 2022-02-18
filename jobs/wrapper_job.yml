@@ -1,0 +1,41 @@
+parameters:
+  - name: azureLogin
+    type: boolean
+    default: false
+  - name: azureServiceConnection
+    type: string
+    default: ''
+  - name: condition
+    type: string
+    default: succeeded()
+  - name: dependsOn
+    type: object
+    default: []
+  - name: name
+    type: object
+  - name: steps
+    type: stepList
+  - name: variables
+    type: object
+    default: []
+
+jobs:
+  - job: ${{ replace(replace(parameters.name, '-', '_'), 'n', '_') }}
+    condition: ${{ parameters.condition }}
+    dependsOn:
+      - ${{ each dependsOn in parameters.dependsOn }}:
+        - ${{ dependsOn }}
+    displayName: ${{ parameters.name }}
+    steps:
+      - ${{ if eq(parameters.azureLogin, 'true') }}:
+        - template: ../steps/azure_login.yml
+          parameters:
+            serviceConnection: ${{ parameters.azureServiceConnection }}
+      - ${{ each step in parameters.steps }}:
+        - ${{ step }}
+    variables:
+      - ${{ each variable in parameters.variables }}:
+        - name: ${{ variable.name }}
+          value: ${{ variable.value }}
+    workspace:
+      clean: all

@@ -2,8 +2,6 @@ parameters:
 - name: environmentVariables
   type: object
   default: []
-- name: serviceConnection
-  type: string
 - name: subscriptionId
   type: string
 - name: workingDirectory
@@ -11,17 +9,6 @@ parameters:
   default: $(Build.Repository.LocalPath)
 
 steps:
-  - task: AzureCLI@2
-    displayName: Azure Authentication
-    inputs:
-      scriptType: bash
-      scriptLocation: inlineScript
-      azureSubscription: ${{ parameters.serviceConnection }}
-      addSpnToEnvironment: true
-      inlineScript: |
-        echo "##vso[task.setvariable variable=azureClientId]$servicePrincipalId"
-        echo "##vso[task.setvariable variable=azureClientSecret]$servicePrincipalKey"
-        echo "##vso[task.setvariable variable=azureTenantId]$tenantId"
   - script: |
       terragrunt run-all validate --terragrunt-include-external-dependencies
     displayName: Terragrunt Validate

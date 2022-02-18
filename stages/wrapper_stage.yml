@@ -1,0 +1,33 @@
+parameters:
+  - name: condition
+    type: string
+    default: succeeded()
+  - name: dependsOn
+    type: object
+    default: []
+  - name: name
+    type: string
+  - name: jobs
+    type: jobList
+  - name: variables
+    type: object
+    default: []
+  - name: workingDirectory
+    type: string
+    default: $(System.DefaultWorkingDirectory)
+
+stages:
+  - stage: ${{ replace(replace(parameters.name, '-', '_'), ' ', '_') }}
+    condition: ${{ parameters.condition }}
+    dependsOn:
+      - ${{ each dependsOn in parameters.dependsOn }}:
+        - ${{ dependsOn }}
+    displayName: ${{ parameters.name }}
+    jobs: 
+      - ${{ each job in parameters.jobs }}:
+        - ${{ job }}
+    variables:
+      - ${{ each var in parameters.variables }}:
+        - ${{ var }}
+      - name: WORKING_DIRECTORY
+        value: ${{ parameters.workingDirectory }}
