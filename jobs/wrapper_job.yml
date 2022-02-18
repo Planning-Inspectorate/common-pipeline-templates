@@ -20,7 +20,7 @@ parameters:
     default: []
 
 jobs:
-  - job: ${{ replace(replace(parameters.name, '-', '_'), 'n', '_') }}
+  - job: ${{ replace(replace(parameters.name, '-', '_'), ' ', '_') }}
     condition: ${{ parameters.condition }}
     dependsOn:
       - ${{ each dependsOn in parameters.dependsOn }}:
