@@ -21,9 +21,14 @@ steps:
       module_directories=(${{ join(' ', parameters.moduleDirectories) }})
 
       # Run TFLint in the working directory, if there is no terraform configuration code to scan, we still get an exit code 0
+      echo "Running TFLint in root directory..."
       tflint --config ${{ parameters.tflintConfigPath }}
+
       if [[ $? -ne 0 ]]; then
+        echo "Issues found in module at path `pwd`"
         errors=true
+      else
+        echo "No issues found!"
       fi
 
       # Run TFLint in any of the specified module directories e.g. /stacks or /modules
@@ -33,9 +38,15 @@ steps:
           cd $d
 
           for m in *; do
-            cd $m; tflint --config ${{ parameters.tflintConfigPath }}
+            cd $m
+            echo "Running TFLint in module at path `pwd`"
+            tflint --config ${{ parameters.tflintConfigPath }}
+            
             if [[ $? -ne 0 ]]; then
+              echo "Issues found in module at path `pwd`"
               errors=true
+            else
+              echo "No issues found!"
             fi
             cd ..
           done
