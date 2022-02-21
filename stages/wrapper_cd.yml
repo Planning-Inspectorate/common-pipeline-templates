@@ -49,7 +49,7 @@ stages:
               - ${{ stage.name }}_${{ dependsOn }}
             - ${{ if stage.dependsOnDeploymentStages }}:
               - ${{ each dependsOnStage in stage.dependsOnDeploymentStages }}:
-                - ${{ replace(replace(dependsOnStage '-', '_'), ' ', '_') }}_${{ environment.name }}
+                - ${{ replace(replace(dependsOnStage, '-', '_'), ' ', '_') }}_${{ environment.name }}
           jobs:
             - ${{ if stage.isDeployment }}:
               - template: ../jobs/wrapper_deployment.yml
