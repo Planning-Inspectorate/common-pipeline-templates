@@ -1,4 +1,7 @@
 parameters:
+  - name: artifactName
+    type: string
+    default: $(Build.BuildId)
   - name: environmentVariables
     type: object
     default: []
@@ -9,17 +12,12 @@ parameters:
     default: $(Build.Repository.LocalPath)
 
 steps:
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      source: current
-      path: $(Pipeline.Workspace)
-    displayName: Download artifact
   - task: CopyFiles@2
     inputs:
-      sourceFolder: $(Pipeline.Workspace)/$(Build.Repository.Name)
+      sourceFolder: $(Pipeline.Workspace)/${{ parameters.artifactName }}
       contents: '**'
       targetFolder: $(System.DefaultWorkingDirectory)
-    displayName: Copy files to default working directory
+    displayName: Copy artifact to default working directory
   - script: |
       terragrunt run-all apply --terragrunt-include-external-dependencies
     displayName: Terragrunt Apply

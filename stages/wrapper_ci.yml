@@ -8,6 +8,9 @@ parameters:
   - name: globalVariables
     type: object
     default: []
+  - name: project
+    type: string
+    default: ''
   - name: validateName
     type: string
   - name: validationSteps
@@ -31,7 +34,7 @@ stages:
       - template: ../jobs/wrapper_job.yml
         parameters:
           azureLogin: ${{ parameters.azureLogin }}
-          azureServiceConnection: $(ADO_SERVICE_CONNECTION)
+          environment: ${{ parameters.environment }}
           name: ${{ parameters.validateName }}  
           steps:
             - checkout: self

@@ -28,6 +28,9 @@ parameters:
   - name: globalVariables
     type: object
     default: []
+  - name: project
+    type: string
+    default: ''
   - name: variables
     type: object
     default: []
@@ -47,16 +50,16 @@ stages:
           dependsOn:
             - ${{ each dependsOn in environment.dependsOn }}:
               - ${{ replace(replace(stage.name, '-', '_'), ' ', '_') }}_${{ dependsOn }}
-            - ${{ if stage.dependsOnDeploymentStages }}:
-              - ${{ each dependsOnStage in stage.dependsOnDeploymentStages }}:
+            - ${{ if stage.dependsOn }}:
+              - ${{ each dependsOnStage in stage.dependsOn }}:
                 - ${{ replace(replace(dependsOnStage, '-', '_'), ' ', '_') }}_${{ environment.name }}
           jobs:
-            - ${{ if stage.isDeployment }}:
+            - ${{ if eq(stage.isDeployment, 'true') }}:
               - template: ../jobs/wrapper_deployment.yml
                 parameters:
-                  azureServiceConnection: $(ADO_SERVICE_CONNECTION)
                   environment: ${{ environment.name }}
                   name: ${{ stage.name }} ${{ environment.name }}
+                  project: ${{ parameters.project }}
                   steps:
                     - ${{ if stage.deploymentSteps }}:
                       - ${{ each deploymentStep in stage.deploymentSteps }}:
@@ -69,8 +72,9 @@ stages:
               - template: ../jobs/wrapper_job.yml
                 parameters:
                   azureLogin: ${{ stage.azureLogin }}
-                  azureServiceConnection: $(ADO_SERVICE_CONNECTION)
+                  environment: ${{ environment.name }}
                   name: ${{ stage.name }} ${{ environment.name }}
+                  project: ${{ parameters.project }}
                   steps:
                     - ${{ if stage.deploymentSteps }}:
                       - ${{ each deploymentStep in stage.deploymentSteps }}:
