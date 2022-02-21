@@ -35,7 +35,8 @@ stages:
         parameters:
           azureLogin: ${{ parameters.azureLogin }}
           environment: ${{ parameters.environment }}
-          name: ${{ parameters.validateName }}  
+          name: ${{ parameters.validateName }}
+          project: ${{ parameters.project }}
           steps:
             - checkout: self
               clean: true
