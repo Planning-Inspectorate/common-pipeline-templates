@@ -46,7 +46,7 @@ stages:
         parameters:
           dependsOn:
             - ${{ each dependsOn in environment.dependsOn }}:
-              - ${{ stage.name }}_${{ dependsOn }}
+              - ${{ replace(replace(stage.name, '-', '_'), ' ', '_') }}_${{ dependsOn }}
             - ${{ if stage.dependsOnDeploymentStages }}:
               - ${{ each dependsOnStage in stage.dependsOnDeploymentStages }}:
                 - ${{ replace(replace(dependsOnStage, '-', '_'), ' ', '_') }}_${{ environment.name }}
