@@ -9,9 +9,20 @@ parameters:
     default: $(Build.Repository.LocalPath)
 
 steps:
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: current
+      path: $(Pipeline.Workspace)
+    displayName: Download artifact
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: $(Pipeline.Workspace)/$(Build.Repository.Name)
+      contents: '**'
+      targetFolder: $(System.DefaultWorkingDirectory)
+    displayName: Copy files to default working directory
   - script: |
-      terragrunt run-all plan --terragrunt-include-external-dependencies
-    displayName: Terragrunt Plan
+      terragrunt run-all apply --terragrunt-include-external-dependencies
+    displayName: Terragrunt Apply
     env:
       ARM_CLIENT_ID: $(azureClientId)
       ARM_CLIENT_SECRET: $(azureClientSecret)

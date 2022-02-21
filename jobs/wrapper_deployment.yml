@@ -1,0 +1,53 @@
+parameters:
+  - name: artifact
+    type: object
+    default:
+      definition: ''
+  - name: azureServiceConnection
+    type: string
+  - name: condition
+    type: string
+    default: succeeded()
+  - name: dependsOn
+    type: object
+    default: []
+  - name: environment
+    type: string
+  - name: name
+    type: object
+    default: []
+  - name: steps
+    type: stepList
+  - name: variables
+    type: object
+    default: []
+
+jobs:
+  - deployment: ${{ replace(replace(parameters.name, '-', '_'), ' ', '_') }}
+    condition: ${{ parameters.condition }}
+    dependsOn:
+      - ${{ each dependsOn in parameters.dependsOn }}:
+        - ${{ dependsOn }}
+    displayName: ${{ parameters.name }}
+    environment: ${{ parameters.environment }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - script: |
+                echo "##vso[build.addbuildtag]$(Build.SourceBranchName)"
+                echo "##vso[build.addbuildtag]environment=${{ parameters.environment }}"
+              displayName: Add build tags
+            - ${{ if ne(parameters.artifact.definition, '') }}:
+              - task: DownloadPipelineArtifact@2
+                inputs: ${{ parameters.artifact }}
+            - template: ../steps/azure_cli_login.yml
+              parameters:
+                serviceConnection: ${{ parameters.azureServiceConnection }}
+            - ${{ each step in parameters.steps }}:
+              - ${{ step }}
+    variables:
+      - ${{ each variable in parameters.variables }}:
+        - ${{ variable }}
+    workspace:
+      clean: all
