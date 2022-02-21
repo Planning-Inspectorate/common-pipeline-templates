@@ -1,0 +1,95 @@
+parameters:
+  - name: deploymentStages
+    type: object
+#   example:
+#     - name: Plan
+#       azureLogin: true
+#       deploymentSteps:
+#         - template: $(WORKING_DIRECTORY)/steps/terragrunt_plan_all.yml
+#       isDeployment: false
+#     - name: Apply
+#       azureLogin: true
+#       dependsOnDeploymentStages:
+#         - Plan
+#       deploymentSteps:
+#         - template: $(WORKING_DIRECTORY)/steps/terragrunt_apply_all.yml
+#       isDeployment: true
+  - name: environments
+    type: object
+#   example:
+#     - name: Dev
+#       variables: 
+#         - template: variables/dev.yml
+#     - name: Test
+#       dependsOn:
+#         - Dev
+#       variables:
+#         - template: variables/test.yml
+  - name: globalVariables
+    type: object
+    default: []
+  - name: project
+    type: string
+    default: ''
+  - name: variables
+    type: object
+    default: []
+  - name: workingDirectory
+    type: string
+    default: $(System.DefaultWorkingDirectory)
+  
+variables:
+  - ${{ each globalVariable in parameters.globalVariables }}:
+    - ${{ globalVariable }}
+
+stages:
+  - ${{ each environment in parameters.environments }}:
+    - ${{ each stage in parameters.deploymentStages }}:
+      - template: ./wrapper_stage.yml
+        parameters:
+          dependsOn:
+            - ${{ each dependsOn in environment.dependsOn }}:
+              - ${{ replace(replace(stage.name, '-', '_'), ' ', '_') }}_${{ dependsOn }}
+            - ${{ if stage.dependsOn }}:
+              - ${{ each dependsOnStage in stage.dependsOn }}:
+                - ${{ replace(replace(dependsOnStage, '-', '_'), ' ', '_') }}_${{ environment.name }}
+          jobs:
+            - ${{ if eq(stage.isDeployment, 'true') }}:
+              - template: ../jobs/wrapper_deployment.yml
+                parameters:
+                  environment: ${{ environment.name }}
+                  name: ${{ stage.name }} ${{ environment.name }}
+                  project: ${{ parameters.project }}
+                  steps:
+                    - ${{ if stage.deploymentSteps }}:
+                      - ${{ each deploymentStep in stage.deploymentSteps }}:
+                        - ${{ deploymentStep }}
+                  variables:
+                    - ${{ if stage.variables }}:
+                      - ${{ each variable in stage.variables }}:
+                        - ${{ variable }}
+            - ${{ else }}:
+              - template: ../jobs/wrapper_job.yml
+                parameters:
+                  azureLogin: ${{ stage.azureLogin }}
+                  environment: ${{ environment.name }}
+                  name: ${{ stage.name }} ${{ environment.name }}
+                  project: ${{ parameters.project }}
+                  steps:
+                    - ${{ if stage.deploymentSteps }}:
+                      - ${{ each deploymentStep in stage.deploymentSteps }}:
+                        - ${{ deploymentStep }}
+                    - ${{ if eq(coalesce(stage.deploymentSteps, false), false) }}:
+                      - ${{ each deploymentStep in parameters.deploymentSteps }}:
+                        - ${{ deploymentStep }}
+                  variables:
+                    - ${{ if stage.variables }}:
+                      - ${{ each variable in stage.variables }}:
+                        - ${{ variable }} 
+          name: ${{ stage.name }} ${{ environment.name }}
+          variables:
+            - ${{ each variable in parameters.variables }}:
+              - ${{ variable }}
+            - ${{ each variable in environment.variables }}:
+              - ${{ variable }}
+          workingDirectory: ${{ parameters.workingDirectory }}

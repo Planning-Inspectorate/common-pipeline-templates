@@ -2,17 +2,20 @@ parameters:
   - name: azureLogin
     type: boolean
     default: false
-  - name: azureServiceConnection
-    type: string
-    default: ''
   - name: condition
     type: string
     default: succeeded()
   - name: dependsOn
     type: object
     default: []
+  - name: environment
+    type: string
+    default: Dev
   - name: name
     type: object
+  - name: project
+    type: string
+    default: ''
   - name: steps
     type: stepList
   - name: variables
@@ -30,12 +33,11 @@ jobs:
       - ${{ if eq(parameters.azureLogin, 'true') }}:
         - template: ../steps/azure_cli_login.yml
           parameters:
-            serviceConnection: ${{ parameters.azureServiceConnection }}
+            azureServiceConnection: ${{ parameters.project }}-${{ parameters.environment }}
       - ${{ each step in parameters.steps }}:
         - ${{ step }}
     variables:
       - ${{ each variable in parameters.variables }}:
-        - name: ${{ variable.name }}
-          value: ${{ variable.value }}
+        - ${{ variable }}
     workspace:
       clean: all

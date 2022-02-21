@@ -2,7 +2,13 @@ parameters:
   - name: azureLogin
     type: boolean
     default: false
-  - name: azureServiceConnection
+  - name: environment
+    type: string
+    default: Dev
+  - name: globalVariables
+    type: object
+    default: []
+  - name: project
     type: string
     default: ''
   - name: validateName
@@ -17,6 +23,10 @@ parameters:
     type: string
     default: $(System.DefaultWorkingDirectory)
 
+variables:
+  - ${{ each globalVariable in parameters.globalVariables }}:
+    - ${{ globalVariable }}
+
 stages:
 - template: ./wrapper_stage.yml
   parameters:
@@ -24,8 +34,9 @@ stages:
       - template: ../jobs/wrapper_job.yml
         parameters:
           azureLogin: ${{ parameters.azureLogin }}
-          azureServiceConnection: ${{ parameters.azureServiceConnection }}
-          name: ${{ parameters.validateName }}  
+          environment: ${{ parameters.environment }}
+          name: ${{ parameters.validateName }}
+          project: ${{ parameters.project }}
           steps:
             - checkout: self
               clean: true

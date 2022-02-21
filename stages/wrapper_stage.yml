@@ -18,6 +18,9 @@ parameters:
 
 stages:
   - stage: ${{ replace(replace(parameters.name, '-', '_'), ' ', '_') }}
+    variables:
+      - ${{ each var in parameters.variables }}:
+        - ${{ var }}
     condition: ${{ parameters.condition }}
     dependsOn:
       - ${{ each dependsOn in parameters.dependsOn }}:
@@ -26,8 +29,3 @@ stages:
     jobs: 
       - ${{ each job in parameters.jobs }}:
         - ${{ job }}
-    variables:
-      - ${{ each var in parameters.variables }}:
-        - ${{ var }}
-      - name: WORKING_DIRECTORY
-        value: ${{ parameters.workingDirectory }}

@@ -1,4 +1,7 @@
 parameters:
+  - name: artifactName
+    type: string
+    default: $(Build.BuildId)
   - name: environmentVariables
     type: object
     default: []
@@ -21,3 +24,22 @@ steps:
       TF_INPUT: false
       ${{ each var in parameters.environmentVariables }}:
         ${{ var.key }}: ${{ var.value }}
+  - task: CopyFiles@2
+    displayName: Copy sources to artifact
+    inputs:
+      SourceFolder: $(Build.Repository.LocalPath)
+      Contents: |
+        */**
+        !.git
+        !**/.terraform/**
+        !**/.terragrunt_cache/**
+        !**/.terraform.lock.hcl
+        !.gitignore
+        !.pre-commit-config.yaml
+        !.tflint.hcl
+        !LICENSE
+        !README.md
+      TargetFolder: $(Build.ArtifactStagingDirectory)
+  - publish: $(Build.ArtifactStagingDirectory)
+    artifact: ${{ parameters.artifactName }}
+    displayName: Publish sources
