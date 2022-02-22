@@ -29,7 +29,8 @@ parameters:
 jobs:
   - deployment: ${{ replace(replace(parameters.name, '-', '_'), ' ', '_') }}
     condition: ${{ parameters.condition }}
-    container: ${{ parameters.container }}
+    ${{ if parameters.container }}:
+      container: ${{ parameters.container }}
     dependsOn:
       - ${{ each dependsOn in parameters.dependsOn }}:
         - ${{ dependsOn }}

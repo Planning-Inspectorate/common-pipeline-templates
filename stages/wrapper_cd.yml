@@ -1,12 +1,10 @@
 parameters:
-  - name: container
-    type: string
-    default: ''
   - name: deploymentStages
     type: object
 #   example:
 #     - name: Plan
 #       azureLogin: true
+#       container: terraform-tooling
 #       deploymentSteps:
 #         - template: $(WORKING_DIRECTORY)/steps/terragrunt_plan_all.yml
 #       isDeployment: false
@@ -60,7 +58,7 @@ stages:
             - ${{ if eq(stage.isDeployment, 'true') }}:
               - template: ../jobs/wrapper_deployment.yml
                 parameters:
-                  container: ${{ parameters.container }}
+                  container: ${{ stage.container }}
                   environment: ${{ environment.name }}
                   name: ${{ stage.name }} ${{ environment.name }}
                   project: ${{ parameters.project }}
@@ -76,7 +74,7 @@ stages:
               - template: ../jobs/wrapper_job.yml
                 parameters:
                   azureLogin: ${{ stage.azureLogin }}
-                  container: ${{ parameters.container }}
+                  container: ${{ stage.container }}
                   environment: ${{ environment.name }}
                   name: ${{ stage.name }} ${{ environment.name }}
                   project: ${{ parameters.project }}
