@@ -1,0 +1,30 @@
+parameters:
+  - name: subscriptionId
+    type: string
+  - name: workingDirectory
+    type: string
+    default: $(Build.Repository.LocalPath)
+
+steps:
+  - script: |
+      terraform init -input=false
+      terraform plan -out=tfplan -input=false
+    displayName: Terraform Plan
+    env:
+      ARM_CLIENT_ID: $(azureClientId)
+      ARM_CLIENT_SECRET: $(azureClientSecret)
+      ARM_SUBSCRIPTION_ID: ${{ parameters.subscriptionId }}
+      ARM_TENANT_ID: $(azureTenantId)
+    workingDirectory: ${{ parameters.workingDirectory }}
+  - task: CopyFiles@2
+    displayName: Copy tfplan to artifact
+    inputs:
+      SourceFolder: ${{ parameters.workingDirectory }}
+      Contents: |
+        .terraform/**
+        .terraform.lock.hcl
+        tfplan
+      TargetFolder: $(Build.ArtifactStagingDirectory)
+  - publish: $(Build.ArtifactStagingDirectory)
+    artifact: terraform-plan
+    displayName: Publish sources

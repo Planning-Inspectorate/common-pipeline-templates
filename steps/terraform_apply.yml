@@ -1,0 +1,15 @@
+parameters:
+  - name: subscriptionId
+    type: string
+
+steps:
+  - script: |
+      chmod -R +x .
+      terraform apply -input=false tfplan
+    displayName: Terraform Apply
+    env:
+      ARM_CLIENT_ID: $(azureClientId)
+      ARM_CLIENT_SECRET: $(azureClientSecret)
+      ARM_SUBSCRIPTION_ID: ${{ parameters.subscriptionId }}
+      ARM_TENANT_ID: $(azureTenantId)
+    workingDirectory: $(Pipeline.Workspace)/terraform-plan
