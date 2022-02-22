@@ -6,6 +6,9 @@ parameters:
   - name: condition
     type: string
     default: succeeded()
+  - name: container
+    type: string
+    default: ''
   - name: dependsOn
     type: object
     default: []
@@ -26,6 +29,7 @@ parameters:
 jobs:
   - deployment: ${{ replace(replace(parameters.name, '-', '_'), ' ', '_') }}
     condition: ${{ parameters.condition }}
+    container: ${{ parameters.container }}
     dependsOn:
       - ${{ each dependsOn in parameters.dependsOn }}:
         - ${{ dependsOn }}
