@@ -18,8 +18,8 @@ parameters:
     default: $(System.DefaultWorkingDirectory)
 
 variables:
-  ${{ each var in parameters.globalVariables }}:
-    ${{ var }}
+  - ${{ each var in parameters.globalVariables }}:
+    - ${{ var }}
 
 stages:
 - template: ./wrapper_stage.yml

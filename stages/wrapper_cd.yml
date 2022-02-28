@@ -38,8 +38,8 @@ parameters:
     default: $(System.DefaultWorkingDirectory)
   
 variables:
-  ${{ each var in parameters.globalVariables }}:
-    ${{ var.key }}: ${{ var.value }}
+  - ${{ each var in parameters.globalVariables }}:
+    - ${{ var }}
 
 stages:
   - ${{ each environment in parameters.environments }}:
