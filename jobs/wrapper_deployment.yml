@@ -47,9 +47,6 @@ jobs:
             - ${{ if ne(parameters.artifact.definition, '') }}:
               - task: DownloadPipelineArtifact@2
                 inputs: ${{ parameters.artifact }}
-            - template: ../steps/azure_cli_login.yml
-              parameters:
-                azureServiceConnection: ${{ parameters.project }}-${{ parameters.environment }}
             - ${{ each step in parameters.steps }}:
               - ${{ step }}
     variables:

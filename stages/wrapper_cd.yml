@@ -3,13 +3,11 @@ parameters:
     type: object
 #   example:
 #     - name: Plan
-#       azureLogin: true
 #       container: terraform-tooling
 #       deploymentSteps:
 #         - template: $(WORKING_DIRECTORY)/steps/terragrunt_plan_all.yml
 #       isDeployment: false
 #     - name: Apply
-#       azureLogin: true
 #       dependsOnDeploymentStages:
 #         - Plan
 #       deploymentSteps:
@@ -40,8 +38,8 @@ parameters:
     default: $(System.DefaultWorkingDirectory)
   
 variables:
-  - ${{ each globalVariable in parameters.globalVariables }}:
-    - ${{ globalVariable }}
+  - ${{ each var in parameters.globalVariables }}:
+    ${{ var.key }}: ${{ var.value }}
 
 stages:
   - ${{ each environment in parameters.environments }}:
@@ -73,7 +71,6 @@ stages:
             - ${{ else }}:
               - template: ../jobs/wrapper_job.yml
                 parameters:
-                  azureLogin: ${{ stage.azureLogin }}
                   container: ${{ stage.container }}
                   environment: ${{ environment.name }}
                   name: ${{ stage.name }} ${{ environment.name }}

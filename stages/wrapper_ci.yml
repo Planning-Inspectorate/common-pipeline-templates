@@ -1,7 +1,4 @@
 parameters:
-  - name: azureLogin
-    type: boolean
-    default: false
   - name: container
     type: string
     default: ''
@@ -27,8 +24,8 @@ parameters:
     default: $(System.DefaultWorkingDirectory)
 
 variables:
-  - ${{ each globalVariable in parameters.globalVariables }}:
-    - ${{ globalVariable }}
+  - ${{ each var in parameters.globalVariables }}:
+    ${{ var.key }}: ${{ var.value }}
 
 stages:
 - template: ./wrapper_stage.yml
@@ -36,11 +33,9 @@ stages:
     jobs:
       - template: ../jobs/wrapper_job.yml
         parameters:
-          azureLogin: ${{ parameters.azureLogin }}
           container: ${{ parameters.container }}
           environment: ${{ parameters.environment }}
           name: ${{ parameters.validateName }}
-          project: ${{ parameters.project }}
           steps:
             - checkout: self
               clean: true
