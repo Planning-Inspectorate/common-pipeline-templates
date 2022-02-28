@@ -2,15 +2,9 @@ parameters:
   - name: container
     type: string
     default: ''
-  - name: environment
-    type: string
-    default: Dev
   - name: globalVariables
     type: object
     default: []
-  - name: project
-    type: string
-    default: ''
   - name: validateName
     type: string
   - name: validationSteps
@@ -25,7 +19,7 @@ parameters:
 
 variables:
   ${{ each var in parameters.globalVariables }}:
-    ${{ var.key }}: ${{ var.value }}
+    ${{ var }}
 
 stages:
 - template: ./wrapper_stage.yml
@@ -34,7 +28,6 @@ stages:
       - template: ../jobs/wrapper_job.yml
         parameters:
           container: ${{ parameters.container }}
-          environment: ${{ parameters.environment }}
           name: ${{ parameters.validateName }}
           steps:
             - checkout: self
