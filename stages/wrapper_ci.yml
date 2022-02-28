@@ -24,7 +24,7 @@ parameters:
     default: $(System.DefaultWorkingDirectory)
 
 variables:
-  - ${{ each var in parameters.globalVariables }}:
+  ${{ each var in parameters.globalVariables }}:
     ${{ var.key }}: ${{ var.value }}
 
 stages:
