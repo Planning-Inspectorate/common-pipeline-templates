@@ -40,5 +40,6 @@ stages:
                 tagPrefix: $(Build.Repository.Name)
     name: ${{ parameters.validateName }}
     variables:
-      - ${{ each variable in parameters.variables }}:
-        - ${{ variable }}
+      - ${{ each var in parameters.variables }}:
+        - ${{ var }}
+        - template: ../variables/environments/${{ lower(environment.name) }}.yml

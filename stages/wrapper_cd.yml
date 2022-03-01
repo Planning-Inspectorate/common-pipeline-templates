@@ -27,9 +27,6 @@ parameters:
   - name: globalVariables
     type: object
     default: []
-  - name: project
-    type: string
-    default: ''
   - name: variables
     type: object
     default: []
@@ -53,28 +50,11 @@ stages:
               - ${{ each dependsOnStage in stage.dependsOn }}:
                 - ${{ replace(replace(dependsOnStage, '-', '_'), ' ', '_') }}_${{ environment.name }}
           jobs:
-            - ${{ if eq(stage.isDeployment, 'true') }}:
-              - template: ../jobs/wrapper_deployment.yml
-                parameters:
-                  container: ${{ stage.container }}
-                  environment: ${{ environment.name }}
-                  name: ${{ stage.name }} ${{ environment.name }}
-                  project: ${{ parameters.project }}
-                  steps:
-                    - ${{ if stage.deploymentSteps }}:
-                      - ${{ each deploymentStep in stage.deploymentSteps }}:
-                        - ${{ deploymentStep }}
-                  variables:
-                    - ${{ if stage.variables }}:
-                      - ${{ each variable in stage.variables }}:
-                        - ${{ variable }}
-            - ${{ else }}:
+            - ${{ if eq(stage.isDeployment, 'false') }}:
               - template: ../jobs/wrapper_job.yml
                 parameters:
                   container: ${{ stage.container }}
-                  environment: ${{ environment.name }}
                   name: ${{ stage.name }} ${{ environment.name }}
-                  project: ${{ parameters.project }}
                   steps:
                     - ${{ if stage.deploymentSteps }}:
                       - ${{ each deploymentStep in stage.deploymentSteps }}:
@@ -84,12 +64,28 @@ stages:
                         - ${{ deploymentStep }}
                   variables:
                     - ${{ if stage.variables }}:
-                      - ${{ each variable in stage.variables }}:
-                        - ${{ variable }} 
+                      - ${{ each var in stage.variables }}:
+                        - ${{ var }} 
+            - ${{ else }}:
+              - template: ../jobs/wrapper_deployment.yml
+                parameters:
+                  container: ${{ stage.container }}
+                  environment: ${{ environment.name }}
+                  name: ${{ stage.name }} ${{ environment.name }}
+                  steps:
+                    - ${{ if stage.deploymentSteps }}:
+                      - ${{ each deploymentStep in stage.deploymentSteps }}:
+                        - ${{ deploymentStep }}
+                  variables:
+                    - ${{ if stage.variables }}:
+                      - ${{ each var in stage.variables }}:
+                        - ${{ var }}
+              
           name: ${{ stage.name }} ${{ environment.name }}
           variables:
-            - ${{ each variable in parameters.variables }}:
-              - ${{ variable }}
-            - ${{ each variable in environment.variables }}:
-              - ${{ variable }}
+            - ${{ each var in parameters.variables }}:
+              - ${{ var }}
+            - ${{ each var in environment.variables }}:
+              - ${{ var }}
+            - template: ../variables/environments/${{ lower(environment.name) }}.yml
           workingDirectory: ${{ parameters.workingDirectory }}
