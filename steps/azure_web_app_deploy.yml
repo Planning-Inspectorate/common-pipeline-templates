@@ -1,0 +1,50 @@
+parameters:
+  - name: appName
+    type: string
+  - name: artifactSourcePipeline
+    type: string
+  - name: azurecrName
+    type: string
+  - name: azurecrServiceConnection
+    type: string
+  - name: azureEnvironmentServiceConnection
+    type: string
+  - name: deploymentTag
+    type: string
+  - name: releaseVersion
+    type: string
+  - name: repository
+    type: string
+
+steps:
+  - task: DownloadPipelineArtifact@2
+    displayName: Download Docker Image
+    inputs:
+      allowPartiallySucceededBuilds: true
+      pipeline: ${{ parameters.artifactSourcePipeline }}
+      project: $(System.TeamProject)
+      source: specific
+      tags: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }},${{ parameters.deploymentTag }}
+  - task: AzureCLI@2
+    displayName: Load Docker Image
+    inputs:
+      azureSubscription: ${{ parameters.azurecrServiceConnection }}
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        az acr login --name ${{ parameters.azurecrName }}
+
+        docker load --input $(Pipeline.Workspace)/docker-image/image.tar
+  - task: AzureWebAppContainer@1
+    displayName: Azure Web App on Container Deploy
+    inputs:
+      appName: ${{ parameters.appName }}
+      azureSubscription: ${{ parameters.azureEnvironmentServiceConnection }}
+      imageName: ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.deploymentTag }}
+  - script: |
+      docker tag ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.deploymentTag }} ${{ parameters.azurecrName }}.azurecr.io/$(repository):$(ENVIRONMENT)
+      docker tag ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.deploymentTag }} ${{ parameters.azurecrName }}.azurecr.io/$(repository):${{ parameters.releaseVersion }}
+      
+      docker push $(azureContainerRegistryName).azurecr.io/${{ parameters.repository }}:${{ parameters.releaseVersion }}
+      docker push $(azureContainerRegistryName).azurecr.io/${{ parameters.repository }}:$(ENVIRONMENT)
+    displayName: Tag Docker Image
