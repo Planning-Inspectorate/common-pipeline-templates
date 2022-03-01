@@ -1,0 +1,71 @@
+parameters:
+  - name: appName
+    type: string
+  - name: artifactSourcePipeline
+    type: string
+  - name: azurecrName
+    type: string
+  - name: azurecrServiceConnection
+    type: string
+  - name: container
+    type: string
+    default: ''
+  - name: deploymentTag
+    type: string
+  - name: environments
+    type: object
+#   example:
+#     - name: Dev
+#     - name: Test
+#       dependsOn:
+#         - Dev
+  - name: globalVariables
+    type: object
+    default: []
+  - name: projectName
+    type: string
+  - name: releaseVersion
+    type: string
+  - name: repository
+    type: string
+  - name: variables
+    type: object
+    default: []
+  - name: workingDirectory
+    type: string
+    default: $(System.DefaultWorkingDirectory)
+  
+variables:
+  - ${{ each var in parameters.globalVariables }}:
+    - ${{ var }}
+
+stages:
+  - ${{ each environment in parameters.environments }}:
+    - template: ./wrapper_stage.yml
+      parameters:
+        dependsOn:
+          - ${{ each dependsOn in environment.dependsOn }}:
+            - Deploy_${{ dependsOn }}
+        jobs:
+          - template: ../jobs/wrapper_deployment.yml
+            parameters:
+              container: ${{ parameters.container }}
+              environment: ${{ environment.name }}
+              name: Deploy ${{ environment.name }}
+              steps:
+                - template: ${{variables['Build.SourcesDirectory']}}/steps/azure_web_app_deploy.yml@templates
+                  parameters:
+                    appName: ${{ parameters.appName }}
+                    artifactSourcePipeline: ${{ parameters.artifactSourcePipeline }}
+                    azurecrName: ${{ parameters.azurecrName }}
+                    azurecrServiceConnection: ${{ parameters.azurecrServiceConnection }}
+                    azureEnvironmentServiceConnection: ${{ parameters.projectName }}-${{ lower(environment.name) }} 
+                    deploymentTag: ${{ parameters.deploymentTag }}
+                    releaseVersion: ${{ parameters.releaseVersion }}
+                    repository: ${{ parameters.repository }}
+        name: Deploy ${{ environment.name }}
+        variables:
+          - template: ../variables/environments/${{ lower(environment.name) }}.yml
+          - ${{ each var in parameters.variables }}:
+            - ${{ var }}
+        workingDirectory: ${{ parameters.workingDirectory }}
