@@ -1,0 +1,40 @@
+parameters:
+  - name: azurecrName
+    type: string
+  - name: azurecrServiceConnection
+    type: string
+  - name: dockerfilePath
+    type: string
+    default: Dockerfile
+  - name: repository
+    type: string
+  - name: versionNumber
+    type: string
+  - name: workingDirectory
+    type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName: ACR Login
+    inputs:
+      azureSubscription: ${{ parameters.azurecrServiceConnection }}
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        az acr login --name ${{ parameters.azurecrName }}
+  - script: |
+      docker build . \
+      -f ${{ parameters.dockerfilePath }} \
+      -t ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.versionNumber }} \
+      -t ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }} \
+      --build-arg APP_NAME=applications-forms-web-app \
+      --build-arg BUILD_ID=$(Build.BuildNumber) \
+      --build-arg VERSION=$(versionNumber)
+
+      docker push -a $(azurecrName).azurecr.io/${{ parameters.repository }}
+      docker save $(azurecrName).azurecr.io/${{ parameters.repository }}:${{ parameters.versionNumber }} -o $(Build.ArtifactStagingDirectory)/image.tar
+    displayName: Build and Push Docker Image to ACR
+    workingDirectory: ${{ parameters.workingDirectory }}
+  - publish: $(Build.ArtifactStagingDirectory)
+    artifact: docker-image
+    displayName: Publish Docker image as artifact

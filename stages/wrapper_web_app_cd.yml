@@ -53,6 +53,9 @@ stages:
               environment: ${{ environment.name }}
               name: Deploy ${{ environment.name }}
               steps:
+                - script: |
+                    echo "##vso[build.addbuildtag]${{ parameters.deploymentTag }}"
+                  displayName: Set Build Tags
                 - template: ${{variables['Build.SourcesDirectory']}}/steps/azure_web_app_deploy.yml@templates
                   parameters:
                     appName: ${{ parameters.appName }}
