@@ -42,4 +42,3 @@ stages:
     variables:
       - ${{ each var in parameters.variables }}:
         - ${{ var }}
-        - template: ../variables/environments/${{ lower(environment.name) }}.yml

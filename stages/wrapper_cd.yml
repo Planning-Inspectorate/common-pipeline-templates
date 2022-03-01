@@ -83,9 +83,9 @@ stages:
               
           name: ${{ stage.name }} ${{ environment.name }}
           variables:
+            - template: ../variables/environments/${{ lower(environment.name) }}.yml
             - ${{ each var in parameters.variables }}:
               - ${{ var }}
             - ${{ each var in environment.variables }}:
               - ${{ var }}
-            - template: ../variables/environments/${{ lower(environment.name) }}.yml
           workingDirectory: ${{ parameters.workingDirectory }}
