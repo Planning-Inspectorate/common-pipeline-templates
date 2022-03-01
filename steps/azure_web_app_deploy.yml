@@ -45,6 +45,6 @@ steps:
       docker tag ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.deploymentTag }} ${{ parameters.azurecrName }}.azurecr.io/$(repository):$(ENVIRONMENT)
       docker tag ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.deploymentTag }} ${{ parameters.azurecrName }}.azurecr.io/$(repository):${{ parameters.releaseVersion }}
       
-      docker push $(azureContainerRegistryName).azurecr.io/${{ parameters.repository }}:${{ parameters.releaseVersion }}
-      docker push $(azureContainerRegistryName).azurecr.io/${{ parameters.repository }}:$(ENVIRONMENT)
+      docker push ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.releaseVersion }}
+      docker push ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:$(ENVIRONMENT)
     displayName: Tag Docker Image
