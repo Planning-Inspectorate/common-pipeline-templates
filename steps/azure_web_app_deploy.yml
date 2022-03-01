@@ -33,9 +33,11 @@ steps:
       azureSubscription: ${{ parameters.azureEnvironmentServiceConnection }}
       imageName: ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.deploymentTag }}
   - script: |
-      docker tag ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.deploymentTag }} ${{ parameters.azurecrName }}.azurecr.io/$(repository):$(ENVIRONMENT)
-      docker tag ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.deploymentTag }} ${{ parameters.azurecrName }}.azurecr.io/$(repository):${{ parameters.releaseVersion }}
-      
-      docker push ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.releaseVersion }}
-      docker push ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:$(ENVIRONMENT)
+      IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
+
+      docker tag $IMAGE:ci-build $IMAGE:$(ENVIRONMENT)
+      docker tag $IMAGE:ci-build $IMAGE:${{ parameters.releaseVersion }}
+
+      docker push $IMAGE:$(ENVIRONMENT)
+      docker push $IMAGE:${{ parameters.releaseVersion }}
     displayName: Tag Docker Image

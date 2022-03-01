@@ -65,7 +65,7 @@ stages:
                   variables:
                     - ${{ if stage.variables }}:
                       - ${{ each var in stage.variables }}:
-                        - ${{ var }} 
+                        - ${{ var }}
             - ${{ else }}:
               - template: ../jobs/wrapper_deployment.yml
                 parameters:
@@ -80,7 +80,7 @@ stages:
                     - ${{ if stage.variables }}:
                       - ${{ each var in stage.variables }}:
                         - ${{ var }}
-              
+
           name: ${{ stage.name }} ${{ environment.name }}
           variables:
             - template: ../variables/environments/${{ lower(environment.name) }}.yml

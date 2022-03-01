@@ -34,10 +34,16 @@ parameters:
   - name: workingDirectory
     type: string
     default: $(System.DefaultWorkingDirectory)
-  
+
 variables:
   - ${{ each var in parameters.globalVariables }}:
     - ${{ var }}
+  - ${{ if eq(parameters.deploymentTag, 'none') }}:
+    - name: deploymentTag
+      value: $[replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.')]
+  - ${{ else }}:
+    - name: deploymentTag
+      value: ${{ parameters.deploymentTag }}
 
 stages:
   - ${{ each environment in parameters.environments }}:
@@ -60,9 +66,9 @@ stages:
                     pipeline: ${{ parameters.artifactSourcePipeline }}
                     project: $(System.TeamProject)
                     source: specific
-                    tags: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }},${{ parameters.deploymentTag }}
+                    tags: $(deploymentTag)
                 - script: |
-                    echo "##vso[build.addbuildtag]${{ parameters.deploymentTag }}"
+                    echo "##vso[build.addbuildtag]$(deploymentTag)"
                   displayName: Set Build Tags
                 - template: ${{variables['Build.SourcesDirectory']}}/steps/azure_web_app_deploy.yml@templates
                   parameters:
@@ -70,8 +76,8 @@ stages:
                     artifactSourcePipeline: ${{ parameters.artifactSourcePipeline }}
                     azurecrName: ${{ parameters.azurecrName }}
                     azurecrServiceConnection: ${{ parameters.azurecrServiceConnection }}
-                    azureEnvironmentServiceConnection: ${{ parameters.projectName }}-${{ lower(environment.name) }} 
-                    deploymentTag: ${{ parameters.deploymentTag }}
+                    azureEnvironmentServiceConnection: ${{ parameters.projectName }}-${{ lower(environment.name) }}
+                    deploymentTag: $(deploymentTag)
                     releaseVersion: ${{ parameters.releaseVersion }}
                     repository: ${{ parameters.repository }}
         name: Deploy ${{ environment.name }}
