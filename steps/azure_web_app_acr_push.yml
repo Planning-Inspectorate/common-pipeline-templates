@@ -23,13 +23,14 @@ steps:
       inlineScript: |
         az acr login --name ${{ parameters.azurecrName }}
   - script: |
+      echo "##vso[build.addbuildtag]$(versionNumber)"
+      echo "##vso[build.addbuildtag]${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }}"
+  - script: |
       docker build . \
       -f ${{ parameters.dockerfilePath }} \
       -t ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.versionNumber }} \
       -t ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }} \
-      --build-arg APP_NAME=applications-forms-web-app \
-      --build-arg BUILD_ID=$(Build.BuildNumber) \
-      --build-arg VERSION=$(versionNumber)
+      --build-arg VERSION=${{ parameters.versionNumber }}
 
       docker push -a $(azurecrName).azurecr.io/${{ parameters.repository }}
       docker save $(azurecrName).azurecr.io/${{ parameters.repository }}:${{ parameters.versionNumber }} -o $(Build.ArtifactStagingDirectory)/image.tar

@@ -41,7 +41,6 @@ jobs:
         deploy:
           steps:
             - script: |
-                echo "##vso[build.addbuildtag]$(Build.SourceBranchName)"
                 echo "##vso[build.addbuildtag]environment=${{ parameters.environment }}"
               displayName: Add build tags
             - ${{ if ne(parameters.artifact.definition, '') }}:

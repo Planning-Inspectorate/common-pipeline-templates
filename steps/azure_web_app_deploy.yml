@@ -17,14 +17,6 @@ parameters:
     type: string
 
 steps:
-  - task: DownloadPipelineArtifact@2
-    displayName: Download Docker Image
-    inputs:
-      allowPartiallySucceededBuilds: true
-      pipeline: ${{ parameters.artifactSourcePipeline }}
-      project: $(System.TeamProject)
-      source: specific
-      tags: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }},${{ parameters.deploymentTag }}
   - task: AzureCLI@2
     displayName: ACR Login
     inputs:

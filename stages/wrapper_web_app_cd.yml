@@ -53,6 +53,14 @@ stages:
               environment: ${{ environment.name }}
               name: Deploy ${{ environment.name }}
               steps:
+                - task: DownloadPipelineArtifact@2
+                  displayName: Download Docker Image
+                  inputs:
+                    allowPartiallySucceededBuilds: true
+                    pipeline: ${{ parameters.artifactSourcePipeline }}
+                    project: $(System.TeamProject)
+                    source: specific
+                    tags: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }},${{ parameters.deploymentTag }}
                 - script: |
                     echo "##vso[build.addbuildtag]${{ parameters.deploymentTag }}"
                   displayName: Set Build Tags
