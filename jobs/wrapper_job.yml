@@ -1,7 +1,4 @@
 parameters:
-  - name: azureLogin
-    type: boolean
-    default: false
   - name: condition
     type: string
     default: succeeded()
@@ -11,14 +8,8 @@ parameters:
   - name: dependsOn
     type: object
     default: []
-  - name: environment
-    type: string
-    default: Dev
   - name: name
     type: object
-  - name: project
-    type: string
-    default: ''
   - name: steps
     type: stepList
   - name: variables
@@ -35,10 +26,6 @@ jobs:
         - ${{ dependsOn }}
     displayName: ${{ parameters.name }}
     steps:
-      - ${{ if eq(parameters.azureLogin, 'true') }}:
-        - template: ../steps/azure_cli_login.yml
-          parameters:
-            azureServiceConnection: ${{ parameters.project }}-${{ parameters.environment }}
       - ${{ each step in parameters.steps }}:
         - ${{ step }}
     variables:

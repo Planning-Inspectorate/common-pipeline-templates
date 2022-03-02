@@ -1,19 +1,10 @@
 parameters:
-  - name: azureLogin
-    type: boolean
-    default: false
   - name: container
     type: string
     default: ''
-  - name: environment
-    type: string
-    default: Dev
   - name: globalVariables
     type: object
     default: []
-  - name: project
-    type: string
-    default: ''
   - name: validateName
     type: string
   - name: validationSteps
@@ -27,8 +18,8 @@ parameters:
     default: $(System.DefaultWorkingDirectory)
 
 variables:
-  - ${{ each globalVariable in parameters.globalVariables }}:
-    - ${{ globalVariable }}
+  - ${{ each var in parameters.globalVariables }}:
+    - ${{ var }}
 
 stages:
 - template: ./wrapper_stage.yml
@@ -36,11 +27,8 @@ stages:
     jobs:
       - template: ../jobs/wrapper_job.yml
         parameters:
-          azureLogin: ${{ parameters.azureLogin }}
           container: ${{ parameters.container }}
-          environment: ${{ parameters.environment }}
           name: ${{ parameters.validateName }}
-          project: ${{ parameters.project }}
           steps:
             - checkout: self
               clean: true
@@ -52,5 +40,5 @@ stages:
                 tagPrefix: $(Build.Repository.Name)
     name: ${{ parameters.validateName }}
     variables:
-      - ${{ each variable in parameters.variables }}:
-        - ${{ variable }}
+      - ${{ each var in parameters.variables }}:
+        - ${{ var }}

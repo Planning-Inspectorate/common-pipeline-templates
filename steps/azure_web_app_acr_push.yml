@@ -1,0 +1,36 @@
+parameters:
+  - name: azurecrName
+    type: string
+  - name: dockerfilePath
+    type: string
+    default: Dockerfile
+  - name: repository
+    type: string
+  - name: versionNumber
+    type: string
+  - name: workingDirectory
+    type: string
+
+steps:
+  - script: |
+      echo "##vso[build.addbuildtag]$(versionNumber)"
+      echo "##vso[build.addbuildtag]${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }}"
+  - script: |
+      IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
+      
+      docker build . \
+      -f ${{ parameters.dockerfilePath }} \
+      -t $IMAGE:${{ parameters.versionNumber }} \
+      -t $IMAGE:${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }} \
+      -t $IMAGE:ci-build \
+      --build-arg VERSION=${{ parameters.versionNumber }}
+
+      docker push $IMAGE:${{ parameters.versionNumber }}
+      docker push $IMAGE:${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }}
+      
+      docker save $IMAGE:ci-build -o $(Build.ArtifactStagingDirectory)/image.tar
+    displayName: Build and Push Docker Image to ACR
+    workingDirectory: ${{ parameters.workingDirectory }}
+  - publish: $(Build.ArtifactStagingDirectory)
+    artifact: docker-image
+    displayName: Publish Docker image as artifact

@@ -1,0 +1,3 @@
+variables:
+  - name: SUBSCRIPTION_ID
+    value: edb1ff78-90da-4901-a497-7e79f966f8e2

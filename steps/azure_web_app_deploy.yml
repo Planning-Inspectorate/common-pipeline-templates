@@ -1,0 +1,34 @@
+parameters:
+  - name: appName
+    type: string
+  - name: artifactSourcePipeline
+    type: string
+  - name: azurecrName
+    type: string
+  - name: azureEnvironmentServiceConnection
+    type: string
+  - name: deploymentTag
+    type: string
+  - name: releaseVersion
+    type: string
+  - name: repository
+    type: string
+
+steps:
+  - script: docker load --input $(Pipeline.Workspace)/docker-image/image.tar
+    displayName: Load Docker Image
+  - task: AzureWebAppContainer@1
+    displayName: Azure Web App on Container Deploy
+    inputs:
+      appName: ${{ parameters.appName }}
+      azureSubscription: ${{ parameters.azureEnvironmentServiceConnection }}
+      imageName: ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.deploymentTag }}
+  - script: |
+      IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
+
+      docker tag $IMAGE:ci-build $IMAGE:$(ENVIRONMENT)
+      docker tag $IMAGE:ci-build $IMAGE:${{ parameters.releaseVersion }}
+
+      docker push $IMAGE:$(ENVIRONMENT)
+      docker push $IMAGE:${{ parameters.releaseVersion }}
+    displayName: Tag Docker Image

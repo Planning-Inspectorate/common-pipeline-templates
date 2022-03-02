@@ -1,0 +1,5 @@
+variables:
+  - name: ENVIRONMENT
+    value: test
+  - name: SUBSCRIPTION_ID
+    value: 76cf28c6-6fda-42f1-bcd9-6d7dbed704ef

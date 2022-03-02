@@ -41,15 +41,11 @@ jobs:
         deploy:
           steps:
             - script: |
-                echo "##vso[build.addbuildtag]$(Build.SourceBranchName)"
                 echo "##vso[build.addbuildtag]environment=${{ parameters.environment }}"
               displayName: Add build tags
             - ${{ if ne(parameters.artifact.definition, '') }}:
               - task: DownloadPipelineArtifact@2
                 inputs: ${{ parameters.artifact }}
-            - template: ../steps/azure_cli_login.yml
-              parameters:
-                azureServiceConnection: ${{ parameters.project }}-${{ parameters.environment }}
             - ${{ each step in parameters.steps }}:
               - ${{ step }}
     variables:

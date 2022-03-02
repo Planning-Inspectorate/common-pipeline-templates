@@ -1,0 +1,91 @@
+parameters:
+  - name: appName
+    type: string
+  - name: artifactSourcePipeline
+    type: string
+  - name: azurecrName
+    type: string
+  - name: azurecrServiceConnection
+    type: string
+  - name: container
+    type: string
+    default: ''
+  - name: deploymentTag
+    type: string
+  - name: environments
+    type: object
+#   example:
+#     - name: Dev
+#     - name: Test
+#       dependsOn:
+#         - Dev
+  - name: globalVariables
+    type: object
+    default: []
+  - name: projectName
+    type: string
+  - name: releaseVersion
+    type: string
+  - name: repository
+    type: string
+  - name: variables
+    type: object
+    default: []
+  - name: workingDirectory
+    type: string
+    default: $(System.DefaultWorkingDirectory)
+
+variables:
+  - ${{ each var in parameters.globalVariables }}:
+    - ${{ var }}
+  - ${{ if eq(parameters.deploymentTag, 'none') }}:
+    - name: deploymentTag
+      value: $[replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.')]
+  - ${{ else }}:
+    - name: deploymentTag
+      value: ${{ parameters.deploymentTag }}
+
+stages:
+  - ${{ each environment in parameters.environments }}:
+    - template: ./wrapper_stage.yml
+      parameters:
+        dependsOn:
+          - ${{ each dependsOn in environment.dependsOn }}:
+            - Deploy_${{ dependsOn }}
+        jobs:
+          - template: ../jobs/wrapper_deployment.yml
+            parameters:
+              container: ${{ parameters.container }}
+              environment: ${{ environment.name }}
+              name: Deploy ${{ environment.name }}
+              steps:
+                - task: DownloadPipelineArtifact@2
+                  displayName: Download Docker Image
+                  inputs:
+                    allowPartiallySucceededBuilds: true
+                    pipeline: ${{ parameters.artifactSourcePipeline }}
+                    project: $(System.TeamProject)
+                    source: specific
+                    tags: $(deploymentTag)
+                - script: |
+                    echo "##vso[build.addbuildtag]$(deploymentTag)"
+                  displayName: Set Build Tags
+                - template: ../steps/acr_auth.yml
+                  parameters:
+                    azurecrName: ${{ parameters.azurecrName }}
+                    azurecrServiceConnection: ${{ parameters.azurecrServiceConnection }}
+                - template: ${{variables['Build.SourcesDirectory']}}/steps/azure_web_app_deploy.yml@templates
+                  parameters:
+                    appName: ${{ parameters.appName }}
+                    artifactSourcePipeline: ${{ parameters.artifactSourcePipeline }}
+                    azurecrName: ${{ parameters.azurecrName }}
+                    azureEnvironmentServiceConnection: ${{ parameters.projectName }}-${{ lower(environment.name) }}
+                    deploymentTag: $(deploymentTag)
+                    releaseVersion: ${{ parameters.releaseVersion }}
+                    repository: ${{ parameters.repository }}
+        name: Deploy ${{ environment.name }}
+        variables:
+          - template: ../variables/environments/${{ lower(environment.name) }}.yml
+          - ${{ each var in parameters.variables }}:
+            - ${{ var }}
+        workingDirectory: ${{ parameters.workingDirectory }}

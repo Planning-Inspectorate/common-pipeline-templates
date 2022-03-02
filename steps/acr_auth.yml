@@ -1,0 +1,14 @@
+parameters:
+  - name: azurecrName
+    type: string
+  - name: azurecrServiceConnection
+    type: string
+
+steps:
+  - task: AzureCLI@2
+    displayName: ACR Login
+    inputs:
+      azureSubscription: ${{ parameters.azurecrServiceConnection }}
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: az acr login --name ${{ parameters.azurecrName }}

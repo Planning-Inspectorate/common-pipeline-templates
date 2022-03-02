@@ -3,18 +3,18 @@ parameters:
     type: object
 #   example:
 #     - name: Plan
-#       azureLogin: true
+#       authType: terraform 
 #       container: terraform-tooling
 #       deploymentSteps:
 #         - template: $(WORKING_DIRECTORY)/steps/terragrunt_plan_all.yml
 #       isDeployment: false
-#     - name: Apply
-#       azureLogin: true
+#     - name: Deploy Container
+#       authType: acr 
+#       azurecrName: pinscontainerregistry
 #       dependsOnDeploymentStages:
 #         - Plan
 #       deploymentSteps:
-#         - template: $(WORKING_DIRECTORY)/steps/terragrunt_apply_all.yml
-#       isDeployment: true
+#         - template: $(WORKING_DIRECTORY)/steps/azure_web_app_deploy.yml
   - name: environments
     type: object
 #   example:
@@ -31,7 +31,6 @@ parameters:
     default: []
   - name: project
     type: string
-    default: ''
   - name: variables
     type: object
     default: []
@@ -40,8 +39,8 @@ parameters:
     default: $(System.DefaultWorkingDirectory)
   
 variables:
-  - ${{ each globalVariable in parameters.globalVariables }}:
-    - ${{ globalVariable }}
+  - ${{ each var in parameters.globalVariables }}:
+    - ${{ var }}
 
 stages:
   - ${{ each environment in parameters.environments }}:
@@ -55,30 +54,21 @@ stages:
               - ${{ each dependsOnStage in stage.dependsOn }}:
                 - ${{ replace(replace(dependsOnStage, '-', '_'), ' ', '_') }}_${{ environment.name }}
           jobs:
-            - ${{ if eq(stage.isDeployment, 'true') }}:
-              - template: ../jobs/wrapper_deployment.yml
-                parameters:
-                  container: ${{ stage.container }}
-                  environment: ${{ environment.name }}
-                  name: ${{ stage.name }} ${{ environment.name }}
-                  project: ${{ parameters.project }}
-                  steps:
-                    - ${{ if stage.deploymentSteps }}:
-                      - ${{ each deploymentStep in stage.deploymentSteps }}:
-                        - ${{ deploymentStep }}
-                  variables:
-                    - ${{ if stage.variables }}:
-                      - ${{ each variable in stage.variables }}:
-                        - ${{ variable }}
-            - ${{ else }}:
+            - ${{ if eq(stage.isDeployment, 'false') }}:
               - template: ../jobs/wrapper_job.yml
                 parameters:
-                  azureLogin: ${{ stage.azureLogin }}
                   container: ${{ stage.container }}
-                  environment: ${{ environment.name }}
                   name: ${{ stage.name }} ${{ environment.name }}
-                  project: ${{ parameters.project }}
                   steps:
+                    - ${{ if eq(stage.authType, 'terraform') }}:
+                      - template: ../steps/terraform_azure_cli_auth.yml
+                        parameters:
+                          azureServiceConnection: ${{ parameters.project }}-${{ environment.name }}
+                    - ${{ if eq(stage.authType, 'acr') }}:
+                      - template: ../steps/acr_auth.yml
+                        parameters:
+                          azurecrName: ${{ stage.azurecrName }}
+                          azurecrServiceConnection: ${{ parameters.project }}-${{ environment.name }}
                     - ${{ if stage.deploymentSteps }}:
                       - ${{ each deploymentStep in stage.deploymentSteps }}:
                         - ${{ deploymentStep }}
@@ -87,12 +77,37 @@ stages:
                         - ${{ deploymentStep }}
                   variables:
                     - ${{ if stage.variables }}:
-                      - ${{ each variable in stage.variables }}:
-                        - ${{ variable }} 
+                      - ${{ each var in stage.variables }}:
+                        - ${{ var }}
+            - ${{ else }}:
+              - template: ../jobs/wrapper_deployment.yml
+                parameters:
+                  container: ${{ stage.container }}
+                  environment: ${{ environment.name }}
+                  name: ${{ stage.name }} ${{ environment.name }}
+                  steps:
+                    - ${{ if eq(stage.authType, 'terraform') }}:
+                      - template: ../steps/terraform_azure_cli_auth.yml
+                        parameters:
+                          azureServiceConnection: ${{ parameters.project }}-${{ environment.name }}
+                    - ${{ if eq(stage.authType, 'acr') }}:
+                      - template: ../steps/acr_auth.yml
+                        parameters:
+                          azurecrName: ${{ stage.azurecrName }}
+                          azurecrServiceConnection: ${{ parameters.project }}-${{ environment.name }}
+                    - ${{ if stage.deploymentSteps }}:
+                      - ${{ each deploymentStep in stage.deploymentSteps }}:
+                        - ${{ deploymentStep }}
+                  variables:
+                    - ${{ if stage.variables }}:
+                      - ${{ each var in stage.variables }}:
+                        - ${{ var }}
+
           name: ${{ stage.name }} ${{ environment.name }}
           variables:
-            - ${{ each variable in parameters.variables }}:
-              - ${{ variable }}
-            - ${{ each variable in environment.variables }}:
-              - ${{ variable }}
+            - template: ../variables/environments/${{ lower(environment.name) }}.yml
+            - ${{ each var in parameters.variables }}:
+              - ${{ var }}
+            - ${{ each var in environment.variables }}:
+              - ${{ var }}
           workingDirectory: ${{ parameters.workingDirectory }}
