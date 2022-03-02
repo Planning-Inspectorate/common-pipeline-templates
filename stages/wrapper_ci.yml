@@ -1,10 +1,21 @@
 parameters:
+  - name: azurecrName
+    type: string
+  - name: authType
+    type: string
+    default: none
   - name: container
     type: string
     default: ''
+  - name: environment
+    type: string
+    default: dev
   - name: globalVariables
     type: object
     default: []
+  - name: projectName
+    type: string
+    default: ''
   - name: validateName
     type: string
   - name: validationSteps
@@ -33,6 +44,15 @@ stages:
             - checkout: self
               clean: true
               persistCredentials: true
+            - ${{ if eq(parameters.authType, 'terraform') }}:
+              - template: ../steps/terraform_azure_cli_auth.yml
+                parameters:
+                  azureServiceConnection: ${{ parameters.projectName }}-${{ parameters.environment }}
+            - ${{ if eq(parameters.authType, 'acr') }}:
+              - template: ../steps/acr_auth.yml
+                parameters:
+                  azurecrName: ${{ parameters.azurecrName }}
+                  azurecrServiceConnection: ${{ parameters.projectName }}-tooling
             - ${{ each validationStep in parameters.validationSteps }}:
               - ${{ validationStep }}
             - template: ../steps/git_tagging.yml

@@ -68,7 +68,7 @@ stages:
                       - template: ../steps/acr_auth.yml
                         parameters:
                           azurecrName: ${{ stage.azurecrName }}
-                          azurecrServiceConnection: ${{ parameters.project }}-${{ environment.name }}
+                          azurecrServiceConnection: ${{ parameters.project }}-tooling
                     - ${{ if stage.deploymentSteps }}:
                       - ${{ each deploymentStep in stage.deploymentSteps }}:
                         - ${{ deploymentStep }}
