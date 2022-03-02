@@ -70,12 +70,15 @@ stages:
                 - script: |
                     echo "##vso[build.addbuildtag]$(deploymentTag)"
                   displayName: Set Build Tags
+                - template: ../steps/acr_auth.yml
+                  parameters:
+                    azurecrName: ${{ parameters.azurecrName }}
+                    azurecrServiceConnection: ${{ parameters.azurecrServiceConnection }}
                 - template: ${{variables['Build.SourcesDirectory']}}/steps/azure_web_app_deploy.yml@templates
                   parameters:
                     appName: ${{ parameters.appName }}
                     artifactSourcePipeline: ${{ parameters.artifactSourcePipeline }}
                     azurecrName: ${{ parameters.azurecrName }}
-                    azurecrServiceConnection: ${{ parameters.azurecrServiceConnection }}
                     azureEnvironmentServiceConnection: ${{ parameters.projectName }}-${{ lower(environment.name) }}
                     deploymentTag: $(deploymentTag)
                     releaseVersion: ${{ parameters.releaseVersion }}

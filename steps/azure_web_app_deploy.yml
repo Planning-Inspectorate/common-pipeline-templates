@@ -17,13 +17,6 @@ parameters:
     type: string
 
 steps:
-  - task: AzureCLI@2
-    displayName: ACR Login
-    inputs:
-      azureSubscription: ${{ parameters.azurecrServiceConnection }}
-      scriptType: bash
-      scriptLocation: inlineScript
-      inlineScript: az acr login --name ${{ parameters.azurecrName }}
   - script: docker load --input $(Pipeline.Workspace)/docker-image/image.tar
     displayName: Load Docker Image
   - task: AzureWebAppContainer@1

@@ -1,8 +1,6 @@
 parameters:
   - name: azurecrName
     type: string
-  - name: azurecrServiceConnection
-    type: string
   - name: dockerfilePath
     type: string
     default: Dockerfile
@@ -14,14 +12,6 @@ parameters:
     type: string
 
 steps:
-  - task: AzureCLI@2
-    displayName: ACR Login
-    inputs:
-      azureSubscription: ${{ parameters.azurecrServiceConnection }}
-      scriptType: bash
-      scriptLocation: inlineScript
-      inlineScript: |
-        az acr login --name ${{ parameters.azurecrName }}
   - script: |
       echo "##vso[build.addbuildtag]$(versionNumber)"
       echo "##vso[build.addbuildtag]${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }}"
