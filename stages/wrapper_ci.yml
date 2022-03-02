@@ -1,6 +1,7 @@
 parameters:
   - name: azurecrName
     type: string
+    default: ''
   - name: authType
     type: string
     default: none
