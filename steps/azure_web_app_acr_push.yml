@@ -15,6 +15,7 @@ steps:
   - script: |
       echo "##vso[build.addbuildtag]$(versionNumber)"
       echo "##vso[build.addbuildtag]${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }}"
+    displayName: Add Build Tags
   - script: |
       IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
       
