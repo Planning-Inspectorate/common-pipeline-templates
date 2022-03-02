@@ -5,8 +5,6 @@ parameters:
     type: string
   - name: azurecrName
     type: string
-  - name: azurecrServiceConnection
-    type: string
   - name: azureEnvironmentServiceConnection
     type: string
   - name: deploymentTag
