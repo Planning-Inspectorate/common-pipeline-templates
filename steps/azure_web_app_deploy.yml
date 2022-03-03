@@ -24,6 +24,7 @@ steps:
       azureSubscription: ${{ parameters.azureEnvironmentServiceConnection }}
       imageName: ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.deploymentTag }}
   - script: |
+      echo "##vso[build.addbuildtag]${{ parameters.deploymentTag }}"
       IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
 
       docker tag $IMAGE:ci-build $IMAGE:$(ENVIRONMENT)
