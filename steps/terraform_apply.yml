@@ -1,8 +1,14 @@
 parameters:
+  - name: artifactName
+    type: string
+    default: terraform-plan
   - name: subscriptionId
     type: string
 
 steps:
+  - download: current
+    artifact: ${{ parameters.artifactName }}
+    displayName: Download Terraform Plan
   - script: |
       chmod -R +x .
       terraform apply -input=false tfplan
@@ -12,4 +18,4 @@ steps:
       ARM_CLIENT_SECRET: $(azureClientSecret)
       ARM_SUBSCRIPTION_ID: ${{ parameters.subscriptionId }}
       ARM_TENANT_ID: $(azureTenantId)
-    workingDirectory: $(Pipeline.Workspace)/terraform-plan
+    workingDirectory: $(Pipeline.Workspace)/${{ parameters.artifactName }}

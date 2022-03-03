@@ -1,7 +1,7 @@
 parameters:
   - name: artifactName
     type: string
-    default: $(Build.BuildId)
+    default: terraform-plan
   - name: environmentVariables
     type: object
     default: []
@@ -27,14 +27,17 @@ steps:
       ${{ each var in parameters.environmentVariables }}:
         ${{ var.key }}: ${{ var.value }}
   - task: CopyFiles@2
-    displayName: Copy sources to artifact
+    displayName: Copy tfplan and lock to artifact
     inputs:
+      flattenFolders: true
       SourceFolder: ${{ parameters.workingDirectory }}
       Contents: |
-        .terragrunt-cache/**/${{ parameters.stack }}/.terraform/**
-        .terragrunt-cache/**/${{ parameters.stack }}/.terraform.lock.hcl
-        .terragrunt-cache/**/${{ parameters.stack }}/tfplan
+        ${{ parameters.workingDirectory }}/.terragrunt-cache/**/common/.terraform.lock.hcl
+        ${{ parameters.workingDirectory }}/.terragrunt-cache/**/common/tfplan
       TargetFolder: $(Build.ArtifactStagingDirectory)
+  - script: |
+      find ${{ parameters.workingDirectory }}/.terragrunt-cache -name .terraform -type d -exec cp -r {} $(Build.ArtifactStagingDirectory)/.terraform \;
+    displayName: Copy .terraform folder to artifact
   - publish: $(Build.ArtifactStagingDirectory)
     artifact: ${{ parameters.artifactName }}
     displayName: Publish sources
