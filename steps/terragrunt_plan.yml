@@ -5,6 +5,8 @@ parameters:
   - name: environmentVariables
     type: object
     default: []
+  - name: stack
+    type: string
   - name: subscriptionId
     type: string
   - name: workingDirectory
@@ -29,9 +31,9 @@ steps:
     inputs:
       SourceFolder: ${{ parameters.workingDirectory }}
       Contents: |
-        .terraform/**
-        .terraform.lock.hcl
-        tfplan
+        .terragrunt-cache/**/${{ parameters.stack }}/.terraform/**
+        .terragrunt-cache/**/${{ parameters.stack }}/.terraform.lock.hcl
+        .terragrunt-cache/**/${{ parameters.stack }}/tfplan
       TargetFolder: $(Build.ArtifactStagingDirectory)
   - publish: $(Build.ArtifactStagingDirectory)
     artifact: ${{ parameters.artifactName }}

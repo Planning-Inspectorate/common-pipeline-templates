@@ -14,7 +14,7 @@ parameters:
 steps:
   - script: |
       terragrunt run-all plan --terragrunt-include-external-dependencies
-    displayName: Terragrunt Plan
+    displayName: Terragrunt Plan All
     env:
       ARM_CLIENT_ID: $(azureClientId)
       ARM_CLIENT_SECRET: $(azureClientSecret)
