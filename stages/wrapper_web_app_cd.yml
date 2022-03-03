@@ -67,9 +67,6 @@ stages:
                     project: $(System.TeamProject)
                     source: specific
                     tags: $(deploymentTag)
-                - script: |
-                    echo "##vso[build.addbuildtag]$(deploymentTag)"
-                  displayName: Set Build Tags
                 - template: ../steps/acr_auth.yml
                   parameters:
                     azurecrName: ${{ parameters.azurecrName }}
