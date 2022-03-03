@@ -82,6 +82,7 @@ stages:
             - ${{ else }}:
               - template: ../jobs/wrapper_deployment.yml
                 parameters:
+                  artifact: ${{ stage.artifact }}
                   container: ${{ stage.container }}
                   environment: ${{ environment.name }}
                   name: ${{ stage.name }} ${{ environment.name }}

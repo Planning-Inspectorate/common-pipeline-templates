@@ -1,0 +1,38 @@
+parameters:
+  - name: artifactName
+    type: string
+    default: $(Build.BuildId)
+  - name: environmentVariables
+    type: object
+    default: []
+  - name: subscriptionId
+    type: string
+  - name: workingDirectory
+    type: string
+    default: $(Build.Repository.LocalPath)
+
+steps:
+  - script: |
+      terragrunt plan -out=tfplan --terragrunt-ignore-external-dependencies
+    displayName: Terragrunt Plan
+    env:
+      ARM_CLIENT_ID: $(azureClientId)
+      ARM_CLIENT_SECRET: $(azureClientSecret)
+      ARM_SUBSCRIPTION_ID: ${{ parameters.subscriptionId }}
+      ARM_TENANT_ID: $(azureTenantId)
+      TERRAGRUNT_WORKING_DIR: ${{ parameters.workingDirectory }}
+      TF_INPUT: false
+      ${{ each var in parameters.environmentVariables }}:
+        ${{ var.key }}: ${{ var.value }}
+  - task: CopyFiles@2
+    displayName: Copy sources to artifact
+    inputs:
+      SourceFolder: ${{ parameters.workingDirectory }}
+      Contents: |
+        .terraform/**
+        .terraform.lock.hcl
+        tfplan
+      TargetFolder: $(Build.ArtifactStagingDirectory)
+  - publish: $(Build.ArtifactStagingDirectory)
+    artifact: ${{ parameters.artifactName }}
+    displayName: Publish sources

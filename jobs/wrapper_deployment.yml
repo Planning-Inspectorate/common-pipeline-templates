@@ -1,8 +1,7 @@
 parameters:
   - name: artifact
-    type: object
-    default:
-      definition: ''
+    type: string
+    default: ''
   - name: condition
     type: string
     default: succeeded()
@@ -43,9 +42,9 @@ jobs:
             - script: |
                 echo "##vso[build.addbuildtag]environment=${{ parameters.environment }}"
               displayName: Add build tags
-            - ${{ if ne(parameters.artifact.definition, '') }}:
-              - task: DownloadPipelineArtifact@2
-                inputs: ${{ parameters.artifact }}
+            - ${{ if ne(parameters.artifact, '') }}:
+              - download: current
+                artifact: ${{ parameters.artifact }}
             - ${{ each step in parameters.steps }}:
               - ${{ step }}
     variables:
