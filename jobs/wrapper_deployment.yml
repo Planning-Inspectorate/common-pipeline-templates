@@ -45,6 +45,7 @@ jobs:
             - ${{ if ne(parameters.artifact, '') }}:
               - download: current
                 artifact: ${{ parameters.artifact }}
+                displayName: Download ${{ parameters.artifact }}
             - ${{ each step in parameters.steps }}:
               - ${{ step }}
     variables:
