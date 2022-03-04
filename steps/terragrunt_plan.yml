@@ -1,10 +1,12 @@
 parameters:
   - name: artifactName
     type: string
-    default: $(Build.BuildId)
+    default: terraform-plan
   - name: environmentVariables
     type: object
     default: []
+  - name: stack
+    type: string
   - name: subscriptionId
     type: string
   - name: workingDirectory
@@ -13,8 +15,8 @@ parameters:
 
 steps:
   - script: |
-      terragrunt run-all plan --terragrunt-include-external-dependencies
-    displayName: Terragrunt Plan All
+      terragrunt plan -out=tfplan --terragrunt-ignore-external-dependencies
+    displayName: Terragrunt Plan
     env:
       ARM_CLIENT_ID: $(azureClientId)
       ARM_CLIENT_SECRET: $(azureClientSecret)
@@ -25,21 +27,17 @@ steps:
       ${{ each var in parameters.environmentVariables }}:
         ${{ var.key }}: ${{ var.value }}
   - task: CopyFiles@2
-    displayName: Copy sources to artifact
+    displayName: Copy tfplan and lock to artifact
     inputs:
-      SourceFolder: $(Build.Repository.LocalPath)
+      flattenFolders: true
+      SourceFolder: ${{ parameters.workingDirectory }}
       Contents: |
-        */**
-        !.git
-        !**/.terraform/**
-        !**/.terragrunt_cache/**
-        !**/.terraform.lock.hcl
-        !.gitignore
-        !.pre-commit-config.yaml
-        !.tflint.hcl
-        !LICENSE
-        !README.md
+        ${{ parameters.workingDirectory }}/.terragrunt-cache/**/common/.terraform.lock.hcl
+        ${{ parameters.workingDirectory }}/.terragrunt-cache/**/common/tfplan
       TargetFolder: $(Build.ArtifactStagingDirectory)
+  - script: |
+      find ${{ parameters.workingDirectory }}/.terragrunt-cache -name .terraform -type d -exec cp -r {} $(Build.ArtifactStagingDirectory)/.terraform \;
+    displayName: Copy .terraform folder to artifact
   - publish: $(Build.ArtifactStagingDirectory)
     artifact: ${{ parameters.artifactName }}
     displayName: Publish sources
