@@ -2,6 +2,9 @@ parameters:
   - name: artifactName
     type: string
     default: terraform-plan
+  - name: environmentVariables
+    type: object
+    default: []
   - name: subscriptionId
     type: string
 
@@ -18,4 +21,6 @@ steps:
       ARM_CLIENT_SECRET: $(azureClientSecret)
       ARM_SUBSCRIPTION_ID: ${{ parameters.subscriptionId }}
       ARM_TENANT_ID: $(azureTenantId)
+      ${{ each var in parameters.environmentVariables }}:
+        ${{ var.key }}: ${{ var.value }}
     workingDirectory: $(Pipeline.Workspace)/${{ parameters.artifactName }}

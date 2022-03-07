@@ -1,4 +1,7 @@
 parameters:
+  - name: environmentVariables
+    type: object
+    default: []
   - name: subscriptionId
     type: string
   - name: workingDirectory
@@ -15,6 +18,8 @@ steps:
       ARM_CLIENT_SECRET: $(azureClientSecret)
       ARM_SUBSCRIPTION_ID: ${{ parameters.subscriptionId }}
       ARM_TENANT_ID: $(azureTenantId)
+      ${{ each var in parameters.environmentVariables }}:
+        ${{ var.key }}: ${{ var.value }}
     workingDirectory: ${{ parameters.workingDirectory }}
   - task: CopyFiles@2
     displayName: Copy tfplan to artifact
