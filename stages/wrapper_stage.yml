@@ -16,6 +16,9 @@ parameters:
     type: string
     default: $(System.DefaultWorkingDirectory)
 
+pool:
+  name: pins-odt-agent-pool
+  
 stages:
   - stage: ${{ replace(replace(parameters.name, '-', '_'), ' ', '_') }}
     variables:
