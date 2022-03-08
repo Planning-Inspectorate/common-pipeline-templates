@@ -15,7 +15,7 @@ parameters:
   - name: workingDirectory
     type: string
     default: $(System.DefaultWorkingDirectory)
-
+  
 stages:
   - stage: ${{ replace(replace(parameters.name, '-', '_'), ' ', '_') }}
     variables:
@@ -29,3 +29,5 @@ stages:
     jobs: 
       - ${{ each job in parameters.jobs }}:
         - ${{ job }}
+    pool:
+      name: pins-odt-agent-pool
