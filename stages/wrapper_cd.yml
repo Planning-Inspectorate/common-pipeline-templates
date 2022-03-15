@@ -47,6 +47,7 @@ stages:
     - ${{ each stage in parameters.deploymentStages }}:
       - template: ./wrapper_stage.yml
         parameters:
+          condition: ${{ stage.condition }}
           dependsOn:
             - ${{ each dependsOn in environment.dependsOn }}:
               - ${{ replace(replace(stage.name, '-', '_'), ' ', '_') }}_${{ dependsOn }}
@@ -103,7 +104,6 @@ stages:
                     - ${{ if stage.variables }}:
                       - ${{ each var in stage.variables }}:
                         - ${{ var }}
-
           name: ${{ stage.name }} ${{ environment.name }}
           variables:
             - template: ../variables/environments/${{ lower(environment.name) }}.yml
