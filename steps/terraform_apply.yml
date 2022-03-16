@@ -11,10 +11,12 @@ parameters:
 steps:
   - download: current
     artifact: ${{ parameters.artifactName }}
+    condition: and(succeeded(), ne(variables['skipApply'], 'true'))
     displayName: Download Terraform Plan
   - script: |
       chmod -R +x .
       terraform apply -input=false tfplan
+    condition: and(succeeded(), ne(variables['skipApply'], 'true'))
     displayName: Terraform Apply
     env:
       ARM_CLIENT_ID: $(azureClientId)
