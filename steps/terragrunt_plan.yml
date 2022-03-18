@@ -38,8 +38,8 @@ steps:
       flattenFolders: true
       SourceFolder: ${{ parameters.workingDirectory }}
       Contents: |
-        ${{ parameters.workingDirectory }}/.terragrunt-cache/**/common/.terraform.lock.hcl
-        ${{ parameters.workingDirectory }}/.terragrunt-cache/**/common/tfplan
+        ${{ parameters.workingDirectory }}/.terragrunt-cache/**/${{ parameters.stack }}/.terraform.lock.hcl
+        ${{ parameters.workingDirectory }}/.terragrunt-cache/**/${{ parameters.stack }}/tfplan
       TargetFolder: $(Build.ArtifactStagingDirectory)
   - script: |
       find ${{ parameters.workingDirectory }}/.terragrunt-cache -name .terraform -type d -exec cp -r {} $(Build.ArtifactStagingDirectory)/.terraform \;
