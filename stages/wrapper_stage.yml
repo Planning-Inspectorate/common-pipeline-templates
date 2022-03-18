@@ -13,11 +13,6 @@ parameters:
     type: object
     default:
       name: pins-odt-agent-pool
-<<<<<<< HEAD
-=======
-    type: string
-    default: pins-odt-agent-pool
->>>>>>> Apply suggestions from code review
   - name: variables
     type: object
     default: []
