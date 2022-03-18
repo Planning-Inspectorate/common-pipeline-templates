@@ -34,5 +34,5 @@ stages:
       - ${{ each job in parameters.jobs }}:
         - ${{ job }}
     pool:
-      ${{ each attribute in parrameters.pool }}:
+      ${{ each attribute in parameters.pool }}:
         ${{ attribute.key }}: ${{ attribute.value}}
