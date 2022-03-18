@@ -33,8 +33,6 @@ parameters:
     type: object
     default:
       name: pins-odt-agent-pool
-    type: string
-    default: pins-odt-agent-pool
   - name: project
     type: string
   - name: variables
