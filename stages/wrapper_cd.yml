@@ -29,7 +29,10 @@ parameters:
   - name: globalVariables
     type: object
     default: []
-  - name: poolName
+  - name: pool
+    type: object
+    default:
+      name: pins-odt-agent-pool
     type: string
     default: pins-odt-agent-pool
   - name: project
@@ -107,7 +110,7 @@ stages:
                     - ${{ if stage.variables }}:
                       - ${{ each var in stage.variables }}:
                         - ${{ var }}
-          poolName: ${{ parameters.poolName }}
+          pool: ${{ parameters.pool }}
           name: ${{ stage.name }} ${{ environment.name }}
           variables:
             - template: ../variables/environments/${{ lower(environment.name) }}.yml

@@ -9,7 +9,10 @@ parameters:
     type: string
   - name: jobs
     type: jobList
-  - name: poolName
+  - name: pool
+    type: object
+    default:
+      name: pins-odt-agent-pool
     type: string
     default: pins-odt-agent-pool
   - name: variables
@@ -33,4 +36,5 @@ stages:
       - ${{ each job in parameters.jobs }}:
         - ${{ job }}
     pool:
-      name: ${{ parameters.poolName }}
+      ${{ each attribute in parrameters.pool }}:
+        ${{ attribute.key }}: ${{ attribute.value}}

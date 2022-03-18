@@ -14,7 +14,10 @@ parameters:
   - name: globalVariables
     type: object
     default: []
-  - name: poolName
+  - name: pool
+    type: object
+    default:
+      name: pins-odt-agent-pool
     type: string
     default: pins-odt-agent-pool
   - name: projectName
@@ -62,7 +65,7 @@ stages:
             - template: ../steps/git_tagging.yml
               parameters:
                 tagPrefix: $(Build.Repository.Name)
-    poolName: ${{ parameters.poolName }}
+    pool: ${{ parameters.pool }}
     name: ${{ parameters.validateName }}
     variables:
       - ${{ each var in parameters.variables }}:
