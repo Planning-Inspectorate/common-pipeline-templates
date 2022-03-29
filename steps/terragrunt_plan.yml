@@ -22,6 +22,10 @@ steps:
       if [[ $? -eq 0 ]]; then
         echo "##vso[task.setvariable variable=skipApply]true"
       fi
+
+      if [[ $? -eq 1 ]]; then
+        exit 1
+      fi
     displayName: Terragrunt Plan
     env:
       ARM_CLIENT_ID: $(azureClientId)

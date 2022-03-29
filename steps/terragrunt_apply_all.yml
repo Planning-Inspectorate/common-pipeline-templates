@@ -9,15 +9,15 @@ parameters:
     type: string
   - name: workingDirectory
     type: string
-    default: $(Build.Repository.LocalPath)
+    default: $(System.DefaultWorkingDirectory)
 
 steps:
   - task: CopyFiles@2
     inputs:
       sourceFolder: $(Pipeline.Workspace)/${{ parameters.artifactName }}
       contents: '**'
-      targetFolder: $(System.DefaultWorkingDirectory)
-    displayName: Copy artifact to default working directory
+      targetFolder: ${{ parameters.workingDirectory }}
+    displayName: Copy artifact to working directory
   - script: |
       terragrunt run-all apply --terragrunt-include-external-dependencies
     displayName: Terragrunt Apply
