@@ -28,3 +28,4 @@ steps:
       azureSubscription: ${{ parameters.azureServiceConnection }}
       inlineScript: |
          az functionapp deployment source config-zip -g ${{ parameters.resourceGroup }} -n ${{ parameters.appName }} --src ${{ parameters.artifactName }}/functions.zip
+      workingDirectory: $(Pipeline.Workspace)
