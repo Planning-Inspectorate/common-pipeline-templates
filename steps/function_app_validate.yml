@@ -9,6 +9,7 @@ steps:
   - script: |
       npm install
       npm prune --production
+    displayName: Install dependencies
     workingDirectory: ${{ parameters.workingDirectory }}
   - task: ArchiveFiles@2
     displayName: Archive files
