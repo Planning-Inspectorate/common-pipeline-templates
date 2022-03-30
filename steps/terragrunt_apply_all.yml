@@ -16,7 +16,7 @@ steps:
     inputs:
       sourceFolder: $(Pipeline.Workspace)/${{ parameters.artifactName }}
       contents: '**'
-      targetFolder: ${{ parameters.workingDirectory }}
+      targetFolder: $(System.DefaultWorkingDirectory)
     displayName: Copy artifact to working directory
   - script: |
       terragrunt run-all apply --terragrunt-include-external-dependencies
