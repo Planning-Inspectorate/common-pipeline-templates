@@ -1,0 +1,30 @@
+parameters:
+  - name: appName
+    type: string
+  - name: artifactName
+    type: string
+    default: azure-functions
+  - name: artifactSourcePipeline
+    type: string
+  - name: azureServiceConnection
+    type: string
+  - name: resourceGroup
+    type: string
+
+steps:
+  - task: DownloadPipelineArtifact@2
+    displayName: Download Functions Artifact
+    inputs:
+      allowPartiallySucceededBuilds: false
+      pipeline: ${{ parameters.artifactSourcePipeline }}
+      project: $(System.TeamProject)
+      source: specific
+      tags: $(Build.SourceBranchName)
+  - task: AzureCLI@2
+    displayName: Azure Authentication
+    inputs:
+      scriptType: bash
+      scriptLocation: inlineScript
+      azureSubscription: ${{ parameters.azureServiceConnection }}
+      inlineScript: |
+         az functionapp deployment source config-zip -g ${{ parameters.resourceGroup }} -n ${{ parameters.appName }} --src ${{ parameters.artifactName }}/functions.zip
