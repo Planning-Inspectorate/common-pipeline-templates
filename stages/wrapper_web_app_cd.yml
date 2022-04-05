@@ -14,16 +14,25 @@ parameters:
     type: string
   - name: environments
     type: object
-#   example:
-#     - name: Dev
-#     - name: Test
-#       dependsOn:
-#         - Dev
+    default:
+      - name: Dev
+      - name: Test
+        dependsOn:
+          - Dev
+      - name: Prod
+        dependsOn:
+          - Test
   - name: globalVariables
     type: object
     default: []
   - name: projectName
     type: string
+  - name: region
+    type: string
+    default: UK West
+    values:
+      - UK West
+      - UK South
   - name: releaseVersion
     type: string
   - name: repository
@@ -44,6 +53,12 @@ variables:
   - ${{ else }}:
     - name: deploymentTag
       value: ${{ parameters.deploymentTag }}
+  - ${{ if eq(parameters.region, 'UK West') }}:
+    - name: REGION_SHORT
+      value: ukw
+  - ${{ if eq(parameters.region, 'UK South') }}:
+    - name: REGION_SHORT
+      value: uks
 
 stages:
   - ${{ each environment in parameters.environments }}:
