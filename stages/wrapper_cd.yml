@@ -45,6 +45,16 @@ parameters:
 variables:
   - ${{ each var in parameters.globalVariables }}:
     - ${{ var }}
+  - ${{ if eq(parameters.region, 'UK West') }}:
+    - name: REGION_SHORT
+      value: ukw
+    - name: REGION_SLUG
+      value: uk-west
+  - ${{ if eq(parameters.region, 'UK South') }}:
+    - name: REGION_SHORT
+      value: uks
+    - name: REGION_SLUG
+      value: uk-south
 
 stages:
   - ${{ each environment in parameters.environments }}:
