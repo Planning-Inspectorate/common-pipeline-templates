@@ -5,6 +5,8 @@ parameters:
   - name: environmentVariables
     type: object
     default: []
+  - name: region
+    type: string
   - name: stack
     type: string
   - name: subscriptionId
@@ -42,8 +44,8 @@ steps:
       flattenFolders: true
       SourceFolder: ${{ parameters.workingDirectory }}
       Contents: |
-        ${{ parameters.workingDirectory }}/.terragrunt-cache/**/${{ parameters.stack }}/.terraform.lock.hcl
-        ${{ parameters.workingDirectory }}/.terragrunt-cache/**/${{ parameters.stack }}/tfplan
+        ${{ parameters.workingDirectory }}/.terragrunt-cache/**/${{ parameters.region }}/${{ parameters.stack }}/.terraform.lock.hcl
+        ${{ parameters.workingDirectory }}/.terragrunt-cache/**/${{ parameters.region }}/${{ parameters.stack }}/tfplan
       TargetFolder: $(Build.ArtifactStagingDirectory)
   - script: |
       find ${{ parameters.workingDirectory }}/.terragrunt-cache -name .terraform -type d -exec cp -r {} $(Build.ArtifactStagingDirectory)/.terraform \;
