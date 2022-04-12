@@ -26,6 +26,7 @@ steps:
       fi
 
       if [[ $? -eq 1 ]]; then
+        set -e
         exit 1
       fi
     displayName: Terragrunt Plan

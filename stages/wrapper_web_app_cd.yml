@@ -25,6 +25,9 @@ parameters:
   - name: globalVariables
     type: object
     default: []
+  - name: keyVaultVariables
+    type: boolean
+    default: false
   - name: preDeploySteps
     type: stepList
     default: []
@@ -105,4 +108,6 @@ stages:
           - template: ../variables/environments/${{ lower(environment.name) }}.yml
           - ${{ each var in parameters.variables }}:
             - ${{ var }}
+          - ${{ if eq(parameters.keyVaultVariables, true) }}:
+            - group: key-vault-${{ lower(environment.name) }}
         workingDirectory: ${{ parameters.workingDirectory }}
