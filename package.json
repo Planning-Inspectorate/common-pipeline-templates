@@ -1,0 +1,35 @@
+{
+  "name": "common-pipeline-templates",
+  "version": "1.0.0",
+  "description": "Azure Pipeline templates that can be used in any PINS pipeline",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Planning-Inspectorate/common-pipeline-templates.git"
+  },
+  "license": "MIT",
+  "scripts": {
+    "commit": "cz",
+    "commit-amend": "git commit --amend -m \"$(git log --format=%B -n1)\" -m \"[skip ci]\"",
+    "commitlint": "commitlint --from=$(git merge-base main --fork-point)",
+    "commitlint:ci": "commitlint --from=$(git merge-base remotes/origin/main --fork-point)",
+    "release": "standard-version -t \"release/\"; git push --follow-tags origin $(git rev-parse --abbrev-ref HEAD)"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^16.2.3",
+    "@commitlint/config-conventional": "^16.2.1",
+    "commitizen": "^4.2.4",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^7.0.4",
+    "standard-version": "^9.3.2"
+  },
+  "standard-version": {
+    "scripts": {
+      "postcommit": "npm run commit-amend"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
