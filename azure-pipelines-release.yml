@@ -50,6 +50,7 @@ stages:
           - script: |
               git config --global user.email "azurepipelines@planninginspectorate.gov.uk"
               git config --global user.name "Azure Pipelines"
+              git fetch origin
 
               npm install
               npm run release
