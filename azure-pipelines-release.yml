@@ -48,6 +48,9 @@ stages:
             clean: true
             persistCredentials: true
           - script: |
+              git config --global user.email "azurepipelines@planninginspectorate.gov.uk"
+              git config --global user.name "Azure Pipelines"
+
               npm install
               npm run release
             displayName: Run release
