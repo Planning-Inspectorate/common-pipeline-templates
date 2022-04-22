@@ -12,7 +12,7 @@
     "commit-amend": "git commit --amend -m \"$(git log --format=%B -n1)\" -m \"[skip ci]\"",
     "commitlint": "commitlint --from=$(git merge-base main --fork-point)",
     "commitlint:ci": "commitlint --from=$(git merge-base remotes/origin/main --fork-point)",
-    "release": "standard-version -t \"release/\"; git push --follow-tags origin $(git rev-parse --abbrev-ref HEAD)"
+    "release": "standard-version -t \"release/\"; git push --follow-tags origin main"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.3",
