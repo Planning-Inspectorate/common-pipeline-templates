@@ -1,11 +1,32 @@
 parameters:
   - name: azurecrName
     type: string
+  - name: buildArgs
+    type: object
+    default: []
   - name: dockerfilePath
     type: string
     default: Dockerfile
+  - name: imageCoverageReportLocation
+    type: string
+    default: /opt/app/coverage
+  - name: imageNpmExitCodeLocation
+    type: string
+    default: /npm.exitcode
+  - name: imageTestReportLocation
+    type: string
+    default: /opt/app/junit.xml
   - name: repository
     type: string
+  - name: runTests
+    type: boolean
+    default: true
+  - name: testStageName
+    type: string
+    default: test
+  - name: testRunTitle
+    type: string
+    default: ''
   - name: versionNumber
     type: string
   - name: workingDirectory
@@ -16,7 +37,71 @@ steps:
       echo "##vso[build.addbuildtag]$(versionNumber)"
       echo "##vso[build.addbuildtag]${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }}"
     displayName: Add Build Tags
+  - ${{ if eq(parameters.runTests, 'true') }}:
+    - script: |
+        build_args="${{ join(' ', parameters.buildArgs) }}"
+
+        for arg in $build_args; do
+          args+=(--build-arg "$arg")
+        done
+
+        IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
+
+        docker build . \
+        -f ${{ parameters.dockerfilePath }} \
+        -t $IMAGE:ci-build \
+        --target ${{ parameters.testStageName }} \
+        "${args[@]}"
+      displayName: Run tests
+      workingDirectory: ${{ parameters.workingDirectory }}
+    - script: |
+        IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
+
+        echo "Looking for images with tag '$IMAGE:ci-build'..."
+        IMAGE_ID=$(docker images $IMAGE:ci-build --quiet)
+
+        echo "Running Docker container..."
+        CONTAINER_ID=$(docker run -d -t $IMAGE_ID)
+
+        until [ $(docker inspect -f {{.State.Running}} $CONTAINER_ID)=="true" ]; do
+          sleep 0.1;
+        done;
+
+        testLocation=$CONTAINER_ID:${{ parameters.imageTestReportLocation }}
+        coverageLocation=$CONTAINER_ID:${{ parameters.imageCoverageReportLocation }}
+        exitCodeLocation=$CONTAINER_ID:${{ parameters.imageNpmExitCodeLocation }}
+
+        echo "Copying test results from '$testLocation'"
+        docker cp $testLocation $(Pipeline.Workspace)/junit.xml
+
+        echo "Copying coverage results from '$coverageLocation'"
+        docker cp $coverageLocation $(Pipeline.Workspace)/coverage
+
+        echo "Copying exit code from '$exitCodeLocation'."
+        docker cp $exitCodeLocation $(Pipeline.Workspace)/npm.exitcode
+      displayName: Copy Test Results
+    - task: PublishTestResults@2
+      displayName: Publish Test Results
+      inputs:
+        testResultsFormat: JUnit
+        testResultsFiles: junit.xml
+        searchFolder: $(Pipeline.Workspace)
+        mergeTestResults: true
+        failTaskOnFailedTests: true
+        testRunTitle: ${{ parameters.testRunTitle }}
+    - task: PublishCodeCoverageResults@1
+      condition: succeededOrFailed()
+      displayName: Publish Code Coverage Results
+      inputs:
+        codeCoverageTool: Cobertura
+        summaryFileLocation: $(Pipeline.Workspace)/coverage/cobertura-coverage.xml
   - script: |
+      build_args="${{ join(' ', parameters.buildArgs) }}"
+
+      for arg in $build_args; do
+        args+=(--build-arg "$arg")
+      done
+      
       IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
       
       docker build . \
@@ -24,7 +109,7 @@ steps:
       -t $IMAGE:${{ parameters.versionNumber }} \
       -t $IMAGE:${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }} \
       -t $IMAGE:ci-build \
-      --build-arg VERSION=${{ parameters.versionNumber }}
+      "${args[@]}"
 
       docker push $IMAGE:${{ parameters.versionNumber }}
       docker push $IMAGE:${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }}
