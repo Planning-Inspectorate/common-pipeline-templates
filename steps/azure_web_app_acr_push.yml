@@ -20,7 +20,7 @@ parameters:
     type: string
   - name: runTests
     type: boolean
-    default: true
+    default: false
   - name: testStageName
     type: string
     default: test
