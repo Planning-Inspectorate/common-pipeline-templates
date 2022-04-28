@@ -23,11 +23,15 @@ pr:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  - group: pipeline_secrets
+
 stages:
   - stage: Validate
     displayName: Validate
     jobs:
       - job: Validate
+        condition: ne(variables['build.sourceBranch'], 'refs/heads/main')
         displayName: Validate commits
         steps:
           - script: |
@@ -37,7 +41,7 @@ stages:
         workspace:
           clean: all
   - stage: Release
-    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
+    condition: eq(variables['build.sourceBranch'], 'refs/heads/main')
     displayName: Release
     dependsOn: Validate
     jobs:
@@ -50,8 +54,20 @@ stages:
           - script: |
               git config --global user.email "azurepipelines@planninginspectorate.gov.uk"
               git config --global user.name "Azure Pipelines"
-              git fetch --all
+              git config --global --add url."https://${PAT}@github.com/".insteadOf "https://github.com/"
+              
+              # Push to a protected branch doesn't work unless the remote URL has .git at the end ¯\_(ツ)_/¯
+              git remote set-url origin $(git remote get-url origin).git
+
+              git fetch -p -P
 
               npm install
               npm run release
+
+              if [[ $? -ne 0 ]]; then
+                echo "##[error]Check the PAT used to authenticate with GitHub has not expired, and has admin privileges on the repo.\n"
+                echo "##[error]The PAT can be updated within the pipeline_secrets variable group."
+              fi
             displayName: Run release
+            env:
+              PAT: $(GITHUB_TOKEN)

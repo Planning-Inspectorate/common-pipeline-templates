@@ -54,3 +54,5 @@ All commits to a feature branch are used to determine what updates should be mad
 The release task is run in the release pipeline, and will run whenever there is a commit to the `main` branch. This task will bump the version number in the `package.json` files, and add the release details to the changelog based on the commits.
 
 After the release task has run, a new commit should appear in the `main` branch and this commit should be tagged with `release/<version_number>`.
+
+**Note:** Due to a limitation within GitHub, it is not possible to provide the Azure Pipelines app permission to push to a protected branch. Therefore, the pipelines make use of a Personal Access Token (PAT) to perform the final push to GitHub that updates version numbers. This PAT is tied to an individual user account, so may expire or become invalid whenever that user is removed from the project. The PAT can be updated by an admin user on the repository by generating a new PAT for their account, and updating the value in the `pipeline_secrets` variable group within Azure Pipelines.
