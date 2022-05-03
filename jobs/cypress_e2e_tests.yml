@@ -1,0 +1,36 @@
+parameters:
+  - name: cypressGroupName
+    type: string
+  - name: cypressRecordKey
+    type: string
+  - name: cypressScreenshotsPath
+    type: string
+    default: packages/e2e-tests/cypress/screenshots
+  - name: nodeVersion
+    type: string
+    default: 16
+  - name: pool
+    type: object
+    default:
+      name: pins-odt-agent-pool
+  - name: strategy
+    type: object
+    default:
+      parallel: 10
+  - name: workingDirectory
+    type: string
+    default: $(Build.Repository.LocalPath)
+
+jobs:
+  - job: Cypress_e2e_tests
+    displayName: Run Cypress E2E Tests
+    pool: ${{ parameters.pool }}
+    strategy: ${{ parameters.strategy }}
+    steps:
+      - template: ../steps/cypress_run_e2e_tests.yml
+        parameters:
+          cypressGroupName: ${{ parameters.cypressGroupName }}
+          cypressRecordKey: ${{ parameters.cypressRecordKey }}
+          cypressScreenshotsPath: ${{ parameters.cypressScreenshotsPath }}
+          nodeVersion: ${{ parameters.nodeVersion }}
+          workingDirectory: ${{ parameters.workingDirectory }}

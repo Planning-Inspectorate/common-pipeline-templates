@@ -49,6 +49,7 @@ stages:
             - checkout: self
               clean: true
               persistCredentials: true
+            - template: ../steps/check_branch_name.yml
             - ${{ if eq(parameters.authType, 'terraform') }}:
               - template: ../steps/terraform_azure_cli_auth.yml
                 parameters:
