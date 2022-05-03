@@ -1,0 +1,26 @@
+steps:
+  script: |
+    BRANCH_REF=$(Build.SourceBranch)
+    BRANCH_NAME="${BRANCH_REF#refs/heads/}"
+    case ${BRANCH} in
+      refs/*) # PRs, merges, tags etc.
+        ;;
+      feature/*)
+        ;;
+      fix/*)
+        ;;
+      task/*)
+        ;;
+      subtask/*)
+        ;;
+      release/*)
+        ;;
+      main)
+        ;;
+      develop)
+        ;;
+      *)
+        echo "##[error]Branch name [${BRANCH}] does not follow convention: [feature/* | fix/* | task/* | subtask/* | release/* | main | develop]."
+        exit 1
+        ;;
+    esac

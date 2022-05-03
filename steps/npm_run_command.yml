@@ -1,0 +1,21 @@
+parameters:
+  - name: nodeVersion
+    type: string
+    default: 16
+    values:
+      - 16
+      - 15
+      - 14
+  - name: npmCommand
+    type: string
+  - name: workingDirectory
+    type: string
+    default: $(Build.Repository.LocalPath)
+
+steps:
+  - script: |
+      source ~/.bashrc
+      nvm use ${{ parameters.nodeVersion }}
+      npm ${{ parameters.npmCommand }}
+    displayName: NPM ${{ parameters.npmCommand }}
+    workingDirectory: ${{ parameters.workingDirectory }}

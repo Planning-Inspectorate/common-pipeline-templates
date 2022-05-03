@@ -1,0 +1,48 @@
+parameters:
+  - name: cypressGroupName
+    type: string
+  - name: cypressRecordKey
+    type: string
+  - name: cypressScreenshotsPath
+    type: string
+    default: packages/e2e-tests/cypress/screenshots
+  - name: dockerComposeFilePath
+    type: string
+    default: $(Build.Repository.LocalPath)
+  - name: nodeVersion
+    type: string
+    default: 16
+  - name: workingDirectory
+    type: string
+    default: $(Build.Repository.LocalPath)
+
+steps:
+  - script: |
+      docker-compose -f ${{ parameters.dockerComposeFilePath }} up -d
+    displayName: Start the world
+  - script: |
+      docker container ls -a
+    displayName: Verify running services
+  - script: |
+      source ~/.bashrc
+      nvm use ${{ parameters.nodeVersion }}
+      npx cypress run --parallel --record --group ${{ parameters.cypressGroupName }} --ci-build-id $(Build.BuildId)
+    displayName: Run Cypress tests in parallel
+    env:
+      CYPRESS_RECORD_KEY: ${{ parameters.cypressRecordKey }}
+    workingDirectory: ${{ parameters.workingDirectory }}
+  - script: |
+      source ~/.bashrc
+      nvm use ${{ parameters.nodeVersion }}
+      npm run test:e2e:postprocess
+    condition: always()
+    displayName: Post-process Cypress test results
+    workingDirectory: ${{ parameters.workingDirectory }}
+  - task: CopyFiles@2
+    displayName: Copy screenshots to artifact
+    inputs:
+      contents: ${{ parameters.cypressScreenshotsPath }}/**
+      targetFolder: $(Build.ArtifactStagingDirectory)
+  - publish: $(Build.ArtifactStagingDirectory)
+    displayName: Publish screenshots
+    artifact: screenshots
