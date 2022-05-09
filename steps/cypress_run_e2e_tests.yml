@@ -1,14 +1,20 @@
 parameters:
   - name: cypressGroupName
     type: string
+  - name: cypressJsonPath
+    type: string
+    default: cypress/cucumber-json
   - name: cypressRecordKey
     type: string
+  - name: cypressReportPath
+    type: string
+    default: cypress/cucumber-report
   - name: cypressScreenshotsPath
     type: string
-    default: packages/e2e-tests/cypress/screenshots
+    default: cypress/screenshots
   - name: dockerComposeFilePath
     type: string
-    default: $(Build.Repository.LocalPath)
+    default: $(Build.Repository.LocalPath)/docker-compose.yml
   - name: nodeVersion
     type: string
     default: 16
@@ -22,7 +28,7 @@ steps:
     displayName: Start the world
   - script: |
       docker container ls -a
-    displayName: Verify running services
+    displayName: Display all containers
   - script: |
       source ~/.bashrc
       nvm use ${{ parameters.nodeVersion }}
@@ -32,17 +38,35 @@ steps:
       CYPRESS_RECORD_KEY: ${{ parameters.cypressRecordKey }}
     workingDirectory: ${{ parameters.workingDirectory }}
   - script: |
-      source ~/.bashrc
-      nvm use ${{ parameters.nodeVersion }}
-      npm run test:e2e:postprocess
+      SCREENSHOTS_DIR=${{ parameters.cypressScreenshotsPath }}
+
+      if [[ -d "$SCREENSHOTS_DIR" ]]; then
+        cp -a $SCREENSHOTS_DIR/. $(Build.ArtifactStagingDirectory)/screenshots
+      else
+        echo "No screenshots to copy..."
+      fi
     condition: always()
-    displayName: Post-process Cypress test results
-    workingDirectory: ${{ parameters.workingDirectory }}
-  - task: CopyFiles@2
     displayName: Copy screenshots to artifact
-    inputs:
-      contents: ${{ parameters.cypressScreenshotsPath }}/**
-      targetFolder: $(Build.ArtifactStagingDirectory)
-  - publish: $(Build.ArtifactStagingDirectory)
-    displayName: Publish screenshots
-    artifact: screenshots
+    workingDirectory: ${{ parameters.workingDirectory }}
+  - script: |
+      JSON_DIR=${{ parameters.cypressJsonPath }}
+
+      if [[ -d "$JSON_DIR" ]]; then
+        cp -a $JSON_DIR/. $(Build.ArtifactStagingDirectory)/cucumber-json
+      else
+        echo "No json to copy..."
+      fi
+    condition: always()
+    displayName: Copy cucumber JSON to artifact
+    workingDirectory: ${{ parameters.workingDirectory }}
+  - script: |
+      REPORTS_DIR=${{ parameters.cypressReportPath }}
+
+      if [[ -d "$REPORTS_DIR" ]]; then
+        cp -a $REPORTS_DIR/. $(Build.ArtifactStagingDirectory)/cucumber-report
+      else
+        echo "No reports to copy..."
+      fi
+    condition: always()
+    displayName: Copy reports to artifact
+    workingDirectory: ${{ parameters.workingDirectory }}

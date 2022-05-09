@@ -1,4 +1,7 @@
 parameters:
+  - name: environmentVariables
+    type: object
+    default: []
   - name: nodeVersion
     type: string
     default: 16
@@ -6,7 +9,7 @@ parameters:
       - 16
       - 15
       - 14
-  - name: npmCommand
+  - name: script
     type: string
   - name: workingDirectory
     type: string
@@ -16,6 +19,9 @@ steps:
   - script: |
       source ~/.bashrc
       nvm use ${{ parameters.nodeVersion }}
-      npm ${{ parameters.npmCommand }}
-    displayName: NPM ${{ parameters.npmCommand }}
+      ${{ parameters.script }}
+    env:
+      ${{ each envVar in parameters.environmentVariables }}:
+        ${{ envVar.key }}: ${{ envVar.value }}
+    displayName: Run ${{ parameters.script }}
     workingDirectory: ${{ parameters.workingDirectory }}
