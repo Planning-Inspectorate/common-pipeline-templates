@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/1.1.0...release/1.2.0) (2022-05-09)
+
+
+### Features
+
+* **templates:** add templates for cypress and branch name check ([5cbb18d](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/5cbb18d83f16e3d1a8b9b9ef2a257635419006c4))
+* **templates:** remove post process step from cypress e2e tests ([2391678](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/2391678bf420ec3a916f9ee87c4548ba8b2a06bb))
+
 ## 1.1.0 (2022-04-28)
 
 
