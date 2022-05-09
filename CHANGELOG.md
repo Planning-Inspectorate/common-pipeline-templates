@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/1.2.0...release/1.2.1) (2022-05-09)
+
+
+### Bug Fixes
+
+* **wrapper_ci.yml:** indentation ([306ba0c](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/306ba0cb1eecf6d104327aa078288d2e1990c83e))
+
 ## [1.2.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/1.1.0...release/1.2.0) (2022-05-09)
 
 
