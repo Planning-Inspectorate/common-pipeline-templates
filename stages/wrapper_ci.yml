@@ -64,8 +64,8 @@ stages:
               - template: ../steps/git_tagging.yml
                 parameters:
                   tagPrefix: $(Build.Repository.Name)
-    pool: ${{ parameters.pool }}
-    name: ${{ parameters.validateName }}
-    variables:
-      - ${{ each var in parameters.variables }}:
-        - ${{ var }}
+      pool: ${{ parameters.pool }}
+      name: ${{ parameters.validateName }}
+      variables:
+        - ${{ each var in parameters.variables }}:
+          - ${{ var }}
