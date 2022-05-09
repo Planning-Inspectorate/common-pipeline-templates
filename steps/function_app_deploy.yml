@@ -21,7 +21,7 @@ steps:
       source: specific
       tags: $(Build.SourceBranchName)
   - task: AzureCLI@2
-    displayName: Azure Authentication
+    displayName: Deploy Function App
     inputs:
       scriptType: bash
       scriptLocation: inlineScript

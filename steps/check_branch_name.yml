@@ -1,26 +1,30 @@
 steps:
-  script: |
-    BRANCH_REF=$(Build.SourceBranch)
-    BRANCH_NAME="${BRANCH_REF#refs/heads/}"
-    case ${BRANCH} in
-      refs/*) # PRs, merges, tags etc.
-        ;;
-      feature/*)
-        ;;
-      fix/*)
-        ;;
-      task/*)
-        ;;
-      subtask/*)
-        ;;
-      release/*)
-        ;;
-      main)
-        ;;
-      develop)
-        ;;
-      *)
-        echo "##[error]Branch name [${BRANCH}] does not follow convention: [feature/* | fix/* | task/* | subtask/* | release/* | main | develop]."
-        exit 1
-        ;;
-    esac
+  - script: |
+      BRANCH_REF=$(Build.SourceBranch)
+      BRANCH_NAME="${BRANCH_REF#refs/heads/}"
+
+      case ${BRANCH_NAME} in
+        refs/*) # PRs, merges, tags etc.
+          ;;
+        dependabot/*) # Depndabot is a GitHub bot that can automatically upgrade dependencies
+          ;;
+        feature/*)
+          ;;
+        fix/*)
+          ;;
+        task/*)
+          ;;
+        subtask/*)
+          ;;
+        release/*)
+          ;;
+        main)
+          ;;
+        develop)
+          ;;
+        *)
+          echo "##[error]Branch name [${BRANCH_NAME}] does not follow convention: [feature/* | fix/* | task/* | subtask/* | release/* | main | develop]."
+          exit 1
+          ;;
+      esac
+    displayName: Check Branch name

@@ -7,8 +7,7 @@ parameters:
 
 steps:
   - script: |
-      npm install
-      npm prune --production
+      npm install --only=prod
     displayName: Install dependencies
     workingDirectory: ${{ parameters.workingDirectory }}
   - task: ArchiveFiles@2

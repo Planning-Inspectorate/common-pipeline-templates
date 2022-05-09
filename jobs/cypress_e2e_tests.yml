@@ -1,11 +1,17 @@
 parameters:
   - name: cypressGroupName
     type: string
+  - name: cypressJsonPath
+    type: string
+    default: cypress/cucumber-json
   - name: cypressRecordKey
     type: string
+  - name: cypressReportPath
+    type: string
+    default: cypress/cucumber-report
   - name: cypressScreenshotsPath
     type: string
-    default: packages/e2e-tests/cypress/screenshots
+    default: cypress/screenshots
   - name: nodeVersion
     type: string
     default: 16
@@ -13,6 +19,12 @@ parameters:
     type: object
     default:
       name: pins-odt-agent-pool
+  - name: postTestRunSteps
+    type: stepList
+    default: []
+  - name: preTestRunSteps
+    type: stepList
+    default: []
   - name: strategy
     type: object
     default:
@@ -27,10 +39,42 @@ jobs:
     pool: ${{ parameters.pool }}
     strategy: ${{ parameters.strategy }}
     steps:
+      - task: Cache@2
+        inputs:
+          key: npm | $(Agent.OS) | package-lock.json
+          path: /home/AzDevOps/.npm
+          restoreKeys: npm | $(Agent.OS) | package-lock.json
+        displayName: Cache NPM packages
+      - task: Cache@2
+        inputs:
+          cacheHitVar: CYPRESS_CACHE_RESTORED
+          key: cypress | $(Agent.OS) | package-lock.json
+          path: /home/AzDevOps/.cache/Cypress
+          restoreKeys: cypress | $(Agent.OS) | package-lock.json
+        displayName: Cache Cypress binary
+      - ${{ each step in parameters.preTestRunSteps }}:
+        - ${{ step }}
       - template: ../steps/cypress_run_e2e_tests.yml
         parameters:
           cypressGroupName: ${{ parameters.cypressGroupName }}
+          cypressJsonPath: ${{ parameters.cypressJsonPath }}
           cypressRecordKey: ${{ parameters.cypressRecordKey }}
+          cypressReportPath: ${{ parameters.cypressReportPath }}
           cypressScreenshotsPath: ${{ parameters.cypressScreenshotsPath }}
           nodeVersion: ${{ parameters.nodeVersion }}
           workingDirectory: ${{ parameters.workingDirectory }}
+      - ${{ each step in parameters.postTestRunSteps }}:
+        - ${{ step }}
+  - job: Publish_artifacts
+    condition: always()
+    dependsOn: Cypress_e2e_tests
+    displayName: Publish test artifacts
+    pool: ${{ parameters.pool }}
+    steps:
+      - checkout: none
+      - publish: $(Build.ArtifactStagingDirectory)/screenshots
+        displayName: Publish screenshots
+        artifact: screenshots
+      - publish: $(Build.ArtifactStagingDirectory)/cucumber-json
+        displayName: Publish cucumber json files
+        artifact: cucumber-json
