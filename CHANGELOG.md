@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/1.2.1...release/1.2.2) (2022-05-10)
+
+
+### Bug Fixes
+
+* **cypress:** artifact publishing ([88e6350](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/88e6350e5ce3e3de09e456ff0012092f1e4862de))
+
 ### [1.2.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/1.2.0...release/1.2.1) (2022-05-09)
 
 
