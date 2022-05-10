@@ -72,9 +72,32 @@ jobs:
     pool: ${{ parameters.pool }}
     steps:
       - checkout: none
+      - script: |
+          if [[ -d "screenshots" ]]; then
+            echo "Screenshots exist"
+            echo "##vso[task.setvariable variable=publishScreenshots]true"
+          fi
+
+          if [[ -d "screenshots" ]]; then
+            echo "JSON files exist"
+            echo "##vso[task.setvariable variable=publishJson]true"
+          fi
+
+          if [[ -d "screenshots" ]]; then
+            echo "Reports exist"
+            echo "##vso[task.setvariable variable=publishReports]true"
+          fi
+        displayName: Check artifacts exist
+        workingDirectory: $(Build.ArtifactStagingDirectory)
       - publish: $(Build.ArtifactStagingDirectory)/screenshots
-        displayName: Publish screenshots
         artifact: screenshots
+        condition: eq(variables['publishScreenshots'], 'true')
+        displayName: Publish screenshots
       - publish: $(Build.ArtifactStagingDirectory)/cucumber-json
-        displayName: Publish cucumber json files
         artifact: cucumber-json
+        condition: eq(variables['publishJson'], 'true')
+        displayName: Publish cucumber json files
+      - publish: $(Build.ArtifactStagingDirectory)/cucumber-report
+        artifact: cucumber-report
+        condition: eq(variables['publishReports'], 'true')
+        displayName: Publish reports
