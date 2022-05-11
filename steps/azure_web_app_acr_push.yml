@@ -21,22 +21,25 @@ parameters:
   - name: runTests
     type: boolean
     default: false
+  - name: tag
+    type: string
+    default: ''
   - name: testStageName
     type: string
     default: test
   - name: testRunTitle
     type: string
     default: ''
-  - name: versionNumber
-    type: string
   - name: workingDirectory
     type: string
 
 steps:
   - script: |
-      echo "##vso[build.addbuildtag]$(versionNumber)"
-      echo "##vso[build.addbuildtag]${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }}"
-    displayName: Add Build Tags
+      TAG=${{ coalesce(parameters.tag, replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.')) }}
+
+      echo "##vso[build.addbuildtag]$TAG"
+      echo "##vso[task.setvariable variable=tag]$TAG"
+    displayName: Add Docker Image Build Tags
   - ${{ if eq(parameters.runTests, 'true') }}:
     - script: |
         build_args="${{ join(' ', parameters.buildArgs) }}"
@@ -52,7 +55,7 @@ steps:
         -t $IMAGE:ci-build \
         --target ${{ parameters.testStageName }} \
         "${args[@]}"
-      displayName: Run tests
+      displayName: Run Tests
       workingDirectory: ${{ parameters.workingDirectory }}
     - script: |
         IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
@@ -106,17 +109,18 @@ steps:
       
       docker build . \
       -f ${{ parameters.dockerfilePath }} \
-      -t $IMAGE:${{ parameters.versionNumber }} \
-      -t $IMAGE:${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }} \
+      -t $IMAGE:$(tag) \
       -t $IMAGE:ci-build \
       "${args[@]}"
 
-      docker push $IMAGE:${{ parameters.versionNumber }}
-      docker push $IMAGE:${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.') }}
+      az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
+      az acr login --name ${{ parameters.azurecrName }}
+
+      docker push $IMAGE:$(tag)
       
       docker save $IMAGE:ci-build -o $(Build.ArtifactStagingDirectory)/image.tar
     displayName: Build and Push Docker Image to ACR
     workingDirectory: ${{ parameters.workingDirectory }}
   - publish: $(Build.ArtifactStagingDirectory)
     artifact: docker-image
-    displayName: Publish Docker image as artifact
+    displayName: Publish Docker Image Artifact

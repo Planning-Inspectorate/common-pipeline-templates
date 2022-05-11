@@ -20,10 +20,10 @@ steps:
       fi
     displayName: Terraform Plan
     env:
-      ARM_CLIENT_ID: $(azureClientId)
-      ARM_CLIENT_SECRET: $(azureClientSecret)
+      ARM_CLIENT_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
+      ARM_CLIENT_SECRET: $(AZURE_SERVICE_PRINCIPAL_SECRET)
       ARM_SUBSCRIPTION_ID: ${{ parameters.subscriptionId }}
-      ARM_TENANT_ID: $(azureTenantId)
+      ARM_TENANT_ID: $(AZURE_TENANT_ID)
       ${{ each var in parameters.environmentVariables }}:
         ${{ var.key }}: ${{ var.value }}
     workingDirectory: ${{ parameters.workingDirectory }}

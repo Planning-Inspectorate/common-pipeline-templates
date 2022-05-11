@@ -33,3 +33,4 @@ steps:
     failTaskOnFailedTests: ${{ parameters.failTaskOnFailure }}
     testRunTitle:  Checkov Analysis
   condition: ${{ parameters.condition }}
+  displayName: Publish Checkov results

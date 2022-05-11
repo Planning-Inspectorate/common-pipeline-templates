@@ -16,9 +16,6 @@ parameters:
   - name: name
     type: object
     default: []
-  - name: project
-    type: string
-    default: ''
   - name: steps
     type: stepList
   - name: variables
@@ -39,13 +36,15 @@ jobs:
       runOnce:
         deploy:
           steps:
-            - script: |
-                echo "##vso[build.addbuildtag]environment=${{ parameters.environment }}"
-              displayName: Add build tags
             - ${{ if ne(parameters.artifact, '') }}:
               - download: current
                 artifact: ${{ parameters.artifact }}
                 displayName: Download ${{ parameters.artifact }}
+            - ${{ else }}:
+              - download: none
+            - script: |
+                echo "##vso[build.addbuildtag]environment=${{ parameters.environment }}"
+              displayName: Add Environment build tags
             - ${{ each step in parameters.steps }}:
               - ${{ step }}
     variables:

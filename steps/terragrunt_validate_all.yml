@@ -13,10 +13,10 @@ steps:
       terragrunt run-all validate --terragrunt-include-external-dependencies
     displayName: Terragrunt Validate
     env:
-      ARM_CLIENT_ID: $(azureClientId)
-      ARM_CLIENT_SECRET: $(azureClientSecret)
+      ARM_CLIENT_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
+      ARM_CLIENT_SECRET: $(AZURE_SERVICE_PRINCIPAL_SECRET)
       ARM_SUBSCRIPTION_ID: ${{ parameters.subscriptionId }}
-      ARM_TENANT_ID: $(azureTenantId)
+      ARM_TENANT_ID: $(AZURE_TENANT_ID)
       TERRAGRUNT_WORKING_DIR: ${{ parameters.workingDirectory }}
       TF_INPUT: false
       ${{ each var in parameters.environmentVariables }}:

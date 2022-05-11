@@ -1,10 +1,7 @@
 parameters:
-  - name: azurecrName
-    type: string
-    default: ''
-  - name: authType
-    type: string
-    default: none
+  - name: azureAuth
+    type: boolean
+    default: true
   - name: container
     type: string
     default: ''
@@ -18,16 +15,10 @@ parameters:
     type: object
     default:
       name: pins-odt-agent-pool
-  - name: projectName
-    type: string
-    default: ''
   - name: validateName
     type: string
   - name: validationSteps
     type: stepList
-    default: []
-  - name: variables
-    type: object
     default: []
   - name: workingDirectory
     type: string
@@ -36,6 +27,7 @@ parameters:
 variables:
   - ${{ each var in parameters.globalVariables }}:
     - ${{ var }}
+  - group: pipeline_secrets
 
 stages:
   - template: ./wrapper_stage.yml
@@ -50,15 +42,10 @@ stages:
                 clean: true
                 persistCredentials: true
               - template: ../steps/check_branch_name.yml
-              - ${{ if eq(parameters.authType, 'terraform') }}:
-                - template: ../steps/terraform_azure_cli_auth.yml
+              - ${{ if parameters.azureAuth }}:
+                - template: ../steps/azure_auth.yml
                   parameters:
-                    azureServiceConnection: ${{ parameters.projectName }}-${{ parameters.environment }}
-              - ${{ if eq(parameters.authType, 'acr') }}:
-                - template: ../steps/acr_auth.yml
-                  parameters:
-                    azurecrName: ${{ parameters.azurecrName }}
-                    azurecrServiceConnection: ${{ parameters.projectName }}-tooling
+                    subscriptionId: $(SUBSCRIPTION_ID)
               - ${{ each validationStep in parameters.validationSteps }}:
                 - ${{ validationStep }}
               - template: ../steps/git_tagging.yml
@@ -67,5 +54,4 @@ stages:
       pool: ${{ parameters.pool }}
       name: ${{ parameters.validateName }}
       variables:
-        - ${{ each var in parameters.variables }}:
-          - ${{ var }}
+        - template: ../variables/environments/${{ lower(parameters.environment) }}.yml
