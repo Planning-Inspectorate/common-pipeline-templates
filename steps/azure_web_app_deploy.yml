@@ -1,35 +1,54 @@
 parameters:
   - name: appName
     type: string
-  - name: artifactSourcePipeline
-    type: string
+  - name: appResourceGroup
   - name: azurecrName
-    type: string
-  - name: azureEnvironmentServiceConnection
-    type: string
-  - name: deploymentTag
-    type: string
-  - name: releaseVersion
     type: string
   - name: repository
     type: string
+  - name: tag
+    type: string
+    default: ''
 
 steps:
-  - script: docker load --input $(Pipeline.Workspace)/docker-image/image.tar
-    displayName: Load Docker Image
-  - task: AzureWebAppContainer@1
-    displayName: Azure Web App on Container Deploy
-    inputs:
-      appName: ${{ parameters.appName }}
-      azureSubscription: ${{ parameters.azureEnvironmentServiceConnection }}
-      imageName: ${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:${{ parameters.deploymentTag }}
   - script: |
-      echo "##vso[build.addbuildtag]${{ parameters.deploymentTag }}"
+      TAG=${{ coalesce(parameters.tag, replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.')) }}
+
+      echo "##vso[build.addbuildtag]$TAG"
+      echo "##vso[task.setvariable variable=tag]$TAG"
+    displayName: Add Docker Image Build Tags
+  - script: |
+      IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:$(tag)
+
+      # Check image exists in registry
+      az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
+      az acr login --name ${{ parameters.azurecrName }}
+      docker manifest inspect $IMAGE > /dev/null
+      
+      if [ $? -ne 0 ]; then
+        echo "##vso[task.logissue type=error]Image not found in registry."
+        exit 1
+      fi
+
+      az account set -s $(SUBSCRIPTION_ID)
+
+      az webapp config container set --name ${{ parameters.appName }} \
+      --resource-group ${{ parameters.appResourceGroup }} \
+      --docker-custom-image-name $IMAGE \
+      --docker-registry-server-url https://${{ parameters.azurecrName }}.azurecr.io \
+      --docker-registry-server-user $AZURE_SERVICE_PRINCIPAL_ID \
+      --docker-registry-server-password $AZURE_SERVICE_PRINCIPAL_SECRET
+    displayName: Deploy Container to Azure Web App
+    env:
+      AZURE_SERVICE_PRINCIPAL_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
+      AZURE_SERVICE_PRINCIPAL_SECRET: $(AZURE_SERVICE_PRINCIPAL_SECRET)
+  - script: |
       IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
 
-      docker tag $IMAGE:ci-build $IMAGE:$(ENVIRONMENT)
-      docker tag $IMAGE:ci-build $IMAGE:${{ parameters.releaseVersion }}
+      az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
+      az acr login --name ${{ parameters.azurecrName }}
 
+      docker pull $IMAGE:$(tag)
+      docker tag $IMAGE:$(tag) $IMAGE:$(ENVIRONMENT)
       docker push $IMAGE:$(ENVIRONMENT)
-      docker push $IMAGE:${{ parameters.releaseVersion }}
-    displayName: Tag Docker Image
+    displayName: Tag Docker Image with Environment

@@ -1,0 +1,13 @@
+parameters:
+  - name: subscriptionId
+    type: string
+
+steps:
+  - script: |
+      az login --service-principal --username $AZURE_SERVICE_PRINCIPAL_ID --password $AZURE_SERVICE_PRINCIPAL_SECRET --tenant $AZURE_TENANT_ID
+      az account set -s ${{ parameters.subscriptionId }}
+    displayName: Azure Authentication
+    env:
+      AZURE_SERVICE_PRINCIPAL_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
+      AZURE_SERVICE_PRINCIPAL_SECRET: $(AZURE_SERVICE_PRINCIPAL_SECRET)
+      AZURE_TENANT_ID: $(AZURE_TENANT_ID)

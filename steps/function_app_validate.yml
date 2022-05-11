@@ -2,14 +2,18 @@ parameters:
   - name: artifactName
     type: string
     default: azure-functions
+  - name: nodeVersion
+    type: string
+    default: 16
   - name: workingDirectory
     type: string
 
 steps:
-  - script: |
-      npm install --only=prod
-    displayName: Install dependencies
-    workingDirectory: ${{ parameters.workingDirectory }}
+  - template: ./node_script.yml
+    parameters:
+      nodeVersion: ${{ parameters.nodeVersion }}
+      script: npm install --only=prod
+      workingDirectory: ${{ parameters.workingDirectory }}
   - task: ArchiveFiles@2
     displayName: Archive files
     inputs:

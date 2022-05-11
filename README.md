@@ -30,7 +30,20 @@ resources:
 
 To use the templates in your pipeline, see the [Microsoft documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates?view=azure-devops) on templates.
 
-## Versioning & Setup
+Some of the templates in this repository assume that the Azure DevOps Pipelines project is set up a certain way to make use of some of the variables. The required variables are described below, and should be added as Pipeline [Variable Groups](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml).
+
+### Azure Authentication
+
+The Azure authentication assumes that a [Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals) has been set up for the project with all the required permissions.
+
+Once the Service Principal has been set up, the following variables should be added to a variable group with the name `pipeline_secrets`:
+- `AZURE_SERVICE_PRINCIPAL_ID` - Set to the Client ID of the Service Principal
+- `AZURE_SERVICE_PRINCIPAL_SECRET` - Set to Client Secret of the Service Principal
+- `AZURE_TENANT_ID` - The ID of the Azure Active Directory tenant that contains the Service Principal
+
+In addition to the above variable, any other secrets and variables can be added to this variables group and will automatically be made available when using some of the wrapper templates in the [jobs](jobs) or [stages](stages) folders.
+
+## Contributing
 
 This repository makes use of simple semantic versioning via the following npm tools:
 - [commitizen](https://github.com/commitizen/cz-cli) - CLI tool to construct commit messages in a format to enable automatically populating the changelog.
