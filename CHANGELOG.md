@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/1.2.2...release/2.0.0) (2022-05-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* **templates:** Parameters changed in main wrapper templates.
+
+https://pins-ds.atlassian.net/browse/DBO-38
+
+* **templates:** refactor Azure authentication and replace Azure tasks ([f35ec62](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/f35ec62f312df5bbd02b5635e11d174795264a23))
+
 ### [1.2.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/1.2.1...release/1.2.2) (2022-05-10)
 
 
