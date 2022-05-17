@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.0.1...release/2.0.2) (2022-05-17)
+
+
+### Bug Fixes
+
+* **templates:** fix syntax error in web app deployment script ([4f4973a](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/4f4973aa312f57da777136a691f81d27a7189054))
+
 ### [2.0.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.0.0...release/2.0.1) (2022-05-17)
 
 
