@@ -18,26 +18,42 @@ steps:
       echo "##vso[task.setvariable variable=tag]$TAG"
     displayName: Add Docker Image Build Tags
   - script: |
-      IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}:$(tag)
+      IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
 
       # Check image exists in registry
       az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
       az acr login --name ${{ parameters.azurecrName }}
-      docker manifest inspect $IMAGE > /dev/null
+      docker manifest inspect $IMAGE:$(tag) > /dev/null
       
-      if [ $? -ne 0 ]; then
-        echo "##vso[task.logissue type=error]Image not found in registry."
+      if [[ $? -ne 0 ]]; then
+        echo "##vso[task.logissue type=error]Image/tag not found in registry."
         exit 1
       fi
 
+      docker pull $IMAGE:$(tag)
+      docker tag $IMAGE:$(tag) $IMAGE:$(ENVIRONMENT)
+      docker push $IMAGE:$(ENVIRONMENT)
+
       az account set -s $(SUBSCRIPTION_ID)
 
-      az webapp config container set --name ${{ parameters.appName }} \
-      --resource-group ${{ parameters.appResourceGroup }} \
-      --docker-custom-image-name $IMAGE \
-      --docker-registry-server-url https://${{ parameters.azurecrName }}.azurecr.io \
-      --docker-registry-server-user $AZURE_SERVICE_PRINCIPAL_ID \
-      --docker-registry-server-password $AZURE_SERVICE_PRINCIPAL_SECRET
+      # Check CD enabled for App service and enable if falase
+      CD_ENABLED=$(az webapp deployment container show-cd-url --name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} | jq .DOCKER_ENABLE_CI)
+
+      if [[ $CD_ENABLED == "false" ]]; then
+        az webapp deployment container config --enable-cd true --name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }}
+      fi
+
+      CURRENT_IMAGE_NAME=$(az webapp config container show --name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value')
+      CURRENT_TAG=${CURRENT_IMAGE_NAME#*:}
+
+      if [[ $CURRENT_TAG -ne "$(ENVIRONMENT)"]]; then
+        az webapp config container set --name ${{ parameters.appName }} \
+        --resource-group ${{ parameters.appResourceGroup }} \
+        --docker-custom-image-name $IMAGE:$(ENVIRONMENT) \
+        --docker-registry-server-url https://${{ parameters.azurecrName }}.azurecr.io \
+        --docker-registry-server-user $AZURE_SERVICE_PRINCIPAL_ID \
+        --docker-registry-server-password $AZURE_SERVICE_PRINCIPAL_SECRET
+      fi
     displayName: Deploy Container to Azure Web App
     env:
       AZURE_SERVICE_PRINCIPAL_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
