@@ -20,7 +20,7 @@ steps:
     displayName: Copy artifact to working directory
   - script: |
       terragrunt run-all apply --terragrunt-include-external-dependencies
-    displayName: Terragrunt Apply
+    displayName: Terragrunt Apply All
     env:
       ARM_CLIENT_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
       ARM_CLIENT_SECRET: $(AZURE_SERVICE_PRINCIPAL_SECRET)

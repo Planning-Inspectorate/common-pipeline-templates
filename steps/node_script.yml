@@ -20,6 +20,11 @@ steps:
       source ~/.bashrc
       nvm use ${{ parameters.nodeVersion }}
       ${{ parameters.script }}
+
+      if [[ $? -ne 0 ]]; then
+        echo 
+        exit 1
+      fi
     env:
       ${{ each envVar in parameters.environmentVariables }}:
         ${{ envVar.key }}: ${{ envVar.value }}
