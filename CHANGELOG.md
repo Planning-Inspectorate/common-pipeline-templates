@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.0.0...release/2.0.1) (2022-05-17)
+
+
+### Bug Fixes
+
+* **templates:** fix deployments to app services where image same as previous by enabling cd ([b919af3](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/b919af3fd0e6a6296e44e8e0a5ca6ea42b085ac9))
+
 ## [2.0.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/1.2.2...release/2.0.0) (2022-05-11)
 
 
