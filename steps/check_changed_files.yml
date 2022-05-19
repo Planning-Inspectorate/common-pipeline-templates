@@ -1,0 +1,62 @@
+# Usage:
+# This template checks changed files against the main development branch and sets an output variable for a certain path filter to indicate changes
+# at this location. This variable can then be used in subsequent jobs, for example, to set the condition on which the job should run.
+#
+# Example:
+# jobs:
+#   - job: A
+#     steps:
+#       - template: steps/check_changed_files.yml@templates
+#         parameters:
+#           pathFilters:
+#             - name: source_code
+#               path: src
+#  - job: B
+#    condition: and(succeeded(), eq(dependencies.A.outputs['checkfiles.source_code'], 'true'))
+#    dependsOn: A
+#    steps:
+#  - script: echo hello from B
+
+parameters:
+  - name: condition
+    type: string
+    default: succeeded()
+  - name: developmentBranch
+    type: string
+    default: main
+  - name: pathFilters
+    type: object
+    # Structure of each object:
+    # - name: <variable_name>
+    #   path: <path_filter>
+  - name: stepName
+    type: string
+    default: check_files
+
+steps:
+  - script: |
+      declare -A PATH_FILTERS
+
+      for row in $(echo "$PATH_FILTERS_JSON" | jq -c '.[]'); do
+        PATH_FILTERS[$(echo "$row" | jq -r '.name')]=$(echo "$row" | jq -r '.path')
+      done
+
+      git fetch origin ${{ parameters.developmentBranch }}:${{ parameters.developmentBranch }}
+      CHANGED_FILES=$(git diff ${{ parameters.developmentBranch }}... --name-only)
+
+      echo "Checking for file changes..."
+      for FILE in $CHANGED_FILES; do
+        for KEY in "${!PATH_FILTERS[@]}"; do
+          if [[ $FILE == *${PATH_FILTERS[$KEY]}* ]]; then
+            echo "MATCH: ${FILE} changed"
+            echo "##vso[task.setvariable variable=$KEY;isOutput=true]true"
+          else
+            echo "IGNORE: ${FILE} changed"
+          fi
+        done
+      done
+    condition: ${{ parameters.condition }}
+    displayName: Check changed files
+    env:
+      PATH_FILTERS_JSON: ${{ convertToJson(parameters.pathFilters) }}
+    name: check_files

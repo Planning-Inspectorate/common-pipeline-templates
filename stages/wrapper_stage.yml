@@ -21,7 +21,7 @@ parameters:
     default: $(System.DefaultWorkingDirectory)
   
 stages:
-  - stage: ${{ replace(replace(parameters.name, '-', '_'), ' ', '_') }}
+  - stage: ${{ replace(replace(replace(replace(parameters.name, '-', '_'), ' ', '_'), '&', 'And'), ',', '') }}
     variables:
       - ${{ each var in parameters.variables }}:
         - ${{ var }}

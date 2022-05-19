@@ -17,8 +17,19 @@ parameters:
       name: pins-odt-agent-pool
   - name: validateName
     type: string
+    default: Validate
   - name: validationSteps
     type: stepList
+    default: []
+  - name: validationJobs # A list of custom objects to use in a multi-job validation context.
+    # Structure of each object in the list must match the following:
+    # - name: Name of the job - Mandatory
+    #   condition: Condition under which to run the job - Optional
+    #   container: The name of the container in which to run the job
+    #   dependsOn: List of job names this one is dependent on in the same stage, must be an object/list. - Optional
+    #   steps: stepList of steps to run - Mandatory
+    #   variables: List of job level variables to pass into the agent - Optional
+    type: object
     default: []
   - name: workingDirectory
     type: string
@@ -33,24 +44,38 @@ stages:
   - template: ./wrapper_stage.yml
     parameters:
       jobs:
-        - template: ../jobs/wrapper_job.yml
-          parameters:
-            container: ${{ parameters.container }}
-            name: ${{ parameters.validateName }}
-            steps:
-              - checkout: self
-                clean: true
-                persistCredentials: true
-              - template: ../steps/check_branch_name.yml
-              - ${{ if parameters.azureAuth }}:
-                - template: ../steps/azure_auth.yml
+        - ${{ if ge(length(parameters.validationJobs), 1) }}:
+          - ${{ each job in parameters.validationJobs }}:
+            - template: ../jobs/wrapper_job.yml
+              parameters:
+                condition: ${{ job.condition }}
+                container: ${{ job.container }}
+                name: ${{ job.name }}
+                steps: ${{ job.steps }}
+                dependsOn:
+                  - ${{ each dependsOn in job.dependsOn }}:
+                    - name: ${{ dependsOn }}
+                ${{ if job.variables }}:
+                  variables: ${{ job.variables }}
+        - ${{ if eq(length(parameters.validationJobs), 0) }}:
+          - template: ../jobs/wrapper_job.yml
+            parameters:
+              container: ${{ parameters.container }}
+              name: ${{ parameters.validateName }}
+              steps:
+                - checkout: self
+                  clean: true
+                  persistCredentials: true
+                - template: ../steps/check_branch_name.yml
+                - ${{ if parameters.azureAuth }}:
+                  - template: ../steps/azure_auth.yml
+                    parameters:
+                      subscriptionId: $(SUBSCRIPTION_ID)
+                - ${{ each validationStep in parameters.validationSteps }}:
+                  - ${{ validationStep }}
+                - template: ../steps/git_tagging.yml
                   parameters:
-                    subscriptionId: $(SUBSCRIPTION_ID)
-              - ${{ each validationStep in parameters.validationSteps }}:
-                - ${{ validationStep }}
-              - template: ../steps/git_tagging.yml
-                parameters:
-                  tagPrefix: $(Build.Repository.Name)
+                    tagPrefix: $(Build.Repository.Name)
       pool: ${{ parameters.pool }}
       name: ${{ parameters.validateName }}
       variables:

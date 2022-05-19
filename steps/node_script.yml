@@ -1,4 +1,7 @@
 parameters:
+  - name: condition
+    type: string
+    default: succeeded()
   - name: environmentVariables
     type: object
     default: []
@@ -25,8 +28,9 @@ steps:
         echo 
         exit 1
       fi
+    condition: ${{ parameters.condition }}
+    displayName: 'Script: ${{ parameters.script }}'
     env:
       ${{ each envVar in parameters.environmentVariables }}:
         ${{ envVar.key }}: ${{ envVar.value }}
-    displayName: Run ${{ parameters.script }}
     workingDirectory: ${{ parameters.workingDirectory }}

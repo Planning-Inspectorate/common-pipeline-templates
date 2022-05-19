@@ -17,13 +17,13 @@ parameters:
     default: []
 
 jobs:
-  - job: ${{ replace(replace(parameters.name, '-', '_'), ' ', '_') }}
+  - job: ${{ replace(replace(replace(replace(parameters.name, '-', '_'), ' ', '_'), '&', 'And'), ',', '') }}
     condition: ${{ parameters.condition }}
     ${{ if parameters.container }}:
       container: ${{ parameters.container }}
     dependsOn:
       - ${{ each dependsOn in parameters.dependsOn }}:
-        - ${{ dependsOn }}
+        - ${{ replace(replace(replace(replace(dependsOn.name, '-', '_'), ' ', '_'), '&', 'And'), ',', '') }}
     displayName: ${{ parameters.name }}
     steps:
       - ${{ each step in parameters.steps }}:
