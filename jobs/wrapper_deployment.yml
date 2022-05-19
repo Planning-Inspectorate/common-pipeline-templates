@@ -23,7 +23,7 @@ parameters:
     default: []
 
 jobs:
-  - deployment: ${{ replace(replace(parameters.name, '-', '_'), ' ', '_') }}
+  - deployment: ${{ replace(replace(replace(replace(parameters.name, '-', '_'), ' ', '_'), '&', 'And'), ',', '') }}
     condition: ${{ parameters.condition }}
     ${{ if parameters.container }}:
       container: ${{ parameters.container }}
