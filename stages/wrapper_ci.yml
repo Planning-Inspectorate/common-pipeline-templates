@@ -1,7 +1,4 @@
 parameters:
-  - name: azureAuth
-    type: boolean
-    default: true
   - name: container
     type: string
     default: ''
@@ -51,12 +48,19 @@ stages:
                 condition: ${{ job.condition }}
                 container: ${{ job.container }}
                 name: ${{ job.name }}
-                steps: ${{ job.steps }}
+                steps:
+                  - checkout: self
+                    clean: true
+                    persistCredentials: true
+                  - template: ../steps/azure_auth.yml
+                  - ${{ each step in job.steps }}:
+                    - ${{ step }}
                 dependsOn:
                   - ${{ each dependsOn in job.dependsOn }}:
                     - name: ${{ dependsOn }}
-                ${{ if job.variables }}:
-                  variables: ${{ job.variables }}
+                variables:
+                  - ${{ each var in job.variables }}:
+                    - ${{ var }}
         - ${{ if eq(length(parameters.validationJobs), 0) }}:
           - template: ../jobs/wrapper_job.yml
             parameters:
@@ -66,16 +70,10 @@ stages:
                 - checkout: self
                   clean: true
                   persistCredentials: true
+                - template: ../steps/azure_auth.yml
                 - template: ../steps/check_branch_name.yml
-                - ${{ if parameters.azureAuth }}:
-                  - template: ../steps/azure_auth.yml
-                    parameters:
-                      subscriptionId: $(SUBSCRIPTION_ID)
                 - ${{ each validationStep in parameters.validationSteps }}:
                   - ${{ validationStep }}
-                - template: ../steps/git_tagging.yml
-                  parameters:
-                    tagPrefix: $(Build.Repository.Name)
       pool: ${{ parameters.pool }}
       name: ${{ parameters.validateName }}
       variables:
