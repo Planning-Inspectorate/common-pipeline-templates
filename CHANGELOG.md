@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.1.0...release/2.1.1) (2022-05-23)
+
+
+### Bug Fixes
+
+* **azure_get_secrets.yml:** fix variable name ([fad2a3a](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/fad2a3a82043d1d3f70e8609f2332e6c79e0cb87))
+
 ## [2.1.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.0.2...release/2.1.0) (2022-05-23)
 
 
