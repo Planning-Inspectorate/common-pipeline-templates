@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.0.2...release/2.1.0) (2022-05-23)
+
+
+### Features
+
+* **templates:** allow multi-job ci pipeline, update stage/job names, check files step template ([dc1eb25](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/dc1eb256b3630dc98b4f156e8f9e9e7790abb9fa))
+
 ### [2.0.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.0.1...release/2.0.2) (2022-05-17)
 
 
