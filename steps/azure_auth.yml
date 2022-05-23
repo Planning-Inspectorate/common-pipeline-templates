@@ -1,6 +1,7 @@
 parameters:
   - name: subscriptionId
     type: string
+    default: $(SUBSCRIPTION_ID)
 
 steps:
   - script: |

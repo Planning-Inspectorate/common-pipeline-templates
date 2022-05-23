@@ -11,8 +11,9 @@
 #           pathFilters:
 #             - name: source_code
 #               path: src
+#           stepName: check_files
 #  - job: B
-#    condition: and(succeeded(), eq(dependencies.A.outputs['checkfiles.source_code'], 'true'))
+#    condition: and(succeeded(), eq(dependencies.A.outputs['check_files.source_code'], 'true'))
 #    dependsOn: A
 #    steps:
 #  - script: echo hello from B
@@ -59,4 +60,4 @@ steps:
     displayName: Check changed files
     env:
       PATH_FILTERS_JSON: ${{ convertToJson(parameters.pathFilters) }}
-    name: check_files
+    name: ${{ parameters.stepName }}
