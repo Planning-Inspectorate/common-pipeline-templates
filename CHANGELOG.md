@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.1.1...release/2.1.2) (2022-05-25)
+
+
+### Bug Fixes
+
+* **azure_web_app_acr_push.yml:** fix name of artifact to avoid conflicts in multi-job pipelines ([a6e4852](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/a6e48525144afccadfb3467e98684630689e19ae))
+
 ### [2.1.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.1.0...release/2.1.1) (2022-05-23)
 
 
