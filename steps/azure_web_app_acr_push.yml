@@ -122,5 +122,5 @@ steps:
     displayName: Build and Push Docker Image to ACR
     workingDirectory: ${{ parameters.workingDirectory }}
   - publish: $(Build.ArtifactStagingDirectory)
-    artifact: docker-image
+    artifact: $(System.JobName)_Docker_Image
     displayName: Publish Docker Image Artifact
