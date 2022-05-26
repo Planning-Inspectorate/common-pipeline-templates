@@ -121,6 +121,12 @@ steps:
       docker save $IMAGE:ci-build -o $(Build.ArtifactStagingDirectory)/image.tar
     displayName: Build and Push Docker Image to ACR
     workingDirectory: ${{ parameters.workingDirectory }}
+  - script: |
+      REPOSITORY=${{ parameters.repository }}
+      ARTIFACT_NAME=$(cut -d "/" -f2 <<< "$REPOSITORY")
+
+      echo "##vso[task.setvariable variable=artifactName]$ARTIFACT_NAME"
+    displayName: Set artifact name
   - publish: $(Build.ArtifactStagingDirectory)
-    artifact: $(System.JobName)_Docker_Image
+    artifact: $(artifactName)
     displayName: Publish Docker Image Artifact
