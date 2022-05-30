@@ -21,7 +21,7 @@ steps:
       IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
 
       az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
-      az acr login --name ${{ parameters.azurecrName }}
+      az acr login --name ${{ parameters.azurecrName }} || { echo "##vso[task.logissue type=error]Login to container registry failed."; exit 1; }
 
       echo "Checking image exists in registry..."
       docker manifest inspect $IMAGE:$(tag) > /dev/null

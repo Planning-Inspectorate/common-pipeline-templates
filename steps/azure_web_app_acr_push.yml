@@ -114,9 +114,9 @@ steps:
       "${args[@]}"
 
       az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
-      az acr login --name ${{ parameters.azurecrName }}
+      az acr login --name ${{ parameters.azurecrName }} || { echo "##vso[task.logissue type=error]Login to container registry failed."; exit 1; }
 
-      docker push $IMAGE:$(tag)
+      docker push $IMAGE:$(tag) || { echo "##vso[task.logissue type=error]Push failed..."; exit 1; }
       
       docker save $IMAGE:ci-build -o $(Build.ArtifactStagingDirectory)/image.tar
     displayName: Build and Push Docker Image to ACR
