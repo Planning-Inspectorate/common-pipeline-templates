@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.1.4...release/2.2.0) (2022-06-06)
+
+
+### Features
+
+* **steps:** support app service slot deployments ([b339564](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/b3395646d3f072f6f03741ff1b2f9e0ce515133b))
+
 ### [2.1.4](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.1.3...release/2.1.4) (2022-05-30)
 
 
