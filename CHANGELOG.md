@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.2.0...release/2.2.1) (2022-06-06)
+
+
+### Bug Fixes
+
+* **steps:** combine slot deploy and swap steps and add missing slot arguments ([c1e3ef3](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/c1e3ef3a2fa9b2d94b1beaefaf38944e60b3dd78))
+* **steps:** update echo output for clarity ([b28dca1](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/b28dca1ddf2869cf63700b93da51488211a2d502))
+
 ## [2.2.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.1.4...release/2.2.0) (2022-06-06)
 
 
