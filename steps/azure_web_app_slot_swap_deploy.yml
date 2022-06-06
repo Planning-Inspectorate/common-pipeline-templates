@@ -66,7 +66,7 @@ steps:
         --docker-registry-server-password $AZURE_SERVICE_PRINCIPAL_SECRET \
         --slot ${{ parameters.appStagingSlotName }}
 
-        echo "Swapping App Service staging slot to production..."
+        echo "Swapping App Service staging slot to production slot..."
         az webapp deployment slot swap --name ${{ parameters.appName }} \
         --resource-group ${{ parameters.appResourceGroup }} \
         --slot ${{ parameters.appStagingSlotName }} \
