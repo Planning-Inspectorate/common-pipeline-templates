@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.2.1...release/2.3.0) (2022-06-07)
+
+
+### Features
+
+* **jobs:** use tests vmss pool for cypress e2e tests by default ([87f34e2](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/87f34e234e0f02ae23b5a325fcade97e29dc129e))
+
 ### [2.2.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.2.0...release/2.2.1) (2022-06-06)
 
 
