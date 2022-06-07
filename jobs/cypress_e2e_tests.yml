@@ -18,7 +18,7 @@ parameters:
   - name: pool
     type: object
     default:
-      name: pins-odt-agent-pool
+      name: pins-odt-agent-pool-tests
   - name: postTestRunSteps
     type: stepList
     default: []
