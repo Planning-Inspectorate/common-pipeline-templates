@@ -1,0 +1,24 @@
+parameters:
+  - name: appName
+    type: string
+  - name: appResourceGroup
+  - name: appStagingSlotName
+    type: string
+    default: staging
+  - name: appTargetSlotName
+    type: string
+    default: production
+
+steps:
+  - script: |
+        az account set -s $(SUBSCRIPTION_ID)
+
+        echo "Swapping App Service staging slot to production slot..."
+        az webapp deployment slot swap --name ${{ parameters.appName }} \
+        --resource-group ${{ parameters.appResourceGroup }} \
+        --slot ${{ parameters.appStagingSlotName }} \
+        --target-slot ${{ parameters.appTargetSlotName }}
+    displayName: Swap Azure Web App Slot
+    env:
+      AZURE_SERVICE_PRINCIPAL_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
+      AZURE_SERVICE_PRINCIPAL_SECRET: $(AZURE_SERVICE_PRINCIPAL_SECRET)
