@@ -13,7 +13,7 @@ steps:
   - script: |
         az account set -s $(SUBSCRIPTION_ID)
 
-        echo "Swapping App Service staging slot to production slot..."
+        echo "Swapping App Service ${{ parameters.appStagingSlotName }} slot to ${{ parameters.appTargetSlotName }} slot..."
         az webapp deployment slot swap --name ${{ parameters.appName }} \
         --resource-group ${{ parameters.appResourceGroup }} \
         --slot ${{ parameters.appStagingSlotName }} \
