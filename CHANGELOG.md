@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.3.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.3.0...release/2.3.1) (2022-06-08)
+
+
+### Bug Fixes
+
+* **steps/terragrunt_plan_all.yml:** stop lock files being removed from artifact ([0c23d40](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/0c23d40cbc2288ded3af67ed136c0da16970d122))
+
 ## [2.3.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.2.1...release/2.3.0) (2022-06-07)
 
 
