@@ -16,7 +16,7 @@ steps:
       # Sets a variable that can be used to skip the apply step.
       # If the Apply step is used in a different stage then the condition can be set at the stage level
       if [[ $? -eq 0 ]]; then
-        echo "##vso[task.setvariable variable=skipApply]true"
+        echo "##vso[task.setvariable variable=skipApply;isOutput=true]true"
       fi
     displayName: Terraform Plan
     env:
@@ -26,6 +26,7 @@ steps:
       ARM_TENANT_ID: $(AZURE_TENANT_ID)
       ${{ each var in parameters.environmentVariables }}:
         ${{ var.key }}: ${{ var.value }}
+    name: terraform_plan
     workingDirectory: ${{ parameters.workingDirectory }}
   - task: CopyFiles@2
     displayName: Copy tfplan to artifact
