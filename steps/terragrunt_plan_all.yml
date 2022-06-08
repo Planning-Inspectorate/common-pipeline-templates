@@ -33,7 +33,6 @@ steps:
         !.git
         !**/.terraform/**
         !**/.terragrunt_cache/**
-        !**/.terraform.lock.hcl
         !.gitignore
         !.pre-commit-config.yaml
         !.tflint.hcl
