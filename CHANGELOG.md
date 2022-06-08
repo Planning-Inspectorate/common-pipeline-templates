@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.4.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.3.1...release/2.4.0) (2022-06-08)
+
+
+### Features
+
+* **steps:** separate slot deploy and slot swap steps ([9832fbf](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/9832fbf5933fd0204f9baa759796b3fc01988198))
+
+
+### Bug Fixes
+
+* **steps:** add newline at end of file ([2579814](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/2579814397104163c9d129af2e3a9e1e54e328eb))
+* **steps:** remove redudant slot swap deploy step ([49212a2](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/49212a29faf19fd52745f33e569c07cb1c142e41))
+* **steps:** update echo output for clarity on slot target ([8ba8994](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/8ba89949d5d6ac11d7e2ae1ff90898987962ffe5))
+* **steps:** update echo output with slot names ([b042ed7](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/b042ed7cb0bd2e0bd5b9ca75d55c4dad6051de62))
+* **steps:** update existing web_app_deploy with slot option ([fa6f6e9](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/fa6f6e9c0c67e2d2217b5c3b4897500f020d6052))
+
 ### [2.3.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.3.0...release/2.3.1) (2022-06-08)
 
 
