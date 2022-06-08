@@ -2,6 +2,9 @@ parameters:
   - name: appName
     type: string
   - name: appResourceGroup
+  - name: appSlotName
+    type: string
+    default: production
   - name: azurecrName
     type: string
   - name: repository
@@ -41,26 +44,27 @@ steps:
       az account set -s $(SUBSCRIPTION_ID)
 
       echo "Checking App Service Continuous Deployment enabled..."
-      CD_ENABLED=$(az webapp deployment container show-cd-url --name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} | jq .DOCKER_ENABLE_CI)
+      CD_ENABLED=$(az webapp deployment container show-cd-url --name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} --slot ${{ parameters.appSlotName }} | jq .DOCKER_ENABLE_CI)
 
       if [[ $CD_ENABLED == "false" ]]; then
         echo "Enabling Continuous Deployment..."
-        az webapp deployment container config --enable-cd true --name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }}
+        az webapp deployment container config --enable-cd true --name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} --slot ${{ parameters.appSlotName }}
       fi
 
-      CURRENT_IMAGE_NAME=$(az webapp config container show --name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value')
+      CURRENT_IMAGE_NAME=$(az webapp config container show --name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} --slot ${{ parameters.appSlotName }} | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value')
       CURRENT_TAG=${CURRENT_IMAGE_NAME#*:}
       
       echo "App Service currently running container from tag: $CURRENT_TAG"
 
       if [[ $CURRENT_TAG != "$(ENVIRONMENT)" ]]; then
-        echo "Setting App Service to run tag: $(ENVIRONMENT)..."
+        echo "Staging App Service to run tag: $(ENVIRONMENT)..."
         az webapp config container set --name ${{ parameters.appName }} \
         --resource-group ${{ parameters.appResourceGroup }} \
         --docker-custom-image-name $IMAGE:$(ENVIRONMENT) \
         --docker-registry-server-url https://${{ parameters.azurecrName }}.azurecr.io \
         --docker-registry-server-user $AZURE_SERVICE_PRINCIPAL_ID \
-        --docker-registry-server-password $AZURE_SERVICE_PRINCIPAL_SECRET
+        --docker-registry-server-password $AZURE_SERVICE_PRINCIPAL_SECRET \
+        --slot ${{ parameters.appSlotName }}
       else
         echo "App Service will pull latest version of tag: $(ENVIRONMENT)"
       fi
