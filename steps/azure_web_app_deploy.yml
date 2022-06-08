@@ -57,7 +57,7 @@ steps:
       echo "App Service currently running container from tag: $CURRENT_TAG"
 
       if [[ $CURRENT_TAG != "$(ENVIRONMENT)" ]]; then
-        echo "Staging App Service to run tag: $(ENVIRONMENT)..."
+        echo "Setting App Service ${{ parameters.appSlotName }} slot to run tag $(ENVIRONMENT)..."
         az webapp config container set --name ${{ parameters.appName }} \
         --resource-group ${{ parameters.appResourceGroup }} \
         --docker-custom-image-name $IMAGE:$(ENVIRONMENT) \
