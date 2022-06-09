@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.4.1...release/2.4.2) (2022-06-09)
+
+
+### Bug Fixes
+
+* **steps/azure-web-app-slot-swap:** fix bash conditional statement ([0e759ed](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/0e759ed4bd081e22cea2310eb8bb29f2f014b115))
+
 ### [2.4.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.4.0...release/2.4.1) (2022-06-09)
 
 
