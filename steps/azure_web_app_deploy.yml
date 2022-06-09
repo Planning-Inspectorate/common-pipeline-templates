@@ -109,7 +109,7 @@ steps:
           exit 1
         else
           if [[ ! -z "$DEPLOYMENT_SLOT" ]]; then
-            STAGING_URL=$(az webapp config hostname list --webapp-name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} --slot ${{ parameters.appStagingSlotName }} | jq '.[].name')
+            STAGING_URL=$(az webapp config hostname list --webapp-name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} --slot ${{ parameters.appSlotName }} | jq '.[].name')
             echo "##[command]App Service deployment staged to: $STAGING_URL"
           fi
         fi
