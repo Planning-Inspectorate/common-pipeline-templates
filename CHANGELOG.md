@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.4.0...release/2.4.1) (2022-06-09)
+
+
+### Bug Fixes
+
+* **steps/terraform_plan.yml:** make skipApply an output variable ([37cd976](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/37cd9766c3900c5fe2bad0c728f09d6dd5802f4e))
+
 ## [2.4.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.3.1...release/2.4.0) (2022-06-08)
 
 
