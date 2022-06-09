@@ -107,6 +107,11 @@ steps:
             docker push $IMAGE:$(ENVIRONMENT)
           fi
           exit 1
+        else
+          if [[ ! -z "$DEPLOYMENT_SLOT" ]]; then
+            STAGING_URL=$(az webapp config hostname list --webapp-name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} --slot ${{ parameters.appStagingSlotName }} | jq '.[].name')
+            echo "##[command]App Service deployment staged to: $STAGING_URL"
+          fi
         fi
       fi
     displayName: Deploy Container to Azure Web App
