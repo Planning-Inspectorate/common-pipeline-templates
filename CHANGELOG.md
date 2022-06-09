@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.3](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.4.2...release/2.4.3) (2022-06-09)
+
+
+### Bug Fixes
+
+* **steps/azure_web_app_deploy.yml:** fix deployment to production slot ([1119522](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/11195227a86b1d4528208382d76d276a58948e90))
+* **steps/azure_web_app_deploy.yml:** run app service deploy webhook as part of pipeline ([8ac9023](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/8ac9023c77085276b47409d8cd33f0dc4d90dfa2))
+
 ### [2.4.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.4.1...release/2.4.2) (2022-06-09)
 
 
