@@ -13,7 +13,7 @@ steps:
   - script: |
         az account set -s $(SUBSCRIPTION_ID)
 
-        if [[ ${{ parameters.appStagingSlotName }} != ${{ parameters.appTargetSlotName }} ]]
+        if [[ ${{ parameters.appStagingSlotName }} != ${{ parameters.appTargetSlotName }} ]]; then
           echo "Swapping App Service ${{ parameters.appStagingSlotName }} slot to ${{ parameters.appTargetSlotName }} slot..."
           az webapp deployment slot swap --name ${{ parameters.appName }} \
           --resource-group ${{ parameters.appResourceGroup }} \
