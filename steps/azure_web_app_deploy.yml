@@ -26,6 +26,18 @@ steps:
       az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
       az acr login --name ${{ parameters.azurecrName }} || { echo "##vso[task.logissue type=error]Login to container registry failed."; exit 1; }
 
+      echo "Pull current environment tag for rollback in case of failure..."
+      docker manifest inspect $IMAGE:$(ENVIRONMENT) > /dev/null
+      
+      if [[ $? -ne 0 ]]; then
+        ROLLBACK_AVAILABLE=true
+
+        docker pull $IMAGE:$(ENVIRONMENT)
+        docker tag $IMAGE:$(ENVIRONMENT) $IMAGE:rollback
+      else
+        echo "No existing tag for environment."
+      fi
+
       echo "Checking image exists in registry..."
       docker manifest inspect $IMAGE:$(tag) > /dev/null
       
@@ -36,15 +48,12 @@ steps:
         echo "Image found..."
       fi
 
-      echo "Pull image to set environment tag..."
-      docker pull $IMAGE:$(tag)
-      docker tag $IMAGE:$(tag) $IMAGE:$(ENVIRONMENT)
-      docker push $IMAGE:$(ENVIRONMENT)
-
       az account set -s $(SUBSCRIPTION_ID)
 
-      echo "Checking App Service Continuous Deployment enabled..."
-      CD_ENABLED=$(az webapp deployment container show-cd-url --name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} --slot ${{ parameters.appSlotName }} | jq .DOCKER_ENABLE_CI)
+      echo "Getting Continuous Deployment info..."
+      CD_INFO=$(az webapp deployment container show-cd-url --name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} --slot ${{ parameters.appSlotName }})
+      CD_ENABLED=$(echo "$CD_INFO" | jq .DOCKER_ENABLE_CI)
+      CD_URL=$(echo "$CD_INFO" | jq .CI_CD_URL)
 
       if [[ $CD_ENABLED == "false" ]]; then
         echo "Enabling Continuous Deployment..."
@@ -53,8 +62,12 @@ steps:
 
       CURRENT_IMAGE_NAME=$(az webapp config container show --name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} --slot ${{ parameters.appSlotName }} | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value')
       CURRENT_TAG=${CURRENT_IMAGE_NAME#*:}
-      
       echo "App Service currently running container from tag: $CURRENT_TAG"
+
+      echo "Pull image and set environment tag..."
+      docker pull $IMAGE:$(tag)
+      docker tag $IMAGE:$(tag) $IMAGE:$(ENVIRONMENT)
+      docker push $IMAGE:$(ENVIRONMENT)
 
       if [[ $CURRENT_TAG != "$(ENVIRONMENT)" ]]; then
         echo "Setting App Service ${{ parameters.appSlotName }} slot to run tag $(ENVIRONMENT)..."
@@ -65,8 +78,25 @@ steps:
         --docker-registry-server-user $AZURE_SERVICE_PRINCIPAL_ID \
         --docker-registry-server-password $AZURE_SERVICE_PRINCIPAL_SECRET \
         --slot ${{ parameters.appSlotName }}
+
+        if [[ $? -ne 0 ]]; then
+          if [[ "$ROLLBACK_AVAILABLE" == true ]]; then
+            docker tag $IMAGE:rollback $IMAGE:$(ENVIRONMENT)
+            docker push $IMAGE:$(ENVIRONMENT)
+          fi
+          echo "##vso[task.logissue type=error]Error setting new container on web app..."
+        fi
       else
         echo "App Service will pull latest version of tag: $(ENVIRONMENT)"
+        STATUSCODE=$(curl -v --output /dev/stderr --write-out "%{http_code}" "$CD_URL" -X POST -H "Content-Length:0")
+
+        if test $STATUSCODE -ne 200; then
+          if [[ "$ROLLBACK_AVAILABLE" == true ]]; then
+            docker tag $IMAGE:rollback $IMAGE:$(ENVIRONMENT)
+            docker push $IMAGE:$(ENVIRONMENT)
+          fi
+          echo "##vso[task.logissue type=error]Error sending webhook, web app has not pulled the latest image..."
+        fi
       fi
     displayName: Deploy Container to Azure Web App
     env:
