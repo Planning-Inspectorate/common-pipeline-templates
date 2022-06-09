@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.5.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.4.3...release/2.5.0) (2022-06-09)
+
+
+### Features
+
+* **steps/azure-web-app-deploy.yml:** output staging url ([5348eca](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/5348eca519d782699a156ca07c2eb27dddf847ef))
+
 ### [2.4.3](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.4.2...release/2.4.3) (2022-06-09)
 
 
