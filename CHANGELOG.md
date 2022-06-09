@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.5.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.5.0...release/2.5.1) (2022-06-09)
+
+
+### Bug Fixes
+
+* **steps/azure-web-app-deploy.yml:** fix app slot name parameter ([e06bd0c](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/e06bd0ccf3baa662f122ace2424fe8c0cdd99063))
+
 ## [2.5.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.4.3...release/2.5.0) (2022-06-09)
 
 
