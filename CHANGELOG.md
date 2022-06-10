@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.5.3](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.5.2...release/2.5.3) (2022-06-10)
+
+
+### Bug Fixes
+
+* **steps/azure_web_app_deploy.yml:** fix container set command ([8048596](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/8048596c3ef1734d47e68661348a02f62eaa9969))
+
 ### [2.5.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.5.1...release/2.5.2) (2022-06-10)
 
 
