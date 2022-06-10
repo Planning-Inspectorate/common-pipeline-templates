@@ -76,7 +76,7 @@ steps:
 
       if [[ $CURRENT_TAG != "$(ENVIRONMENT)" ]]; then
         echo "##[command]Swapping App Service container to tag: $(ENVIRONMENT)..."
-        az webapp config container set
+        az webapp config container set \
         --docker-custom-image-name $IMAGE:$(ENVIRONMENT) \
         --docker-registry-server-url https://${{ parameters.azurecrName }}.azurecr.io \
         --docker-registry-server-user $AZURE_SERVICE_PRINCIPAL_ID \
