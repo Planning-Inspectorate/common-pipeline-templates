@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.5.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.5.1...release/2.5.2) (2022-06-10)
+
+
+### Bug Fixes
+
+* **steps/azure-get-secrets:** fix bash if statement ([e4e04cd](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/e4e04cdd973088a5844df701e69a04b2a7d416e4))
+* **steps/azure-get-secrets:** fix yaml formatting ([7c34919](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/7c349198582c9296eac9d9737a58f16e18627f5a))
+
 ### [2.5.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.5.0...release/2.5.1) (2022-06-09)
 
 
