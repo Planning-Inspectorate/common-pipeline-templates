@@ -17,7 +17,7 @@ parameters:
 
 steps:
   - script: |
-      terragrunt plan -out=tfplan--terragrunt-ignore-external-dependencies
+      terragrunt plan -out=tfplan --terragrunt-ignore-external-dependencies
     displayName: Terragrunt Plan
     env:
       ARM_CLIENT_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
