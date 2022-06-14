@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.5.5](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.5.4...release/2.5.5) (2022-06-14)
+
+
+### Bug Fixes
+
+* **templates): fix(templates:** fix typo and remove isOutput flag ([2b32ed9](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/2b32ed935f983a03df270e804dd70142a760664f))
+
 ### [2.5.4](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.5.3...release/2.5.4) (2022-06-14)
 
 
