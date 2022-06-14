@@ -45,7 +45,7 @@ steps:
         echo "##vso[task.logissue type=error]Image/tag not found in registry."
         exit 1
       else
-        echo "##[command]Image found!"
+        echo "Image found!"
       fi
 
       az account set -s $(SUBSCRIPTION_ID)
@@ -56,7 +56,7 @@ steps:
       [[ ! -z "$DEPLOYMENT_SLOT" ]] && args+=("--slot" "$DEPLOYMENT_SLOT")
       
       echo "##[command]Getting Continuous Deployment info..."
-      CD_CONFIG=$(az webapp deployment container show-cd-url "${args[@]}")
+      CD_CONFIG=$(az webapp deployment container show-cd-url "${args[@]}"); echo $CD_CONFIG
       CD_ENABLED=$(echo "$CD_CONFIG" | jq -r .DOCKER_ENABLE_CI)
       CD_URL=$(echo "$CD_CONFIG" | jq -r .CI_CD_URL)
 
@@ -94,7 +94,7 @@ steps:
           exit 1
         fi
       else
-        echo "##[command]App Service will pull latest version of tag: $(ENVIRONMENT), sending webook"
+        echo "##[command]Sending webhook... App Service will pull latest version of tag: $(ENVIRONMENT)"
         
         STATUSCODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" "$CD_URL" -X POST -H "Content-Length:0")
 
@@ -110,7 +110,7 @@ steps:
         else
           if [[ ! -z "$DEPLOYMENT_SLOT" ]]; then
             STAGING_URL=$(az webapp config hostname list --webapp-name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} --slot ${{ parameters.appSlotName }} | jq '.[].name')
-            echo "##[command]App Service deployment staged to: $STAGING_URL"
+            echo "App Service deployment staged to: $STAGING_URL"
           fi
         fi
       fi
