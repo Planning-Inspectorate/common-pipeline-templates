@@ -1,6 +1,6 @@
 {
   "name": "common-pipeline-templates",
-  "version": "2.5.3",
+  "version": "2.5.4",
   "description": "Azure Pipeline templates that can be used in any PINS pipeline",
   "repository": {
     "type": "git",

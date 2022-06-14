@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.5.4](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.5.3...release/2.5.4) (2022-06-14)
+
+
+### Bug Fixes
+
+* **templates:** move terraform apply skip logic ([8674b90](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/8674b904617a7e6bfc29e271ce03bb185e363b1c))
+
 ### [2.5.3](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.5.2...release/2.5.3) (2022-06-10)
 
 
