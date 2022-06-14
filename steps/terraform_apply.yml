@@ -9,14 +9,23 @@ parameters:
     type: string
 
 steps:
+  - script: |
+      if [[ -d "${{ parameters.artifactName }}" ]]; then
+        echo "Terraform Plan found..."
+      else
+        echo "##[warning]No Terraform Plan found, skipping Apply..."
+        echo "##vso[task.setvariable variable=skipApply;isOutput=true]true"
+      fi
+    displayName: Check for Terraform Plan
+    workingDirectory: $(Pipeline.Workspace)
   - download: current
     artifact: ${{ parameters.artifactName }}
-    condition: and(succeeded(), ne(variables['skipApply'], 'true'))
+    condition: ne(variables['skipApply'], 'true')
     displayName: Download Terraform Plan
   - script: |
       chmod -R +x .
       terraform apply -input=false tfplan
-    condition: and(succeeded(), ne(variables['skipApply'], 'true'))
+    condition: ne(variables['skipApply'], 'true')
     displayName: Terraform Apply
     env:
       ARM_CLIENT_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
