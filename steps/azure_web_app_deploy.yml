@@ -2,6 +2,7 @@ parameters:
   - name: appName
     type: string
   - name: appResourceGroup
+    type: string
   - name: appSlotName
     type: string
     default: ''
@@ -15,7 +16,8 @@ parameters:
 
 steps:
   - script: |
-      TAG=${{ coalesce(parameters.tag, replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '.')) }}
+      FORMATTED_GIT_REF=$(echo $(Build.SourceBranch) | sed "s/refs\/heads\///;s/refs\/tags\///")
+      TAG=$([[ -z "${{ parameters.tag }}" ]] && echo "${FORMATTED_GIT_REF//\//.}" || echo "${{ parameters.tag }}")
 
       echo "##vso[build.addbuildtag]$TAG"
       echo "##vso[task.setvariable variable=tag]$TAG"
@@ -65,9 +67,10 @@ steps:
         az webapp deployment container config --enable-cd true "${args[@]}"
       fi
 
+      echo "##[command]App Service currently running image:"
       CURRENT_IMAGE_NAME=$(az webapp config container show "${args[@]}" | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value')
       CURRENT_TAG=${CURRENT_IMAGE_NAME#*:}
-      echo ##[command]"App Service currently running container from tag: $CURRENT_TAG"
+      echo "$CURRENT_IMAGE_NAME"
 
       echo "##[command]Pull image and set environment tag..."
       docker pull $IMAGE:$(tag)
@@ -96,10 +99,10 @@ steps:
       else
         echo "##[command]Sending webhook... App Service will pull latest version of tag: $(ENVIRONMENT)"
         
-        STATUSCODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" "$CD_URL" -X POST -H "Content-Length:0")
+        STATUS_CODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" "$CD_URL" -X POST -H "Content-Length:0")
 
-        if test $STATUSCODE -ne 200; then
-          echo "##vso[task.logissue type=error]Error sending webhook, web app has not pulled the latest image..."
+        if [[ $STATUS_CODE -lt 200 ]] || [[ $STATUS_CODE -gt 299 ]]; then
+          echo "##vso[task.logissue type=error]Error sending webhook, response code: $STATUS_CODE"
 
           if [[ "$ROLLBACK_AVAILABLE" == true ]]; then
             echo "##[command]Rolling back environment tag to previous..."
@@ -108,6 +111,7 @@ steps:
           fi
           exit 1
         else
+          echo "Webhook sent, response code: $STATUS_CODE"
           if [[ ! -z "$DEPLOYMENT_SLOT" ]]; then
             STAGING_URL=$(az webapp config hostname list --webapp-name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} --slot ${{ parameters.appSlotName }} | jq '.[].name')
             echo "App Service deployment staged to: $STAGING_URL"
