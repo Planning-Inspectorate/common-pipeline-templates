@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.0.0...release/3.0.1) (2022-06-23)
+
+
+### Bug Fixes
+
+* **stages/wrapper_cd.yml:** add job conditions ([cd6016b](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/cd6016b09bb848c6366f2fb6e49d449ffcd78630))
+
 ## [3.0.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.5.5...release/3.0.0) (2022-06-23)
 
 
