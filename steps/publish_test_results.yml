@@ -1,0 +1,37 @@
+parameters:
+  - name: coverageFiles
+    type: string
+    default: '**/coverage/cobertura-coverage.xml'
+  - name: coverageReportDirectory
+    type: string
+    default: '**/coverage'
+  - name: searchFolder
+    type: string
+    default: $(Pipeline.Workspace)
+  - name: testResultsFiles
+    type: string
+    default: junit.xml
+  - name: testResultsFormat
+    type: string
+    default: JUnit
+  - name: testRunTitle
+    type: string
+
+steps:
+  - task: PublishTestResults@2
+    displayName: Publish Test Results
+    inputs:
+      failTaskOnFailedTests: true
+      mergeTestResults: true
+      searchFolder: ${{ parameters.searchFolder }}
+      testResultsFiles: ${{ parameters.testResultsFiles }}
+      testResultsFormat: ${{ parameters.testResultsFormat }}
+      testRunTitle: ${{ parameters.testRunTitle }}
+  - task: PublishCodeCoverageResults@1
+    condition: succeededOrFailed()
+    displayName: Publish Code Coverage Results
+    inputs:
+      codeCoverageTool: Cobertura
+      failIfCoverageEmpty: true
+      reportDirectory: ${{ parameters.coverageReportDirectory }}
+      summaryFileLocation: ${{ parameters.coverageFiles }}
