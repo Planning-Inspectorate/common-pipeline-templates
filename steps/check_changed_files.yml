@@ -43,6 +43,11 @@ steps:
       done
 
       git fetch origin ${{ parameters.developmentBranch }}:${{ parameters.developmentBranch }}
+
+      if [[ $? -ne 0 ]]; then
+        echo "##[error]Development branch does not exist..."
+      fi
+
       CHANGED_FILES=$(git diff ${{ parameters.developmentBranch }}... --name-only)
 
       echo "Checking for file changes..."

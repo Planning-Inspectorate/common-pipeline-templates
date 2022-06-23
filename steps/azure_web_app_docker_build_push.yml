@@ -1,0 +1,68 @@
+parameters:
+  - name: azurecrName
+    type: string
+  - name: buildArgs
+    type: object
+    default: []
+  - name: dockerfilePath
+    type: string
+    default: Dockerfile
+  - name: repository
+    type: string
+  - name: tag
+    type: string
+    default: ''
+  - name: workingDirectory
+    type: string
+    default: $(Build.Repository.LocalPath)
+
+steps:
+  - script: |
+      IS_PR=${{ contains(variables['Build.SourceBranch'], 'refs/pull') }}
+
+      if [[ $IS_PR != true ]]; then
+        FORMATTED_GIT_REF=$(echo $(Build.SourceBranch) | sed "s/refs\/heads\///;s/refs\/tags\///")
+        TAG=$([[ -z "${{ parameters.tag }}" ]] && echo "${FORMATTED_GIT_REF//\//.}" || echo "${{ parameters.tag }}")
+
+        echo "##vso[build.addbuildtag]$TAG"
+        echo "##vso[task.setvariable variable=tag]$TAG"
+      else
+        echo "##vso[task.setvariable variable=isPR]$IS_PR"
+        echo "##[warning]Build is for a Pull Request, won't push image to Container Registry..."
+      fi
+    displayName: Add Docker Image Build Tags
+  - script: |
+      build_args="${{ join(' ', parameters.buildArgs) }}"
+
+      for arg in $build_args; do
+        args+=(--build-arg "$arg")
+      done
+
+      IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
+
+      docker build . \
+      -f ${{ parameters.dockerfilePath }} \
+      -t $IMAGE:$(tag) \
+      -t $IMAGE:ci-build \
+      "${args[@]}"
+
+      az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
+      az acr login --name ${{ parameters.azurecrName }} || { echo "##vso[task.logissue type=error]Login to container registry failed."; exit 1; }
+
+      docker push $IMAGE:$(tag) || { echo "##vso[task.logissue type=error]Push failed..."; exit 1; }
+
+      docker save $IMAGE:ci-build -o $(Build.ArtifactStagingDirectory)/image.tar
+    condition: ne(variables['isPR'], 'true')
+    displayName: Build and Push Docker Image to ACR
+    workingDirectory: ${{ parameters.workingDirectory }}
+  - script: |
+      REPOSITORY=${{ parameters.repository }}
+      ARTIFACT_NAME=$(cut -d "/" -f2 <<< "$REPOSITORY")
+
+      echo "##vso[task.setvariable variable=artifactName]$ARTIFACT_NAME"
+    condition: ne(variables['isPR'], 'true')
+    displayName: Set artifact name
+  - publish: $(Build.ArtifactStagingDirectory)
+    artifact: $(artifactName)
+    condition: ne(variables['isPR'], 'true')
+    displayName: Publish Docker Image as Artifact

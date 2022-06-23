@@ -1,0 +1,24 @@
+parameters:
+  - name: azurecrName
+    type: string
+  - name: existingTag
+    type: string
+    default: ''
+  - name: repository
+    type: string
+  - name: tag
+    type: string
+
+steps:
+  - script: |
+      FORMATTED_GIT_REF=$(echo $(Build.SourceBranch) | sed "s/refs\/heads\///;s/refs\/tags\///")
+      EXISTING_TAG=$([[ -z "${{ parameters.existingTag }}" ]] && echo "${FORMATTED_GIT_REF//\//.}" || echo "${{ parameters.existingTag }}")
+      IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
+
+      az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
+      az acr login --name ${{ parameters.azurecrName }} || { echo "##vso[task.logissue type=error]Login to container registry failed."; exit 1; }
+
+      docker pull $IMAGE:$EXISTING_TAG
+      docker tag $IMAGE:$EXISTING_TAG $IMAGE:${{ parameters.tag }}
+      docker push $IMAGE:${{ parameters.tag }}
+    displayName: Tag Docker Image
