@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.5.5...release/3.0.0) (2022-06-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **wrappers:** Structure of the deploymentStages parameter now requires a deploymentJobs key.
+
+### Features
+
+* **steps/publish_test_results.yml:** move publish test results to stand alone step ([9d93f14](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/9d93f14848c597b39e4096c474cb3474e1581bfc))
+* **web app deployment steps:** update web app deploy steps to accept standalone tags ([b85bda9](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/b85bda905acd2f7e0db07575f1a7454dce2d43a4))
+* **wrappers:** update wrappers to accept different structured of parameters ([3bddfcf](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/3bddfcf50883896bb60c97eeadc043b669038ec6))
+
 ### [2.5.5](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/2.5.4...release/2.5.5) (2022-06-14)
 
 
