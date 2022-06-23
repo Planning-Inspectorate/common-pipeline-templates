@@ -23,7 +23,7 @@ parameters:
     default: []
 
 jobs:
-  - deployment: ${{ replace(replace(replace(replace(parameters.name, '-', '_'), ' ', '_'), '&', 'And'), ',', '') }}
+  - deployment: ${{ lower(replace(replace(replace(replace(parameters.name, '-', '_'), ' ', '_'), '&', 'And'), ',', '')) }}
     condition: ${{ parameters.condition }}
     ${{ if parameters.container }}:
       container: ${{ parameters.container }}
@@ -48,7 +48,7 @@ jobs:
             - ${{ each step in parameters.steps }}:
               - ${{ step }}
     variables:
-      - ${{ each variable in parameters.variables }}:
-        - ${{ variable }}
+      - ${{ each var in parameters.variables }}:
+        - ${{ var }}
     workspace:
       clean: all

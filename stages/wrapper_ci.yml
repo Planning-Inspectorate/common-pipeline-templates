@@ -42,6 +42,10 @@ stages:
     parameters:
       jobs:
         - ${{ if ge(length(parameters.validationJobs), 1) }}:
+          - job: check_branch_name
+            displayName: Check branch name
+            steps:
+              - template: ../steps/check_branch_name.yml
           - ${{ each job in parameters.validationJobs }}:
             - template: ../jobs/wrapper_job.yml
               parameters:
