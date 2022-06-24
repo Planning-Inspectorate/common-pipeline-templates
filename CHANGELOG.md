@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.0.1...release/3.0.2) (2022-06-24)
+
+
+### Bug Fixes
+
+* **steps/azure_web_app_deploy.yml:** stop logging web app cd info ([a8e2e27](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/a8e2e27cafab4853674db8e3a438457c5f54571c))
+
 ### [3.0.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.0.0...release/3.0.1) (2022-06-23)
 
 
