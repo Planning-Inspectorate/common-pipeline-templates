@@ -46,8 +46,6 @@ steps:
       if [[ $? -ne 0 ]]; then
         echo "##vso[task.logissue type=error]Image/tag not found in registry."
         exit 1
-      else
-        echo "Image found!"
       fi
 
       az account set -s $(SUBSCRIPTION_ID)
@@ -58,7 +56,7 @@ steps:
       [[ ! -z "$DEPLOYMENT_SLOT" ]] && args+=("--slot" "$DEPLOYMENT_SLOT")
       
       echo "##[command]Getting Continuous Deployment info..."
-      CD_CONFIG=$(az webapp deployment container show-cd-url "${args[@]}"); echo $CD_CONFIG
+      CD_CONFIG=$(az webapp deployment container show-cd-url "${args[@]}")
       CD_ENABLED=$(echo "$CD_CONFIG" | jq -r .DOCKER_ENABLE_CI)
       CD_URL=$(echo "$CD_CONFIG" | jq -r .CI_CD_URL)
 
