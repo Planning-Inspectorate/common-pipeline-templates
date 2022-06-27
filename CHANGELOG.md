@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.3](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.0.2...release/3.0.3) (2022-06-27)
+
+
+### Bug Fixes
+
+* **artifacts:** fix artifact download in cd pipelines ([476251f](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/476251ff1a021ad7fedce7cf73245efbe304dc49))
+
 ### [3.0.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.0.1...release/3.0.2) (2022-06-24)
 
 
