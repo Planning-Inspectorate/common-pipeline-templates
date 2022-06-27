@@ -24,7 +24,6 @@ steps:
         FORMATTED_GIT_REF=$(echo $(Build.SourceBranch) | sed "s/refs\/heads\///;s/refs\/tags\///")
         TAG=$([[ -z "${{ parameters.tag }}" ]] && echo "${FORMATTED_GIT_REF//\//.}" || echo "${{ parameters.tag }}")
 
-        echo "##vso[build.addbuildtag]$TAG"
         echo "##vso[task.setvariable variable=tag]$TAG"
       else
         echo "##vso[task.setvariable variable=isPR]$IS_PR"

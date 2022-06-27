@@ -5,22 +5,36 @@ steps:
 
       case ${BRANCH_NAME} in
         refs/*) # PRs, merges, tags etc.
+          if [[ "$BRANCH_NAME" == *"refs/tags/"* ]]; then
+            TAG_NAME="${BRANCH_NAME#refs/tags/}"
+            echo "##vso[build.addbuildtag]$TAG_NAME"
+          else
+            echo "##vso[build.addbuildtag]$BRANCH_NAME"
+          fi
           ;;
         dependabot/*) # Depndabot is a GitHub bot that can automatically upgrade dependencies
+          echo "##vso[build.addbuildtag]$BRANCH_NAME"
           ;;
         feature/*)
+          echo "##vso[build.addbuildtag]$BRANCH_NAME"
           ;;
         fix/*)
+          echo "##vso[build.addbuildtag]$BRANCH_NAME"
           ;;
         task/*)
+          echo "##vso[build.addbuildtag]$BRANCH_NAME"
           ;;
         subtask/*)
+          echo "##vso[build.addbuildtag]$BRANCH_NAME"
           ;;
         release/*)
+          echo "##vso[build.addbuildtag]$BRANCH_NAME"
           ;;
         main)
+          echo "##vso[build.addbuildtag]$BRANCH_NAME"
           ;;
         develop)
+          echo "##vso[build.addbuildtag]$BRANCH_NAME"
           ;;
         *)
           echo "##[error]Branch name [${BRANCH_NAME}] does not follow convention: [feature/* | fix/* | task/* | subtask/* | release/* | main | develop]."
