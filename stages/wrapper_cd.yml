@@ -16,7 +16,11 @@ parameters:
 #         - Previous Stage
 #       deploymentJobs:
 #         - name: Example
-#           artifact: artifact-name
+#           artifact: 
+#             name: artifact-name
+#             path: $(Pipeline.Workspace)
+#             patterns: **/*.zip
+#             sourcePipeline: pipeline name
 #           condition: condition
 #           container: container-name
 #           isDeployment: false
@@ -57,7 +61,6 @@ parameters:
 #         - Previous Stage
 #       jobs:
 #         - name: Example
-#           artifact: artifact-name
 #           condition: condtion
 #           container: container-name
 #           steps:
@@ -163,16 +166,6 @@ stages:
                         environment: ${{ environment.name }}
                         name: ${{ job.name }}
                         steps:
-                          - ${{ if job.artifact }}:
-                            - task: DownloadPipelineArtifact@2
-                              displayName: Download ${{ parameters.artifact }}
-                              inputs:
-                                allowPartiallySucceededBuilds: true
-                                artifact: ${{ parameters.artifact }}
-                                pipeline: ${{ parameters.sourcePipeline }}
-                                project: $(System.TeamProject)
-                                source: specific
-                                tags: $(Build.SourceBranchName)
                           - ${{ if parameters.azureAuth }}:
                             - template: ../steps/azure_auth.yml
                               parameters:
@@ -269,16 +262,6 @@ stages:
                       environment: ${{ environment.name }}
                       name: ${{ job.name }}
                       steps:
-                        - ${{ if job.artifact }}:
-                          - task: DownloadPipelineArtifact@2
-                            displayName: Download ${{ parameters.artifact }}
-                            inputs:
-                              allowPartiallySucceededBuilds: true
-                              artifact: ${{ parameters.artifact }}
-                              pipeline: ${{ parameters.sourcePipeline }}
-                              project: $(System.TeamProject)
-                              source: specific
-                              tags: $(Build.SourceBranchName)
                         - ${{ if parameters.azureAuth }}:
                           - template: ../steps/azure_auth.yml
                             parameters:

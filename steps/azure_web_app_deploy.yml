@@ -17,12 +17,15 @@ parameters:
 steps:
   - script: |
       FORMATTED_GIT_REF=$(echo $(Build.SourceBranch) | sed "s/refs\/heads\///;s/refs\/tags\///")
-      TAG=$([[ -z "${{ parameters.tag }}" ]] && echo "${FORMATTED_GIT_REF//\//.}" || echo "${{ parameters.tag }}")
+      
+      if [[ -z "${{ parameters.tag }}" ]]; then
+        TAG="${FORMATTED_GIT_REF//\//.}"
+        echo "##vso[build.addbuildtag]$FORMATTED_GIT_REF"
+      else
+         TAG=${{ parameters.tag }}
+        echo "##vso[build.addbuildtag]${{ parameters.tag }}"
+      fi
 
-      echo "##vso[build.addbuildtag]$TAG"
-      echo "##vso[task.setvariable variable=tag]$TAG"
-    displayName: Add Docker Image Build Tags
-  - script: |
       IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
 
       az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
@@ -41,7 +44,7 @@ steps:
       fi
 
       echo "##[command]Checking image exists in registry..."
-      docker manifest inspect $IMAGE:$(tag) > /dev/null
+      docker manifest inspect $IMAGE:$TAG > /dev/null
       
       if [[ $? -ne 0 ]]; then
         echo "##vso[task.logissue type=error]Image/tag not found in registry."
@@ -71,8 +74,8 @@ steps:
       echo "$CURRENT_IMAGE_NAME"
 
       echo "##[command]Pull image and set environment tag..."
-      docker pull $IMAGE:$(tag)
-      docker tag $IMAGE:$(tag) $IMAGE:$(ENVIRONMENT)
+      docker pull $IMAGE:$TAG
+      docker tag $IMAGE:$TAG $IMAGE:$(ENVIRONMENT)
       docker push $IMAGE:$(ENVIRONMENT)
 
       if [[ $CURRENT_TAG != "$(ENVIRONMENT)" ]]; then
