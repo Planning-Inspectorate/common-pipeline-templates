@@ -36,8 +36,8 @@ jobs:
       runOnce:
         deploy:
           steps:
+            - download: current
             - ${{ if parameters.artifact }}:
-              - download: none
               - task: DownloadPipelineArtifact@2
                 displayName: 'Download Artifact: ${{ parameters.artifact.name }}'
                 inputs:
@@ -52,8 +52,6 @@ jobs:
                   project: $(System.TeamProject)
                   source: specific
                   tags: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), 'ref/tags/', '') }}
-            - ${{ else }}:
-              - download: none
             - script: |
                 echo "##vso[build.addbuildtag]environment=${{ parameters.environment }}"
               displayName: Add Environment build tags
