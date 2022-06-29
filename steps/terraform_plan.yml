@@ -28,6 +28,7 @@ steps:
       Contents: |
         .terraform/**
         .terraform.lock.hcl
+        *.tftpl
         tfplan
       TargetFolder: $(Build.ArtifactStagingDirectory)
   - publish: $(Build.ArtifactStagingDirectory)
