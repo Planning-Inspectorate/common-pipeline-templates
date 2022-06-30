@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.0.3...release/3.1.0) (2022-06-30)
+
+
+### Features
+
+* **jobs/wrapper_deployment.yml:** download artifacts from current pipeline ([9b1048b](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/9b1048bf905e1542bb06e0dbbb44b471439724fb))
+* **steps/terraform_plan.yml:** include templatefiles in artifact ([cde7396](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/cde7396689380f391e42f2c421c7c1b8d9ce1351))
+
 ### [3.0.3](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.0.2...release/3.0.3) (2022-06-27)
 
 
