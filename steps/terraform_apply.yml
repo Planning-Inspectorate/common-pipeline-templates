@@ -18,10 +18,6 @@ steps:
       fi
     displayName: Check for Terraform Plan
     workingDirectory: $(Pipeline.Workspace)
-  - download: current
-    artifact: ${{ parameters.artifactName }}
-    condition: ne(variables['skipApply'], 'true')
-    displayName: Download Terraform Plan
   - script: |
       chmod -R +x .
       terraform apply -input=false tfplan
