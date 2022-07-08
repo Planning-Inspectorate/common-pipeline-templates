@@ -20,17 +20,17 @@ steps:
   - script: |
       IS_PR=${{ contains(variables['Build.SourceBranch'], 'refs/pull') }}
 
-      if [[ $IS_PR != true ]]; then
+      if [[ "$IS_PR" != "true" ]]; then
         FORMATTED_GIT_REF=$(echo $(Build.SourceBranch) | sed "s/refs\/heads\///;s/refs\/tags\///")
         TAG=$([[ -z "${{ parameters.tag }}" ]] && echo "${FORMATTED_GIT_REF//\//.}" || echo "${{ parameters.tag }}")
-
-        echo "##vso[task.setvariable variable=tag]$TAG"
-      else
-        echo "##vso[task.setvariable variable=isPR]$IS_PR"
-        echo "##[warning]Build is for a Pull Request, won't push image to Container Registry..."
       fi
-    displayName: Add Docker Image Build Tags
-  - script: |
+
+      git config --global user.name 'Azure DevOps'
+      git config --global user.email 'azure-devops@planninginspectorate.gov.uk'
+      git fetch --tags
+
+      git_tags=$(git tag -l --points-at HEAD)
+
       build_args="${{ join(' ', parameters.buildArgs) }}"
 
       for arg in $build_args; do
@@ -39,19 +39,31 @@ steps:
 
       IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
 
+      for git_tag in $git_tags; do
+        additional_tags+=(-t "$IMAGE:$git_tag")
+      done
+      
       docker build . \
       -f ${{ parameters.dockerfilePath }} \
-      -t $IMAGE:$(tag) \
+      -t $IMAGE:$TAG \
       -t $IMAGE:ci-build \
+      "${additional_tags[@]}" \
       "${args[@]}"
 
-      az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
-      az acr login --name ${{ parameters.azurecrName }} || { echo "##vso[task.logissue type=error]Login to container registry failed."; exit 1; }
+      if [[ "$IS_PR" != "true" ]]; then
+        az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
+        az acr login --name ${{ parameters.azurecrName }} || { echo "##vso[task.logissue type=error]Login to container registry failed."; exit 1; }
 
-      docker push $IMAGE:$(tag) || { echo "##vso[task.logissue type=error]Push failed..."; exit 1; }
+        docker push $IMAGE:$TAG || { echo "##vso[task.logissue type=error]Push failed..."; exit 1; }
+        
+        for git_tag in $git_tags; do
+          docker push $IMAGE:$git_tag || { echo "##vso[task.logissue type=error]Push failed..."; exit 1; }
+        done
 
-      docker save $IMAGE:ci-build -o $(Build.ArtifactStagingDirectory)/image.tar
-    condition: ne(variables['isPR'], 'true')
+        docker save $IMAGE:ci-build -o $(Build.ArtifactStagingDirectory)/image.tar
+      else
+        echo "##[warning]Build is for a Pull Request, won't push image to Container Registry..."
+      fi
     displayName: Build and Push Docker Image to ACR
     workingDirectory: ${{ parameters.workingDirectory }}
   - script: |
