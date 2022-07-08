@@ -45,7 +45,11 @@ stages:
           - job: check_branch_name
             displayName: Check branch name
             steps:
+              - checkout: self
+                clean: true
+                persistCredentials: true
               - template: ../steps/check_branch_name.yml
+              - template: ../steps/git_tagging.yml
           - ${{ each job in parameters.validationJobs }}:
             - template: ../jobs/wrapper_job.yml
               parameters:
@@ -76,8 +80,9 @@ stages:
                   persistCredentials: true
                 - template: ../steps/azure_auth.yml
                 - template: ../steps/check_branch_name.yml
-                - ${{ each validationStep in parameters.validationSteps }}:
-                  - ${{ validationStep }}
+                - template: ../steps/git_tagging.yml
+                - ${{ each step in parameters.validationSteps }}:
+                  - ${{ step }}
       pool: ${{ parameters.pool }}
       name: ${{ parameters.validateName }}
       variables:

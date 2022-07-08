@@ -1,14 +1,12 @@
 parameters:
   - name: tagPrefix
     type: string
+    default: $(tagPrefix)
 
 steps:
   - script: |
       git config --global user.name 'Azure DevOps'
       git config --global user.email 'azure-devops@planninginspectorate.gov.uk'
-
-      git tag -l | xargs git tag -d
-      git fetch --tags
 
       DATE=$(date +%Y-%m-%d)
       TAG_NAME="${{ parameters.tagPrefix }}_$(Build.BuildNumber)"
@@ -16,7 +14,7 @@ steps:
 
       EXISTING_TAGS=$(git tag -l --points-at HEAD)
       echo "$EXISTING_TAGS" | while read tag ; do
-        if [[ $tag == *"${{ parameters.tagPrefix }}"* ]]; then
+        if [[ $tag == *${{ parameters.tagPrefix }}_* ]]; then
           echo "##vso[build.addbuildtag]$tag"
           echo "Tag already set - skipping"
           exit 2
