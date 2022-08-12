@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.1.1...release/3.2.0) (2022-08-12)
+
+
+### Features
+
+* add support for customisable job timeout ([aed8fdc](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/aed8fdc702eb5e3f2a984b40e6b4b1a7eae490d9))
+
+
+### Bug Fixes
+
+* remove timeout attribute from wrapper deployment ([cef3b8b](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/cef3b8b74805af1fbf4b699dfbc4a0a04090df07))
+
 ### [3.1.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.1.0...release/3.1.1) (2022-07-08)
 
 
