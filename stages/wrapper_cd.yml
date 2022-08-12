@@ -176,7 +176,6 @@ stages:
                                 subscriptionId: $(SUBSCRIPTION_ID)
                           - ${{ each step in job.steps }}:
                             - ${{ step }}
-                        timeoutInMinutes: ${{ job.timeoutInMinutes }}
                         variables:
                           - ${{ each var in job.variables }}:
                             - ${{ var }}
@@ -275,7 +274,6 @@ stages:
                               subscriptionId: $(SUBSCRIPTION_ID)
                         - ${{ each step in job.steps }}:
                           - ${{ step }}
-                      timeoutInMinutes: ${{ job.timeoutInMinutes }}
                       variables:
                         - ${{ each var in job.variables }}:
                           - ${{ var }}
