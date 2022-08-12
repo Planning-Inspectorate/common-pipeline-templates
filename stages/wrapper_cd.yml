@@ -26,6 +26,7 @@ parameters:
 #           isDeployment: false
 #           steps:
 #             - template: $(WORKING_DIRECTORY)/steps/terragrunt_plan_all.yml
+#           timeoutInMinutes: 120
 #           variables:
 #             - name: myVar
 #               value: myString
@@ -65,6 +66,7 @@ parameters:
 #           container: container-name
 #           steps:
 #             - template: $(WORKING_DIRECTORY)/steps/terragrunt_plan_all.yml
+#           timeoutInMinutes: 120
 #           variables:
 #             - name: myVar
 #               value: myString
@@ -111,6 +113,7 @@ stages:
                     steps:
                       - ${{ each step in job.steps }}:
                         - ${{ step }}
+                    timeoutInMinutes: ${{ job.timeoutInMinutes }}
                     variables:
                       - ${{ each var in job.variables }}:
                         - ${{ var }}
@@ -154,6 +157,7 @@ stages:
                                 subscriptionId: $(SUBSCRIPTION_ID)
                           - ${{ each step in job.steps }}:
                             - ${{ step }}
+                        timeoutInMinutes: ${{ job.timeoutInMinutes }}
                         variables:
                           - ${{ each var in job.variables }}:
                             - ${{ var }}
@@ -172,6 +176,7 @@ stages:
                                 subscriptionId: $(SUBSCRIPTION_ID)
                           - ${{ each step in job.steps }}:
                             - ${{ step }}
+                        timeoutInMinutes: ${{ job.timeoutInMinutes }}
                         variables:
                           - ${{ each var in job.variables }}:
                             - ${{ var }}
@@ -207,6 +212,7 @@ stages:
                   steps:
                     - ${{ each step in job.steps }}:
                       - ${{ step }}
+                  timeoutInMinutes: ${{ job.timeoutInMinutes }}
                   variables:
                     - ${{ each var in job.variables }}:
                       - ${{ var }}
@@ -250,6 +256,7 @@ stages:
                               subscriptionId: $(SUBSCRIPTION_ID)
                         - ${{ each step in job.steps }}:
                           - ${{ step }}
+                      timeoutInMinutes: ${{ job.timeoutInMinutes }}
                       variables:
                         - ${{ each var in job.variables }}:
                           - ${{ var }}
@@ -268,6 +275,7 @@ stages:
                               subscriptionId: $(SUBSCRIPTION_ID)
                         - ${{ each step in job.steps }}:
                           - ${{ step }}
+                      timeoutInMinutes: ${{ job.timeoutInMinutes }}
                       variables:
                         - ${{ each var in job.variables }}:
                           - ${{ var }}

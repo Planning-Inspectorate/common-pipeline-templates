@@ -12,6 +12,9 @@ parameters:
     type: object
   - name: steps
     type: stepList
+  - name: timeoutInMinutes
+    type: number
+    default: 60
   - name: variables
     type: object
     default: []
@@ -28,6 +31,7 @@ jobs:
     steps:
       - ${{ each step in parameters.steps }}:
         - ${{ step }}
+    timeoutInMinutes: ${{ parameters.timeoutInMinutes }}
     variables:
       - ${{ each var in parameters.variables }}:
         - ${{ var }}
