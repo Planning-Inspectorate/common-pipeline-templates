@@ -44,7 +44,7 @@ steps:
   # Deploy to staging slot for warm-up
   - task: AzureRmWebAppDeployment@4
     displayName: 'Deploy to Staging Slot'
-    enabled: false
+    enabled: true
     inputs:
       ConnectionType: 'AzureRM'
       azureSubscription: $(SUBSCRIPTION_ID)
@@ -60,7 +60,7 @@ steps:
   # Swap to production slot
   - task: AzureAppServiceManage@0
     displayName: 'Swap to Active Slot'
-    enabled: false
+    enabled: true
     inputs:
       azureSubscription: $(SUBSCRIPTION_ID)
       Action: 'Swap Slots'
