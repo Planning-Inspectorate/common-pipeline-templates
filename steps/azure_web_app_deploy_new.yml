@@ -1,0 +1,69 @@
+parameters:
+  - name: acrNamespace
+    type: string
+  - name: acrRepository
+    type: string
+  - name: appName
+    type: string
+  - name: appResourceGroup
+    type: string
+  - name: debugEnabled
+    default: false
+    type: boolean
+  - name: imageTag
+    type: string
+    default: 'main'
+
+steps:
+  # Infer the image tag
+  - script: |
+      # Get the branch name
+      FORMATTED_GIT_REF=$(echo $(Build.SourceBranch) | sed "s/refs\/heads\///;s/refs\/tags\///")
+      
+      # If the imageTag parameter is null use the branch name as the image tag
+      if [[ -z "${{ parameters.imageTag }}" ]]; then
+        TAG="${FORMATTED_GIT_REF//\//.}"
+        echo "##vso[build.addbuildtag]$FORMATTED_GIT_REF"
+      else
+        TAG=${{ parameters.tag }}
+        echo "##vso[build.addbuildtag]${{ parameters.imageTag }}"
+      fi
+    displayName: 'Get Image Tag'
+
+  # Debug output
+  - script: |
+      echo "Subscription ID:          $(SUBSCRIPTION_ID)"
+      echo "Source ACR Namespace:     ${{ parameters.acrNamespace }}"
+      echo "Source ACR Repository:    ${{ parameters.acrRepository }}"
+      echo "Source Image Tag:         $TAG"
+      echo "Target Resource Group:    ${{ parameters.appResourceGroup }}"
+      echo "Target App Service:       ${{ parameters.appName }}"
+    condition: eq('${{ parameters.debugEnabled }}', 'true')
+    displayName: 'Debug Output'
+      
+  # Deploy to staging slot for warm-up
+  - task: AzureRmWebAppDeployment@4
+    displayName: 'Deploy to Staging Slot'
+    enabled: false
+    inputs:
+      ConnectionType: 'AzureRM'
+      azureSubscription: $(SUBSCRIPTION_ID)
+      appType: 'webAppContainer'
+      WebAppName: ${{ parameters.appName }}
+      deployToSlotOrASE: true
+      resorceGroupName: ${{ parameters.appResourceGroup }}
+      SlotName: 'staging'
+      DockerNamespace: ${{ parameters.acrNamespace }}
+      DockerRepository: ${{ parameters.acrRepository }}
+      DockerImageTag: $TAG
+
+  # Swap to production slot
+  - task: AzureAppServiceManage@0
+    displayName: 'Swap to Active Slot'
+    enabled: false
+    inputs:
+      azureSubscription: $(SUBSCRIPTION_ID)
+      Action: 'Swap Slots'
+      ResourceGroupName: ${{ parameters.appResourceGroup }}
+      SourceSlot: 'staging'
+      SwapWithProduction: true
