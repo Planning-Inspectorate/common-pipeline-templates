@@ -12,7 +12,7 @@ parameters:
     type: boolean
   - name: imageTag
     type: string
-    default: 'main'
+    default: ''
 
 steps:
   # Infer the image tag
@@ -25,7 +25,7 @@ steps:
         TAG="${FORMATTED_GIT_REF//\//.}"
         echo "##vso[build.addbuildtag]$FORMATTED_GIT_REF"
       else
-        TAG=${{ parameters.tag }}
+        TAG=${{ parameters.imageTag }}
         echo "##vso[build.addbuildtag]${{ parameters.imageTag }}"
       fi
     displayName: 'Get Image Tag'
