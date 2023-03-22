@@ -91,7 +91,7 @@ parameters:
 variables:
   - ${{ each var in parameters.globalVariables }}:
     - ${{ var }}
-  - group: pipeline_secrets
+    - group: Terraform ${{ parameters.environments }}
 
 stages:
   - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'ResourceTrigger') }}:
@@ -185,7 +185,6 @@ stages:
                 pool: ${{ parameters.pool }}
               name: ${{ stage.name }} ${{ environment.name }}
               variables:
-                - template: ../variables/environments/${{ lower(environment.name) }}.yml
                 - template: ../variables/regions/${{ lower(replace(parameters.region, ' ', '-')) }}.yml
                 - ${{ each var in stage.variables }}:
                   - ${{ var }}
@@ -283,7 +282,6 @@ stages:
             ${{ else }}:
               pool: ${{ parameters.pool }}
             variables:
-              - template: ../variables/environments/${{ lower(environment.name) }}.yml
               - template: ../variables/regions/${{ lower(replace(parameters.region, ' ', '-')) }}.yml
               - ${{ each var in stage.variables }}:
                 - ${{ var }}
