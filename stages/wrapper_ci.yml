@@ -35,7 +35,7 @@ parameters:
 variables:
   - ${{ each var in parameters.globalVariables }}:
     - ${{ var }}
-  - group: Terraform Dev
+  - group: Terraform ${{ parameters.environment }}
 
 stages:
   - template: ./wrapper_stage.yml
