@@ -85,5 +85,3 @@ stages:
                   - ${{ step }}
       pool: ${{ parameters.pool }}
       name: ${{ parameters.validateName }}
-      variables:
-        - template: ../variables/environments/${{ lower(parameters.environment) }}.yml
