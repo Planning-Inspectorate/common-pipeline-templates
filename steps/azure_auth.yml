@@ -1,30 +1,14 @@
 parameters:
-  - name: servicePrincipalId
-    type: string
-    default: $(AZURE_SERVICE_PRINCIPAL_ID)
-  - name: servicePrincipalSecret
-    type: string
-    default: $(AZURE_SERVICE_PRINCIPAL_SECRET)
   - name: subscriptionId
     type: string
     default: $(SUBSCRIPTION_ID)
-  - name: tenantId
-    type: string
-    default: $(AZURE_TENANT_ID)
 
 steps:
   - script: |
-      echo "Authenticating with service principal: ${{ parameters.servicePrincipalId }}"
-      echo "##[command]az login --service-principal"
-      az login \
-        --service-principal \
-        --username ${{ parameters.servicePrincipalId }} \
-        --password ${{ parameters.servicePrincipalSecret }} \
-        --tenant ${{ parameters.tenantId }}
-      echo "Setting subscription context: ${{ parameters.subscriptionId }}"
-      echo "##[command]az account set --subscription ${{ parameters.subscriptionId }}"
-      az account set \
-        --subscription ${{ parameters.subscriptionId }}
-      echo "##[command]az account show"
-      az account show
-    displayName: 'Azure Login'
+      az login --service-principal --username $AZURE_SERVICE_PRINCIPAL_ID --password $AZURE_SERVICE_PRINCIPAL_SECRET --tenant $AZURE_TENANT_ID \
+      && az account set -s ${{ parameters.subscriptionId }}
+    displayName: Azure Authentication
+    env:
+      AZURE_SERVICE_PRINCIPAL_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
+      AZURE_SERVICE_PRINCIPAL_SECRET: $(AZURE_SERVICE_PRINCIPAL_SECRET)
+      AZURE_TENANT_ID: $(AZURE_TENANT_ID)
