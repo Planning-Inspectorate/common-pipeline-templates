@@ -91,7 +91,7 @@ parameters:
 variables:
   - ${{ each var in parameters.globalVariables }}:
     - ${{ var }}
-    - group: Terraform ${{ environment.name }}
+    - group: Terraform ${{ parameters.environment }}
 
 stages:
   - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'ResourceTrigger') }}:
