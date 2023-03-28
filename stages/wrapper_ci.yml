@@ -35,7 +35,7 @@ parameters:
 variables:
   - ${{ each var in parameters.globalVariables }}:
     - ${{ var }}
-    - group: pipeline_secrets
+  - group: pipeline_secrets_test
 
 stages:
   - template: ./wrapper_stage.yml
@@ -85,4 +85,5 @@ stages:
                   - ${{ step }}
       pool: ${{ parameters.pool }}
       name: ${{ parameters.validateName }}
-
+      variables:
+        - template: ../variables/environments/${{ lower(parameters.environment) }}.yml
