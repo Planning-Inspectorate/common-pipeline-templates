@@ -35,7 +35,7 @@ parameters:
 variables:
   - ${{ each var in parameters.globalVariables }}:
     - ${{ var }}
-    - group: Terraform_Dev
+    - group: pipeline_secrets
 
 stages:
   - template: ./wrapper_stage.yml
