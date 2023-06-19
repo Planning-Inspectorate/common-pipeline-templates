@@ -31,7 +31,7 @@ steps:
     displayName: Display all containers
   - script: |
       source ~/.bashrc
-      nvm use ${{ parameters.nodeVersion }}
+      nvm use ${{ parameters.nodeVersion }} || nvm install ${{ parameters.nodeVersion }}
       npx cypress run --parallel --record --group ${{ parameters.cypressGroupName }} --ci-build-id $(Build.BuildId)
     displayName: Run Cypress tests in parallel
     env:

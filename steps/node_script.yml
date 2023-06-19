@@ -22,7 +22,7 @@ parameters:
 steps:
   - script: |
       source ~/.bashrc
-      nvm use ${{ parameters.nodeVersion }}
+      nvm use ${{ parameters.nodeVersion }} || nvm install ${{ parameters.nodeVersion }}
       ${{ parameters.script }}
 
       if [[ $? -ne 0 ]]; then
