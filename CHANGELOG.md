@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.3.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.2.0...release/3.3.0) (2023-06-19)
+
+
+### Features
+
+* **support node 18:** updating the pipelines yaml to allow support for node 18 ([e488609](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/e4886097b789028fad8dbb256ba0fe616e060e1d))
+
 ## [3.2.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.1.1...release/3.2.0) (2022-08-12)
 
 
