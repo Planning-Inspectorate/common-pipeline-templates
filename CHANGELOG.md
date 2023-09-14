@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.5.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.4.0...release/3.5.0) (2023-09-14)
+
+
+### Features
+
+* **function app validate step:** extend function app validate to allow custom script ([09ec610](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/09ec6104242f805a94188129f412f05211cf7b4b))
+
 ## [3.4.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.3.0...release/3.4.0) (2023-06-19)
 
 
