@@ -7,12 +7,15 @@ parameters:
     default: 16
   - name: workingDirectory
     type: string
+  - name: script
+    type: string
+    default: npm install --only=prod
 
 steps:
   - template: ./node_script.yml
     parameters:
       nodeVersion: ${{ parameters.nodeVersion }}
-      script: npm install --only=prod
+      script: ${{ parameters.script }}
       workingDirectory: ${{ parameters.workingDirectory }}
   - task: ArchiveFiles@2
     displayName: Archive files
