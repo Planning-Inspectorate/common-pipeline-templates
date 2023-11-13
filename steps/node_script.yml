@@ -7,7 +7,7 @@ parameters:
     default: []
   - name: nodeVersion
     type: string
-    default: 16
+    default: 18
     values:
       - 16
       - 15
