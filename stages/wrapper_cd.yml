@@ -107,6 +107,9 @@ stages:
               - ${{ each job in stage.jobs }}:
                 - template: ../jobs/wrapper_job.yml
                   parameters:
+                    dependsOn:
+                      - ${{ each dependsOnJob in job.dependsOn }}:
+                        - name: ${{ dependsOnJob }}
                     condition: ${{ job.condition }}
                     container: ${{ job.container }}
                     name: ${{ job.name }}
@@ -147,6 +150,9 @@ stages:
                   - ${{ if eq(job.isDeployment, 'false') }}:
                     - template: ../jobs/wrapper_job.yml
                       parameters:
+                        dependsOn:
+                          - ${{ each dependsOnJob in job.dependsOn }}:
+                            - name: ${{ dependsOnJob }}
                         condition: ${{ job.condition }}
                         container: ${{ job.container }}
                         name: ${{ job.name }}
@@ -167,6 +173,9 @@ stages:
                         artifact: ${{ job.artifact }}
                         condition: ${{ job.condition }}
                         container: ${{ job.container }}
+                        dependsOn:
+                        - ${{ each dependsOnJob in job.dependsOn }}:
+                          - name: ${{ dependsOnJob }}
                         environment: ${{ environment.name }}
                         name: ${{ job.name }}
                         steps:
@@ -205,6 +214,9 @@ stages:
             - ${{ each job in stage.jobs }}:
               - template: ../jobs/wrapper_job.yml
                 parameters:
+                  dependsOn:
+                    - ${{ each dependsOnJob in job.dependsOn }}:
+                      - name: ${{ dependsOnJob }}
                   condition: ${{ job.condition }}
                   container: ${{ job.container }}
                   name: ${{ job.name }}
@@ -245,6 +257,9 @@ stages:
                 - ${{ if eq(job.isDeployment, 'false') }}:
                   - template: ../jobs/wrapper_job.yml
                     parameters:
+                      dependsOn:
+                        - ${{ each dependsOnJob in job.dependsOn }}:
+                          - name: ${{ dependsOnJob }}
                       condition: ${{ job.condition }}
                       container: ${{ job.container }}
                       name: ${{ job.name }}
@@ -265,6 +280,9 @@ stages:
                       artifact: ${{ job.artifact }}
                       condition: ${{ job.condition }}
                       container: ${{ job.container }}
+                      dependsOn:
+                        - ${{ each dependsOnJob in job.dependsOn }}:
+                          - name: ${{ dependsOnJob }}
                       environment: ${{ environment.name }}
                       name: ${{ job.name }}
                       steps:
