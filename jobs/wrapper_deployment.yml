@@ -7,7 +7,7 @@ parameters:
     default: succeeded()
   - name: container
     type: string
-    default: ''
+    default: ""
   - name: dependsOn
     type: object
     default: []
@@ -29,7 +29,7 @@ jobs:
       container: ${{ parameters.container }}
     dependsOn:
       - ${{ each dependsOn in parameters.dependsOn }}:
-        - ${{ dependsOn }}
+          - ${{ replace(replace(replace(replace(dependsOn.name, '-', '_'), ' ', '_'), '&', 'And'), ',', '') }}
     displayName: ${{ parameters.name }}
     environment: ${{ parameters.environment }}
     strategy:
@@ -38,27 +38,27 @@ jobs:
           steps:
             - download: current
             - ${{ if parameters.artifact }}:
-              - task: DownloadPipelineArtifact@2
-                displayName: 'Download Artifact: ${{ parameters.artifact.name }}'
-                inputs:
-                  allowPartiallySucceededBuilds: true
-                  artifact: ${{ parameters.artifact.name }}
-                  ${{ if ne(parameters.artifact.path, '') }}:
-                    path: ${{ parameters.artifact.path }}
-                  ${{ if ne(parameters.artifact.patterns, '') }}:
-                    patterns: ${{ parameters.artifact.patterns }}
-                  pipeline: ${{ parameters.artifact.sourcePipeline }}
-                  preferTriggeringPipeline: true
-                  project: $(System.TeamProject)
-                  source: specific
-                  tags: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), 'ref/tags/', '') }}
+                - task: DownloadPipelineArtifact@2
+                  displayName: "Download Artifact: ${{ parameters.artifact.name }}"
+                  inputs:
+                    allowPartiallySucceededBuilds: true
+                    artifact: ${{ parameters.artifact.name }}
+                    ${{ if ne(parameters.artifact.path, '') }}:
+                      path: ${{ parameters.artifact.path }}
+                    ${{ if ne(parameters.artifact.patterns, '') }}:
+                      patterns: ${{ parameters.artifact.patterns }}
+                    pipeline: ${{ parameters.artifact.sourcePipeline }}
+                    preferTriggeringPipeline: true
+                    project: $(System.TeamProject)
+                    source: specific
+                    tags: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), 'ref/tags/', '') }}
             - script: |
                 echo "##vso[build.addbuildtag]environment=${{ parameters.environment }}"
               displayName: Add Environment build tags
             - ${{ each step in parameters.steps }}:
-              - ${{ step }}
+                - ${{ step }}
     variables:
       - ${{ each var in parameters.variables }}:
-        - ${{ var }}
+          - ${{ var }}
     workspace:
       clean: all
