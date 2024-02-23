@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.6.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.5.0...release/3.6.0) (2024-02-23)
+
+
+### Features
+
+* allow dependsOn for deployment jobs ([d248640](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/d2486401e0bbfef948bc4e5523f33088b6002d30))
+
 ## [3.5.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.4.0...release/3.5.0) (2023-09-14)
 
 
