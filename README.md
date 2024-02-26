@@ -42,14 +42,15 @@ Once the Service Principal has been set up, the following variables should be ad
 - `AZURE_SERVICE_PRINCIPAL_SECRET` - Set to Client Secret of the Service Principal
 - `AZURE_TENANT_ID` - The ID of the Azure Active Directory tenant that contains the Service Principal
 
-In addition to the above variables, any other secrets and variables can be added to this variables group and will automatically be made available when using the wrapper templates (`wrapper_cd.yml` and `wrapper_ci.yml`) [stages](stages) folder. This is because these templates contain the following line:
+In addition to the above variables, any other secrets and variables can be added to this variables group and will automatically be made available when using the wrapper templates (`wrapper_cd.yml` and `wrapper_ci.yml`) [stages](stages) folder. This is because these templates contain the following lines:
 
 ```
 variables:
   - group: pipeline_secrets
+  - group: pipeline_secrets_${{ parameters.environment }}
 ```
 
-If not using these templates, please include the above line in your consuming pipeline.
+If not using these templates, please include the above lines in your consuming pipeline.
 
 ## Contributing
 
