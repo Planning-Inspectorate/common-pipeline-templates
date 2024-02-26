@@ -36,19 +36,20 @@ Some of the templates in this repository assume that the Azure DevOps Pipelines 
 
 The Azure authentication assumes that a [Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals) has been set up for the project with all the required permissions. For example, a NodeJS application deployed on to Azure App Service would need a Service Principal with permission to push, pull, and delete from the Container Registry, and permission to deploy to App Service.
 
-Once the Service Principal has been set up, the following variables should be added to a variable group with the name `pipeline_secrets`:
+Once the Service Principal has been set up, the following variables should be added to a variable group with the name `pipeline_secrets_<environment>`:
 - `AZURE_SERVICE_PRINCIPAL_ID` - Set to the Client ID of the Service Principal
 - `AZURE_SERVICE_PRINCIPAL_SECRET` - Set to Client Secret of the Service Principal
 - `AZURE_TENANT_ID` - The ID of the Azure Active Directory tenant that contains the Service Principal
 
-In addition to the above variables, any other secrets and variables can be added to this variables group and will automatically be made available when using the wrapper templates (`wrapper_cd.yml` and `wrapper_ci.yml`) [stages](stages) folder. This is because these templates contain the following line:
+In addition to the above variables, any other secrets and variables can be added to this variables group and will automatically be made available when using the wrapper templates (`wrapper_cd.yml` and `wrapper_ci.yml`) [stages](stages) folder. This is because these templates contain the following lines:
 
 ```
 variables:
   - group: pipeline_secrets
+  - group: pipeline_secrets_${{ parameters.environment }}
 ```
 
-If not using these templates, please include the above line in your consuming pipeline.
+If not using these templates, please include the above lines in your consuming pipeline.
 
 ## Contributing
 
