@@ -92,6 +92,7 @@ variables:
   - ${{ each var in parameters.globalVariables }}:
     - ${{ var }}
   - group: pipeline_secrets
+  - group: pipeline_secrets_${{ parameters.environment }}
 
 stages:
   - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'ResourceTrigger') }}:
