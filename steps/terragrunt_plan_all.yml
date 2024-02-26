@@ -23,7 +23,10 @@ steps:
       TERRAGRUNT_WORKING_DIR: ${{ parameters.workingDirectory }}
       TF_INPUT: false
       ${{ each var in parameters.environmentVariables }}:
-        ${{ var.key }}: ${{ var.value }}
+        ${{ if eq(var.key, 'DR_DEPLOYMENT') }}:
+          ${{ var.key }}: ${{ lower(var.value) }}
+        ${{ else }}:
+          ${{ var.key }}: ${{ var.value }}
   - task: CopyFiles@2
     displayName: Copy sources to artifact
     inputs:
