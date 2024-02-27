@@ -36,7 +36,7 @@ Some of the templates in this repository assume that the Azure DevOps Pipelines 
 
 The Azure authentication assumes that a [Service Principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals) has been set up for the project with all the required permissions. For example, a NodeJS application deployed on to Azure App Service would need a Service Principal with permission to push, pull, and delete from the Container Registry, and permission to deploy to App Service.
 
-Once the Service Principal has been set up, the following variables should be added to a variable group with the name configured via the `variableGroupPrefix` parameter, which defaults to `ci_pipeline_secrets_<environment>` and `cd_pipeline_secrets_<environment>`:
+Once the Service Principal has been set up, the following variables should be added to a variable group with the name configured via the `variableGroupPrefix` parameter, which defaults to `cd_pipeline_secrets_<environment>`:
 
 - `AZURE_SERVICE_PRINCIPAL_ID` - Set to the Client ID of the Service Principal
 - `AZURE_SERVICE_PRINCIPAL_SECRET` - Set to Client Secret of the Service Principal
