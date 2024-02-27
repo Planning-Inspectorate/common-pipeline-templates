@@ -45,6 +45,9 @@ parameters:
       - name: Prod
         dependsOn:
           - Test
+  - name: variableGroupPrefix
+    type: string
+    default: cd_pipeline_secrets
   - name: globalVariables
     type: object
     default: []
@@ -92,7 +95,8 @@ variables:
   - ${{ each var in parameters.globalVariables }}:
     - ${{ var }}
   - group: pipeline_secrets
-  - group: pipeline_secrets_${{ parameters.environment }}
+  - group: ${{ parameters.variableGroupPrefix }}
+  - group: ${{ parameters.variableGroupPrefix }}_${{ parameters.environment }}
 
 stages:
   - ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'ResourceTrigger') }}:
