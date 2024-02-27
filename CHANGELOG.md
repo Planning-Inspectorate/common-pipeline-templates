@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.9.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.8.0...release/3.9.0) (2024-02-27)
+
+
+### Features
+
+* add per-env variable group ([920698b](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/920698baaf568c496f8c18f4b199596ef1d43184))
+* set variable group on cd stage ([fa99bb4](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/fa99bb458271f0e5d77a95a7ccb8b052c9e714b9))
+
 ## [3.8.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.7.0...release/3.8.0) (2024-02-27)
 
 
