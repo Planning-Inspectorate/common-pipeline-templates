@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.8.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.7.0...release/3.8.0) (2024-02-27)
+
+
+### Features
+
+* add parameter to set variable group prefix ([9dc5272](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/9dc5272ebf5644c4f4dd90866bb5b1a736f30395))
+
 ## [3.7.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.6.1...release/3.7.0) (2024-02-26)
 
 
