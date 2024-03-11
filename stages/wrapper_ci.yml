@@ -31,6 +31,9 @@ parameters:
   - name: workingDirectory
     type: string
     default: $(System.DefaultWorkingDirectory)
+  - name: skipAzureAuth
+    type: boolean
+    default: false
 
 variables:
   - ${{ each var in parameters.globalVariables }}:
@@ -60,7 +63,8 @@ stages:
                   - checkout: self
                     clean: true
                     persistCredentials: true
-                  - template: ../steps/azure_auth.yml
+                  - ${{ if not(parameters.skipAzureAuth) }}:
+                    - template: ../steps/azure_auth.yml
                   - ${{ each step in job.steps }}:
                     - ${{ step }}
                 dependsOn:
@@ -78,7 +82,8 @@ stages:
                 - checkout: self
                   clean: true
                   persistCredentials: true
-                - template: ../steps/azure_auth.yml
+                - ${{ if not(parameters.skipAzureAuth) }}:
+                  - template: ../steps/azure_auth.yml
                 - template: ../steps/check_branch_name.yml
                 - template: ../steps/git_tagging.yml
                 - ${{ each step in parameters.validationSteps }}:
