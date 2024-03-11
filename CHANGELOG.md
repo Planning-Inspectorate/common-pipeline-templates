@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.10.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.9.0...release/3.10.0) (2024-03-11)
+
+
+### Features
+
+* option to skip azure auth step ([170c12e](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/170c12e0c8f6768043a1f679d73828a7cee99d53))
+
 ## [3.9.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.8.0...release/3.9.0) (2024-02-27)
 
 
