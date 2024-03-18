@@ -34,6 +34,9 @@ parameters:
   - name: skipAzureAuth
     type: boolean
     default: false
+  - name: gitFetchDepth # see https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/azure-repos-git?view=azure-devops&tabs=yaml#shallow-fetch
+    type: number
+    default: 1
 
 variables:
   - ${{ each var in parameters.globalVariables }}:
@@ -51,6 +54,7 @@ stages:
               - checkout: self
                 clean: true
                 persistCredentials: true
+                fetchDepth: ${{ parameters.gitFetchDepth }}
               - template: ../steps/check_branch_name.yml
               - template: ../steps/git_tagging.yml
           - ${{ each job in parameters.validationJobs }}:
@@ -63,6 +67,7 @@ stages:
                   - checkout: self
                     clean: true
                     persistCredentials: true
+                    fetchDepth: ${{ parameters.gitFetchDepth }}
                   - ${{ if not(parameters.skipAzureAuth) }}:
                     - template: ../steps/azure_auth.yml
                   - ${{ each step in job.steps }}:
@@ -82,6 +87,7 @@ stages:
                 - checkout: self
                   clean: true
                   persistCredentials: true
+                  fetchDepth: ${{ parameters.gitFetchDepth }}
                 - ${{ if not(parameters.skipAzureAuth) }}:
                   - template: ../steps/azure_auth.yml
                 - template: ../steps/check_branch_name.yml
