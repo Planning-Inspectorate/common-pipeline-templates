@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.12.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.11.0...release/3.12.0) (2024-04-15)
+
+
+### Features
+
+* support any number for node version ([dfeaa62](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/dfeaa62c107aee9aee31a27ac439c4e058d65bc3))
+
 ## [3.11.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.10.0...release/3.11.0) (2024-03-18)
 
 
