@@ -6,6 +6,7 @@ This repository holds a collection of pipeline templates. These are a series of 
 
 All template files should be held within these folders:
 
+- [pipelines](pipelines)
 - [jobs](jobs)
 - [stages](stages)
 - [steps](steps)
@@ -24,6 +25,7 @@ resources:
       type: github
       endpoint: Planning-Inspectorate
       name: Planning-Inspectorate/common-pipeline-templates
+      ref: refs/tags/release/<version>
 ```
 
 `endpoint` refers to the name of the GitHub service connection in your pipeline.
@@ -51,6 +53,8 @@ variables:
 ```
 
 If not using these templates, please include the above lines in your consuming pipeline.
+
+> Note: we are moving away from Service Principles with secrets, and using Service Principles with Workload identity federation, see [Introduction to Azure DevOps Workload identity federation (OIDC)](https://devblogs.microsoft.com/devops/introduction-to-azure-devops-workload-identity-federation-oidc-with-terraform/). For example the  pipeline templates in the pipelines folder uses this approach, so the above variable groups and secrets does not apply.
 
 ## Contributing
 
