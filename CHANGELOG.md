@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.13.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.12.0...release/3.13.0) (2024-04-18)
+
+
+### Features
+
+* terraform plan+apply pipeline template ([b99f6af](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/b99f6afe384aa5f23d7080a49653bbedf7668137))
+
 ## [3.12.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.11.0...release/3.12.0) (2024-04-15)
 
 
