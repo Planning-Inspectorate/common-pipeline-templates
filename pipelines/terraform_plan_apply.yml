@@ -1,0 +1,125 @@
+# A pipeline template for running a Terraform plan and apply
+# Uses Service Connections for access Azure, both for remote state and for the terraform actions
+
+parameters:
+  - name: automaticDeployments
+    type: object
+    default:
+      environments:
+        - name: Dev
+  - name: environments
+    type: object
+    default:
+      - name: Dev
+      - name: Test
+        dependsOn:
+          - Dev
+      - name: Prod
+        dependsOn:
+          - Test
+  - name: pool
+    type: object
+    default:
+      name: pins-odt-agent-pool
+  - name: workingDirectory
+    type: string
+    default: $(System.DefaultWorkingDirectory)
+  - name: serviceConnectionPrefix
+    type: string
+  - name: storageAccountName
+    type: string
+  - name: resourceGroupName
+    type: string
+  - name: containerPrefix
+    type: string
+  - name: planFileName
+    type: string
+    default: main.tfplan
+  - name: environmentVarFilePath
+    type: string
+    default: ''
+
+variables:
+  - name: environmentsSource
+    ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'ResourceTrigger') }}:
+      value: automaticDeployments.environments
+    ${{ else }}:
+      value: environments
+
+stages:
+  - ${{ each environment in parameters[variables.environmentsSource] }}:
+    - template: ../stages/wrapper_stage.yml
+      parameters:
+        name: Terraform Plan ${{ environment.name }}
+        pool: ${{ parameters.pool }}
+        dependsOn:
+          - ${{ each dependsOn in environment.dependsOn }}:
+            - terraform_plan_${{ lower(dependsOn) }}
+        jobs:
+          - job: plan
+            displayName: Plan
+            workspace:
+              clean: all  
+            timeoutInMinutes: 30
+            steps:
+              - task: TerraformTaskV4@4
+                displayName: Initialize Terraform
+                inputs:
+                  workingDirectory: ${{ parameters.workingDirectory }}
+                  provider: 'azurerm'
+                  command: 'init'
+                  backendServiceArm: ${{ format('{0} {1}', parameters.serviceConnectionPrefix, environment.name) }}
+                  backendAzureRmStorageAccountName: ${{ parameters.storageAccountName }}
+                  backendAzureRmResourceGroupName: ${{ parameters.resourceGroupName }}
+                  backendAzureRmContainerName: ${{ parameters.containerPrefix }}${{ lower(environment.name) }}
+                  backendAzureRmKey: ${{ format('{0}.tfstate', lower(environment.name)) }}
+                env:
+                  ARM_USE_OIDC: true
+                  ARM_USE_AZUREAD: true
+              - task: TerraformTaskV4@4
+                name: terraformPlan${{ environment.name }}
+                displayName: Create Terraform Plan
+                inputs:
+                  workingDirectory: ${{ parameters.workingDirectory }}
+                  provider: 'azurerm'
+                  command: 'plan'
+                  ${{ if eq(parameters.environmentVarFilePath, '') }}:
+                    commandOptions: '-out ${{ parameters.planFileName }}' 
+                  ${{ else }}:
+                    # add a var file for each environment, if configured
+                    commandOptions: ${{ format('-out {0} -var-file={1}/{2}.tfvars', parameters.planFileName, parameters.environmentVarFilePath, lower(environment.name)) }}
+                  environmentServiceNameAzureRM: ${{ format('{0} {1}', parameters.serviceConnectionPrefix, environment.name) }}
+                env:
+                  ARM_USE_OIDC: true
+                  ARM_USE_AZUREAD: true
+    - template: ../stages/wrapper_stage.yml
+      parameters:
+        name: Terraform Apply ${{ environment.name }}
+        pool: ${{ parameters.pool }}
+        dependsOn:
+          - ${{ each dependsOn in environment.dependsOn }}:
+            - terraform_apply_${{ lower(dependsOn) }}
+          - terraform_plan_${{ environment.name }}
+        jobs:
+          - deployment: apply
+            displayName: Apply
+            environment:
+              name: ${{ environment.name }}
+            workspace:
+              clean: all  
+            strategy:
+              runOnce:
+                deploy:
+                  steps:
+                    - task: TerraformTaskV4@4
+                      displayName: Apply Terraform Plan
+                      condition: eq(variables['terraformPlan${{ environment.name }}.changesPresent'], 'true')
+                      inputs:
+                        workingDirectory: ${{ parameters.workingDirectory }}
+                        provider: 'azurerm'
+                        command: 'apply'
+                        commandOptions: ${{ parameters.planFileName }}
+                        environmentServiceNameAzureRM: ${{ format('{0} {1}', parameters.serviceConnectionPrefix, environment.name) }}
+                      env:
+                        ARM_USE_OIDC: true
+                        ARM_USE_AZUREAD: true
