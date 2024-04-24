@@ -92,6 +92,18 @@ stages:
                 env:
                   ARM_USE_OIDC: true
                   ARM_USE_AZUREAD: true
+              - task: CopyFiles@2
+                displayName: Create plan artifact
+                inputs:
+                  SourceFolder: ${{ parameters.workingDirectory }}
+                  Contents: |
+                    !.git
+                    !**/.terraform/**
+                    **/**
+                  TargetFolder: $(Build.ArtifactStagingDirectory)
+              - publish: $(Build.ArtifactStagingDirectory)
+                artifact: terraform-plan-${{ lower(environment.name) }}
+                displayName: Publish plan artifact
     - template: ../stages/wrapper_stage.yml
       parameters:
         name: Terraform Apply ${{ environment.name }}
@@ -112,6 +124,20 @@ stages:
               runOnce:
                 deploy:
                   steps:
+                    - download: current
+                      artifact: terraform-plan-${{ lower(environment.name) }}
+                    - task: CopyFiles@2
+                      inputs:
+                        sourceFolder: $(Pipeline.Workspace)/terraform-plan-${{ lower(environment.name) }}
+                        contents: '**'
+                        targetFolder: ${{ parameters.workingDirectory }}
+                    - script: |
+                        /bin/chmod -R +x .
+                      workingDirectory: ${{ parameters.workingDirectory }}
+                      # set file perms so that terraform plugins can be executed
+                      # see https://learn.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml#tips
+                      # "Build artifacts are stored on a Windows filesystem, which causes all UNIX permissions to be lost, including the execution bit."
+                      displayName: Set File Perms
                     - task: TerraformTaskV4@4
                       displayName: Apply Terraform Plan
                       inputs:
