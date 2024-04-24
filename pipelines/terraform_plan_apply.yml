@@ -96,10 +96,11 @@ stages:
       parameters:
         name: Terraform Apply ${{ environment.name }}
         pool: ${{ parameters.pool }}
+        condition: eq(stageDependencies.terraform_plan_${{ lower(environment.name) }}.outputs['plan.terraformPlan${{ environment.name }}.changesPresent'], 'true')
         dependsOn:
           - ${{ each dependsOn in environment.dependsOn }}:
             - terraform_apply_${{ lower(dependsOn) }}
-          - terraform_plan_${{ environment.name }}
+          - terraform_plan_${{ lower(environment.name) }}
         jobs:
           - deployment: apply
             displayName: Apply
@@ -113,7 +114,6 @@ stages:
                   steps:
                     - task: TerraformTaskV4@4
                       displayName: Apply Terraform Plan
-                      condition: eq(variables['terraformPlan${{ environment.name }}.changesPresent'], 'true')
                       inputs:
                         workingDirectory: ${{ parameters.workingDirectory }}
                         provider: 'azurerm'
