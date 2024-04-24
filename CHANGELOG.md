@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.14.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.14.0...release/3.14.1) (2024-04-24)
+
+
+### Bug Fixes
+
+* correctly reference job output across stages ([c4e41ac](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/c4e41ac106b55dbd9a1016c67bc0cbbf5aa3cbf6))
+* share tf plan between stages via artefact ([d2248a0](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/d2248a0044f13552b796817113cfa75b934aaae9))
+
 ## [3.14.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.13.0...release/3.14.0) (2024-04-18)
 
 
