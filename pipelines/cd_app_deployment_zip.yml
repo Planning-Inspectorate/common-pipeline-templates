@@ -1,0 +1,90 @@
+# A pipeline template for running a Azure App Service deployment
+# Uses Service Connections for access Azure
+
+parameters:
+  - name: automaticDeployments
+    type: object
+    default:
+      environments:
+        - name: Dev
+  - name: environments
+    type: object
+    default:
+      - name: Dev
+      - name: Test
+        dependsOn:
+          - Dev
+      - name: Prod
+        dependsOn:
+          - Test
+  - name: pool
+    type: object
+    default:
+      name: pins-odt-agent-pool
+  - name: workingDirectory
+    type: string
+    default: $(System.DefaultWorkingDirectory)
+  - name: variableGroupPrefix
+    type: string
+  - name: serviceConnectionPrefix
+    type: string
+  - name: apps
+    type: object
+    # with artifact, sourcePipeline, name, and optionally steps properties
+
+variables:
+  - name: environmentsSource
+    ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'ResourceTrigger') }}:
+      value: automaticDeployments.environments
+    ${{ else }}:
+      value: environments
+
+stages:
+  - ${{ each environment in parameters[variables.environmentsSource] }}:
+    - template: ../stages/wrapper_stage.yml
+      parameters:
+        name: Deploy ${{ environment.name }}
+        pool: ${{ parameters.pool }}
+        dependsOn:
+          - ${{ each dependsOn in environment.dependsOn }}:
+            - deploy_${{ lower(dependsOn) }}
+        jobs:
+          - ${{ each app in parameters.apps }}:
+            - deployment: deploy_${{ replace(app.name, '-', '_') }}
+              displayName: Deploy ${{ app.name }}
+              ${{ if ne(parameters.variableGroupPrefix, '') }}:
+                variables:
+                  - group: ${{ parameters.variableGroupPrefix }}_${{ lower(environment.name) }}
+              environment:
+                name: ${{ environment.name }}
+              workspace:
+                clean: all
+              strategy:
+                runOnce:
+                  deploy:
+                    steps:
+                      - ${{ if ne(app.steps, '') }}:
+                        - ${{ each step in app.steps }}:
+                          - ${{ step }}
+                      - task: DownloadPipelineArtifact@2
+                        displayName: "Download Artifact: ${{ app.artifact }}"
+                        inputs:
+                          allowPartiallySucceededBuilds: true
+                          artifact: ${{ app.artifact }}
+                          ${{ if ne(app.sourcePipeline, '') }}:
+                            pipeline: ${{ app.sourcePipeline }}
+                            source: specific
+                          ${{ else }}:
+                            source: current
+                          preferTriggeringPipeline: true
+                          project: $(System.TeamProject)
+                          tags: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), 'ref/tags/', '') }}
+                          targetPath: $(System.DefaultWorkingDirectory)/${{ app.artifact }}
+                      - task: AzureWebApp@1
+                        displayName: "Deploy ${{ app.name }}"
+                        inputs:
+                          azureSubscription: ${{ format('{0} {1}', parameters.serviceConnectionPrefix, environment.name) }}
+                          appType: 'webAppLinux'
+                          appName: ${{ format('{0}{1}', app.name, lower(environment.name)) }}
+                          package: $(System.DefaultWorkingDirectory)/${{ app.artifact }}/${{ app.artifact }}.zip
+                          deploymentMethod: zipDeploy
