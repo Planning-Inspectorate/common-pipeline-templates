@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.15.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.14.1...release/3.15.0) (2024-05-01)
+
+
+### Features
+
+* cd template for app deployment ([6980fd7](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/6980fd7b03ff8fb19c8ac09095d2329cd8e29de2))
+
 ### [3.14.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.14.0...release/3.14.1) (2024-04-24)
 
 
