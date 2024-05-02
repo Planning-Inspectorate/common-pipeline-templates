@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.15.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.15.0...release/3.15.1) (2024-05-02)
+
+
+### Bug Fixes
+
+* terraform plan/apply with input=false for non-interactive mode ([c990fd3](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/c990fd32714f8e2a3162541099ba85608e6f5bf4))
+
 ## [3.15.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.14.1...release/3.15.0) (2024-05-01)
 
 
