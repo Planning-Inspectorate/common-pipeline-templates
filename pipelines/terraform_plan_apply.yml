@@ -83,11 +83,12 @@ stages:
                   workingDirectory: ${{ parameters.workingDirectory }}
                   provider: 'azurerm'
                   command: 'plan'
+                  # use -input=false so terraform doesn't prompt for input
                   ${{ if eq(parameters.environmentVarFilePath, '') }}:
-                    commandOptions: '-out ${{ parameters.planFileName }}' 
+                    commandOptions: '-input=false -out ${{ parameters.planFileName }}' 
                   ${{ else }}:
                     # add a var file for each environment, if configured
-                    commandOptions: ${{ format('-out {0} -var-file={1}/{2}.tfvars', parameters.planFileName, parameters.environmentVarFilePath, lower(environment.name)) }}
+                    commandOptions: ${{ format('-input=false -out {0} -var-file={1}/{2}.tfvars', parameters.planFileName, parameters.environmentVarFilePath, lower(environment.name)) }}
                   environmentServiceNameAzureRM: ${{ format('{0} {1}', parameters.serviceConnectionPrefix, environment.name) }}
                 env:
                   ARM_USE_OIDC: true
@@ -144,7 +145,8 @@ stages:
                         workingDirectory: ${{ parameters.workingDirectory }}
                         provider: 'azurerm'
                         command: 'apply'
-                        commandOptions: ${{ parameters.planFileName }}
+                        # use -input=false so terraform doesn't prompt for input
+                        commandOptions: '-input=false ${{ parameters.planFileName }}'
                         environmentServiceNameAzureRM: ${{ format('{0} {1}', parameters.serviceConnectionPrefix, environment.name) }}
                       env:
                         ARM_USE_OIDC: true
