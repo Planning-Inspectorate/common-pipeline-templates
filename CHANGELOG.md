@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.15.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.15.1...release/3.15.2) (2024-05-03)
+
+
+### Bug Fixes
+
+* terraform plan/apply automatic deployment ([bc192ea](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/bc192eaab79eff5bf593599dcbc3337bfe458160))
+
 ### [3.15.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.15.0...release/3.15.1) (2024-05-02)
 
 
