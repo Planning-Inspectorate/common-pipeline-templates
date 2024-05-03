@@ -2,11 +2,10 @@
 # Uses Service Connections for access Azure, both for remote state and for the terraform actions
 
 parameters:
-  - name: automaticDeployments
+  - name: automaticDeploymentEnvironments
     type: object
     default:
-      environments:
-        - name: Dev
+      - name: Dev
   - name: environments
     type: object
     default:
@@ -42,7 +41,7 @@ parameters:
 variables:
   - name: environmentsSource
     ${{ if in(variables['Build.Reason'], 'IndividualCI', 'BatchedCI', 'ResourceTrigger') }}:
-      value: automaticDeployments.environments
+      value: automaticDeploymentEnvironments
     ${{ else }}:
       value: environments
 
