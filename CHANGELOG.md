@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.16.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.15.2...release/3.16.0) (2024-05-23)
+
+
+### Features
+
+* add training environment ([466eb0f](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/466eb0fd30a41074f44844fbc708398abbd13853))
+
 ### [3.15.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.15.1...release/3.15.2) (2024-05-03)
 
 
