@@ -4,6 +4,6 @@ variables:
   - name: ENVIRONMENT
     value: training
   - name: KEY_VAULT_NAME
-    value: pinskvcommontrainingukw001
+    value: pinskvcommontrainingukw
   - name: SUBSCRIPTION_ID
     value: dbfbfbbf-eb6f-457b-9c0c-fe3a071975bc
