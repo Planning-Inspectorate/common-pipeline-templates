@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.16.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.16.0...release/3.16.1) (2024-06-04)
+
+
+### Bug Fixes
+
+* training key vault name had to be <=24 chars ([e516d54](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/e516d549799307f49b554ab4c313de7bd32eda9c))
+
 ## [3.16.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.15.2...release/3.16.0) (2024-05-23)
 
 
