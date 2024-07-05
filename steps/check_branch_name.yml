@@ -18,6 +18,9 @@ steps:
         feature/*)
           echo "##vso[build.addbuildtag]$BRANCH_NAME"
           ;;
+        feat/*)
+          echo "##vso[build.addbuildtag]$BRANCH_NAME"
+          ;;
         fix/*)
           echo "##vso[build.addbuildtag]$BRANCH_NAME"
           ;;
@@ -36,8 +39,10 @@ steps:
         develop)
           echo "##vso[build.addbuildtag]$BRANCH_NAME"
           ;;
+        gh-readonly-queue/*) # github merge queue branches
+          ;;
         *)
-          echo "##[error]Branch name [${BRANCH_NAME}] does not follow convention: [feature/* | fix/* | task/* | subtask/* | release/* | main | develop]."
+          echo "##[error]Branch name [${BRANCH_NAME}] does not follow convention: [feat/* | feature/* | fix/* | task/* | subtask/* | release/* | main | develop]."
           exit 1
           ;;
       esac
