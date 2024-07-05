@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.17.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.16.1...release/3.17.0) (2024-07-05)
+
+
+### Features
+
+* allow github merge queue branch names ([a6e1b83](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/a6e1b83da75d41af53571ffa9a5c0b1acc924ee2))
+
 ### [3.16.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.16.0...release/3.16.1) (2024-06-04)
 
 
