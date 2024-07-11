@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.18.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.16.1...release/3.18.0) (2024-07-11)
+
+
+### Features
+
+* add tfenv use to select terraform version ([dac4d66](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/dac4d665320b9d1872f3ee5f15be98e03ecc8ac7))
+* allow github merge queue branch names ([a6e1b83](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/a6e1b83da75d41af53571ffa9a5c0b1acc924ee2))
+
 ## [3.17.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.16.1...release/3.17.0) (2024-07-05)
 
 

@@ -15,6 +15,9 @@ parameters:
   - name: gitFetchDepth # see https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/azure-repos-git?view=azure-devops&tabs=yaml#shallow-fetch
     type: number
     default: 1
+  - name: terraformVersion
+    type: string
+    default: 'latest' # defaults to whichever is latest on the agent
 
 stages:
   - template: ../stages/wrapper_stage.yml
@@ -42,3 +45,4 @@ stages:
                   moduleDirectories:
                     - ${{ parameters.workingDirectory }}
               - template: ../steps/run_checkov.yml@templates
+
