@@ -15,6 +15,9 @@ parameters:
   - name: gitFetchDepth # see https://learn.microsoft.com/en-us/azure/devops/pipelines/repos/azure-repos-git?view=azure-devops&tabs=yaml#shallow-fetch
     type: number
     default: 1
+  - name: terraformVersion
+    type: string
+    default: 'latest' # defaults to whichever is latest on the agent
 
 stages:
   - template: ../stages/wrapper_stage.yml
@@ -32,6 +35,10 @@ stages:
                 fetchDepth: ${{ parameters.gitFetchDepth }}
               - template: ../steps/check_branch_name.yml
               - template: ../steps/git_tagging.yml
+              - script: |
+                  echo "Using terraform version ${{ parameters.terraformVersion }}"
+                  tfenv use ${{ parameters.terraformVersion }}
+                displayName: Set Terraform Version
               - template: ../steps/terraform_format.yml@templates
               - template: ../steps/terraform_validate.yml@templates
                 parameters:
