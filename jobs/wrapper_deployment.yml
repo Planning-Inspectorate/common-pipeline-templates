@@ -51,7 +51,7 @@ jobs:
                     preferTriggeringPipeline: true
                     project: $(System.TeamProject)
                     source: specific
-                    tags: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), 'ref/tags/', '') }}
+                    tags: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), 'refs/tags/', '') }}
             - script: |
                 echo "##vso[build.addbuildtag]environment=${{ parameters.environment }}"
               displayName: Add Environment build tags
