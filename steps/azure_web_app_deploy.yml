@@ -63,10 +63,11 @@ steps:
       CD_ENABLED=$(echo "$CD_CONFIG" | jq -r .DOCKER_ENABLE_CI)
       CD_URL=$(echo "$CD_CONFIG" | jq -r .CI_CD_URL)
 
-      if [[ $CD_ENABLED == "false" ]]; then
-        echo "##[command]Enabling Continuous Deployment..."
-        az webapp deployment container config --enable-cd true "${args[@]}"
-      fi
+      #Disabling continous deployment 
+      # if [[ $CD_ENABLED == "false" ]]; then
+      #   echo "##[command]Enabling Continuous Deployment..."
+      #   az webapp deployment container config --enable-cd true "${args[@]}"
+      # fi
 
       echo "##[command]App Service currently running image:"
       CURRENT_IMAGE_NAME=$(az webapp config container show "${args[@]}" | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value')
@@ -82,9 +83,10 @@ steps:
         echo "##[command]Swapping App Service container to tag: $(ENVIRONMENT)..."
         az webapp config container set \
         --docker-custom-image-name $IMAGE:$(ENVIRONMENT) \
-        --docker-registry-server-url https://${{ parameters.azurecrName }}.azurecr.io \
-        --docker-registry-server-user $AZURE_SERVICE_PRINCIPAL_ID \
-        --docker-registry-server-password $AZURE_SERVICE_PRINCIPAL_SECRET \
+        # Removing below lines as it over-rides the login credentials set from module (https://github.com/Planning-Inspectorate/infrastructure-modules/blob/main/modules/node-app-service/locals.tf#L6)
+        # --docker-registry-server-url https://${{ parameters.azurecrName }}.azurecr.io \
+        # --docker-registry-server-user $AZURE_SERVICE_PRINCIPAL_ID \
+        # --docker-registry-server-password $AZURE_SERVICE_PRINCIPAL_SECRET \
         "${args[@]}"
 
         if [[ $? -ne 0 ]]; then
@@ -97,28 +99,29 @@ steps:
           fi
           exit 1
         fi
+      fi
+      
+      echo "##[command]Sending webhook... App Service will pull latest version of tag: $(ENVIRONMENT)"
+      
+      STATUS_CODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" "$CD_URL" -X POST -H "Content-Length:0")
+
+      if [[ $STATUS_CODE -lt 200 ]] || [[ $STATUS_CODE -gt 299 ]]; then
+        echo "##vso[task.logissue type=error]Error sending webhook, response code: $STATUS_CODE"
+
+        if [[ "$ROLLBACK_AVAILABLE" == true ]]; then
+          echo "##[command]Rolling back environment tag to previous..."
+          docker tag $IMAGE:rollback $IMAGE:$(ENVIRONMENT)
+          docker push $IMAGE:$(ENVIRONMENT)
+        fi
+        exit 1
       else
-        echo "##[command]Sending webhook... App Service will pull latest version of tag: $(ENVIRONMENT)"
-        
-        STATUS_CODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" "$CD_URL" -X POST -H "Content-Length:0")
-
-        if [[ $STATUS_CODE -lt 200 ]] || [[ $STATUS_CODE -gt 299 ]]; then
-          echo "##vso[task.logissue type=error]Error sending webhook, response code: $STATUS_CODE"
-
-          if [[ "$ROLLBACK_AVAILABLE" == true ]]; then
-            echo "##[command]Rolling back environment tag to previous..."
-            docker tag $IMAGE:rollback $IMAGE:$(ENVIRONMENT)
-            docker push $IMAGE:$(ENVIRONMENT)
-          fi
-          exit 1
-        else
-          echo "Webhook sent, response code: $STATUS_CODE"
-          if [[ ! -z "$DEPLOYMENT_SLOT" ]]; then
-            STAGING_URL=$(az webapp config hostname list --webapp-name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} --slot ${{ parameters.appSlotName }} | jq '.[].name')
-            echo "App Service deployment staged to: $STAGING_URL"
-          fi
+        echo "Webhook sent, response code: $STATUS_CODE"
+        if [[ ! -z "$DEPLOYMENT_SLOT" ]]; then
+          STAGING_URL=$(az webapp config hostname list --webapp-name ${{ parameters.appName }} --resource-group ${{ parameters.appResourceGroup }} --slot ${{ parameters.appSlotName }} | jq '.[].name')
+          echo "App Service deployment staged to: $STAGING_URL"
         fi
       fi
+      
     displayName: Deploy Container to Azure Web App
     env:
       AZURE_SERVICE_PRINCIPAL_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
