@@ -113,7 +113,7 @@ steps:
           docker tag $IMAGE:rollback $IMAGE:$(ENVIRONMENT)
           docker push $IMAGE:$(ENVIRONMENT)
         fi
-        exit 1
+        # exit 1
       fi
       
       # echo "Webhook sent, response code: $STATUS_CODE"
