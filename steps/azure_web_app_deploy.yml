@@ -102,6 +102,7 @@ steps:
       fi
       
       echo "##[command]Sending webhook... App Service will pull latest version of tag: $(ENVIRONMENT)"
+      echo "Values for curl: http code: ${http_code} cd url: ${CD_URL}"
       
       STATUS_CODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" "$CD_URL" -X POST -H "Content-Length:0")
 
