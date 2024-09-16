@@ -102,9 +102,9 @@ steps:
       fi
       
       echo "##[command]Sending webhook... App Service will pull latest version of tag: $(ENVIRONMENT)"
-      echo "Values for curl: http code: ${http_code} cd url: ${CD_URL}"
+      echo "Values for curl:  cd url: $CD_URL"
       
-      STATUS_CODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" "$CD_URL" -X POST -H "Content-Length:0")
+      STATUS_CODE=$(curl --silent --output /dev/stderr --write-out "%{response_code}" "$CD_URL" -X POST -H "Content-Length:0")
 
       if [[ $STATUS_CODE -lt 200 ]] || [[ $STATUS_CODE -gt 299 ]]; then
         echo "##vso[task.logissue type=error]Error sending webhook, response code: $STATUS_CODE"
