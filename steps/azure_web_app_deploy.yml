@@ -63,11 +63,10 @@ steps:
       CD_ENABLED=$(echo "$CD_CONFIG" | jq -r .DOCKER_ENABLE_CI)
       CD_URL=$(echo "$CD_CONFIG" | jq -r .CI_CD_URL)
 
-      #Disabling continous deployment 
-      # if [[ $CD_ENABLED == "false" ]]; then
-      #   echo "##[command]Enabling Continuous Deployment..."
-      #   az webapp deployment container config --enable-cd true "${args[@]}"
-      # fi
+      if [[ $CD_ENABLED == "false" ]]; then
+        echo "##[command]Enabling Continuous Deployment..."
+        az webapp deployment container config --enable-cd true "${args[@]}"
+      fi
 
       echo "##[command]App Service currently running image:"
       CURRENT_IMAGE_NAME=$(az webapp config container show "${args[@]}" | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value')
