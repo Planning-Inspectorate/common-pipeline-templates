@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.18.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.18.0...release/3.18.1) (2024-09-19)
+
+
+### Bug Fixes
+
+* deleting tfenv and docker credentials ([f107901](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/f107901ee5e4acaa90133b52bee55b4b897cdb9f))
+
 ## [3.18.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.16.1...release/3.18.0) (2024-07-11)
 
 
