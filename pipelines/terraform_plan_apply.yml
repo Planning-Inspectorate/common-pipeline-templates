@@ -64,6 +64,10 @@ stages:
               clean: all  
             timeoutInMinutes: 30
             steps:
+              - script: |
+                  echo "Using terraform version ${{ parameters.terraformVersion }}"
+                  tfenv use ${{ parameters.terraformVersion }}
+                displayName: Set Terraform Version
               - task: TerraformTaskV4@4
                 displayName: Initialize Terraform
                 inputs:
@@ -127,6 +131,10 @@ stages:
               runOnce:
                 deploy:
                   steps:
+                    - script: |
+                        echo "Using terraform version ${{ parameters.terraformVersion }}"
+                        tfenv use ${{ parameters.terraformVersion }}
+                      displayName: Set Terraform Version
                     - download: current
                       artifact: terraform-plan-${{ lower(environment.name) }}
                     - task: CopyFiles@2
