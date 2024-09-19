@@ -59,14 +59,18 @@ steps:
       [[ ! -z "$DEPLOYMENT_SLOT" ]] && args+=("--slot" "$DEPLOYMENT_SLOT")
       
       echo "##[command]Getting Continuous Deployment info..."
-      CD_CONFIG=$(az webapp deployment container show-cd-url "${args[@]}")
-      CD_ENABLED=$(echo "$CD_CONFIG" | jq -r .DOCKER_ENABLE_CI)
-      CD_URL=$(echo "$CD_CONFIG" | jq -r .CI_CD_URL)
+      # CD_CONFIG=$(az webapp deployment container show-cd-url "${args[@]}")
+      # CD_ENABLED=$(echo "$CD_CONFIG" | jq -r .DOCKER_ENABLE_CI)
+      CD_URL_WEBHOOK="https://$pins-app-template-web-dev:1njeWGf904XiqEQpnXF7KFJohbJiwSmnlQwAwMgYlY3HLEFE4sQiixXhXgpE@pins-app-template-web-dev.scm.azurewebsites.net/api/registry/webhook"
+      CD_URL=$(echo "$CD_URL_WEBHOOK")
 
-      if [[ $CD_ENABLED == "false" ]]; then
-        echo "##[command]Enabling Continuous Deployment..."
-        az webapp deployment container config --enable-cd true "${args[@]}"
-      fi
+      # echo "##[command]CD config values: $CD_CONFIG "
+      # echo "##[command]CD URL values: $CD_URL "
+      # echo "##[command]CD enable script is commented. Continuous Deployment info: $CD_ENABLED " 
+      # if [[ $CD_ENABLED == "false" ]]; then
+      #   echo "##[command]Enabling Continuous Deployment..."
+      #   az webapp deployment container config --enable-cd true "${args[@]}"
+      # fi
 
       echo "##[command]App Service currently running image:"
       CURRENT_IMAGE_NAME=$(az webapp config container show "${args[@]}" | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value')
@@ -95,8 +99,9 @@ steps:
           exit 1
         fi
       fi
-      
+
       echo "##[command]Sending webhook... App Service will pull latest version of tag: $(ENVIRONMENT)"
+      
       
       STATUS_CODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" "$CD_URL" -X POST -H "Content-Length:0")
 
