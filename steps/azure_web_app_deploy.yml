@@ -58,11 +58,13 @@ steps:
       DEPLOYMENT_SLOT=${{ parameters.appSlotName }}
       [[ ! -z "$DEPLOYMENT_SLOT" ]] && args+=("--slot" "$DEPLOYMENT_SLOT")
       
-      echo "##[command]Getting Continuous Deployment info..."
+      echo "##[command]Getting Continuous Deployment URL..."
       CD_CONFIG=$(az webapp deployment list-publishing-credentials "${args[@]}")
       CD_URL=$(echo "$CD_CONFIG" | jq -r .scmUri)
 
-
+      echo "##[command]Getting Continuous Deployment status..."
+      CD_CONFIG_STATUS=$(az webapp deployment container show-cd-url "${args[@]}")
+      CD_ENABLED=$(echo "$CD_CONFIG_STATUS" | jq -r .DOCKER_ENABLE_CI)
       if [[ $CD_ENABLED == "true" ]]; then
         echo "##[command]Disabling Continuous Deployment..."
         az webapp deployment container config --enable-cd false "${args[@]}"
