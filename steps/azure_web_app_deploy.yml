@@ -61,12 +61,14 @@ steps:
       echo "##[command]Getting Continuous Deployment info..."
       # CD_CONFIG=$(az webapp deployment container show-cd-url "${args[@]}")
       # CD_ENABLED=$(echo "$CD_CONFIG" | jq -r .DOCKER_ENABLE_CI)
-      CD_URL_WEBHOOK="https://$pins-app-template-web-dev:1njeWGf904XiqEQpnXF7KFJohbJiwSmnlQwAwMgYlY3HLEFE4sQiixXhXgpE@pins-app-template-web-dev.scm.azurewebsites.net/api/registry/webhook"
-      CD_URL=$(echo "$CD_URL_WEBHOOK")
+      # CD_URL=$(echo "$CD_CONFIG" | jq -r .CI_CD_URL)
 
-      # echo "##[command]CD config values: $CD_CONFIG "
-      # echo "##[command]CD URL values: $CD_URL "
-      # echo "##[command]CD enable script is commented. Continuous Deployment info: $CD_ENABLED " 
+      CD_CONFIG=$(az webapp deployment list-publishing-credentials "${args[@]}")
+      CD_URL=$(echo "$CD_CONFIG" | jq -r .scmUri)
+
+      echo "##[command]CD config values: $CD_CONFIG "
+      echo "##[command]CD URL values: $CD_URL "
+      echo "##[command]CD enable script is commented. Continuous Deployment info: $CD_ENABLED " 
       # if [[ $CD_ENABLED == "false" ]]; then
       #   echo "##[command]Enabling Continuous Deployment..."
       #   az webapp deployment container config --enable-cd true "${args[@]}"
@@ -103,7 +105,7 @@ steps:
       echo "##[command]Sending webhook... App Service will pull latest version of tag: $(ENVIRONMENT)"
       
       
-      STATUS_CODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" "$CD_URL" -X POST -H "Content-Length:0")
+      STATUS_CODE=$(curl --silent --output /dev/stderr --write-out "%{http_code}" "$CD_URL/docker/hook" -X POST -H "Content-Length:0")
 
       if [[ $STATUS_CODE -lt 200 ]] || [[ $STATUS_CODE -gt 299 ]]; then
         echo "##vso[task.logissue type=error]Error sending webhook, response code: $STATUS_CODE"
