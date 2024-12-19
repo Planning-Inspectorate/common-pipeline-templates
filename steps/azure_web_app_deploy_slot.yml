@@ -45,7 +45,7 @@ steps:
       docker push $IMAGE:$GIT_COMMIT
 
       echo "##[command]Swapping App Service container to tag: $IMAGE:$GIT_COMMIT..."
-      az webapp config container set --docker-custom-image-name $IMAGE:$GIT_COMMIT "${args[@]}"
+      az webapp config container set --container-image-name $IMAGE:$GIT_COMMIT "${args[@]}"
 
       echo "##[command]Restarting App Service slot"
       az webapp restart "${args[@]}"
