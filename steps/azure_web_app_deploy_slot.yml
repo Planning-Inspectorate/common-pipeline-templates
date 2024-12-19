@@ -1,0 +1,60 @@
+parameters:
+  - name: appName
+    type: string
+  - name: appResourceGroup
+    type: string
+  - name: azurecrName
+    type: string
+  - name: repository
+    type: string
+
+steps:
+  - script: |
+      APPNAME=${{ parameters.appName }}
+      IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
+      FORMATTED_GIT_REF=$(echo $(Build.SourceBranch) | sed "s/refs\/heads\///;s/refs\/tags\///")
+      TAG="${FORMATTED_GIT_REF//\//.}"
+      GIT_COMMIT=$(resources.pipeline.build.sourceCommit)
+
+      echo "IMAGE:$IMAGE"
+      echo "TAG:$TAG"
+      echo "GIT_COMMIT:$GIT_COMMIT"
+
+      echo "logging into az"
+      az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
+      az acr login --name $(azurecrName) || { echo "##vso[task.logissue type=error]Login to container registry failed."; exit 1; }
+
+      echo "##[command]Checking image $IMAGE:$TAG exists in registry..."
+      docker manifest inspect $IMAGE:$TAG > /dev/null
+      if [[ $? -ne 0 ]]; then
+        echo "##vso[task.logissue type=error]Image/tag not found in registry."
+        exit 1
+      fi
+
+      az account set -s $(SUBSCRIPTION_ID)
+      args=("--name" "$APPNAME" "--resource-group" "${{ parameters.appResourceGroup }}" "--slot" "staging")
+
+      echo "##[command]App Service currently running image:"
+      CURRENT_IMAGE_NAME=$(az webapp config container show "${args[@]}" | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value')
+      CURRENT_TAG=${CURRENT_IMAGE_NAME#*:}
+      echo "$CURRENT_IMAGE_NAME"
+
+      echo "##[command]Pull image and set environment tag..."
+      docker pull $IMAGE:$TAG
+      docker tag $IMAGE:$TAG $IMAGE:$GIT_COMMIT
+      docker push $IMAGE:$GIT_COMMIT
+
+      echo "##[command]Swapping App Service container to tag: $IMAGE:$GIT_COMMIT..."
+      az webapp config container set --docker-custom-image-name $IMAGE:$GIT_COMMIT "${args[@]}"
+
+      echo "##[command]Restarting App Service slot"
+      az webapp restart "${args[@]}"
+
+      APP_URL=$(az webapp show "${args[@]}" --query defaultHostName --output tsv)
+      FULL_URL="https://$APP_URL"
+      echo "##vso[task.setvariable variable=slotUrl;isOutput=true]$FULL_URL"
+    name: deploySlotOutputs
+    displayName: Deploy Container to Azure Web App Slot
+    env:
+      AZURE_SERVICE_PRINCIPAL_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
+      AZURE_SERVICE_PRINCIPAL_SECRET: $(AZURE_SERVICE_PRINCIPAL_SECRET)
