@@ -83,7 +83,7 @@ steps:
       if [[ $CURRENT_TAG != "$(ENVIRONMENT)" ]]; then
         echo "##[command]Swapping App Service container to tag: $(ENVIRONMENT)..."
         az webapp config container set \
-        --docker-custom-image-name $IMAGE:$(ENVIRONMENT) \
+        --container-image-name $IMAGE:$(ENVIRONMENT) \
         "${args[@]}"
 
         if [[ $? -ne 0 ]]; then
