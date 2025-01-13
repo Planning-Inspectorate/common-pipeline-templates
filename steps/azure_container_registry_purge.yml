@@ -5,8 +5,9 @@ parameters:
 steps:
   - script: |
         ls
-        bash azure_container_registry_purge.sh
+        bash ./common-pipeline-templates/steps/azure_container_registry_purge.sh
     displayName: Purge images
+    workingDirectory: $(Pipeline.Workspace)
     env:
       AZURE_SERVICE_PRINCIPAL_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
       AZURE_SERVICE_PRINCIPAL_SECRET: $(AZURE_SERVICE_PRINCIPAL_SECRET)
