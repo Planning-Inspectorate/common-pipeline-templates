@@ -4,7 +4,8 @@ parameters:
 
 steps:
   - script: |
-        bash ./azure_container_registry_purge.sh
+        ls
+        bash azure_container_registry_purge.sh
     displayName: Purge images
     env:
       AZURE_SERVICE_PRINCIPAL_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
