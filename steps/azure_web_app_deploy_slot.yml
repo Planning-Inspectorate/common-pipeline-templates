@@ -1,3 +1,5 @@
+# Deploy to an Azure Web App by updating the docker container image tag to the git commit
+
 parameters:
   - name: appName
     type: string
@@ -7,47 +9,50 @@ parameters:
     type: string
   - name: repository
     type: string
+  - name: slot
+    type: string
+    default: "staging"
 
 steps:
   - script: |
-      APPNAME=${{ parameters.appName }}
-      IMAGE=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
-      FORMATTED_GIT_REF=$(echo $(Build.SourceBranch) | sed "s/refs\/heads\///;s/refs\/tags\///")
-      TAG="${FORMATTED_GIT_REF//\//.}"
-      GIT_COMMIT=$(resources.pipeline.build.sourceCommit)
+      set -e # exit if there are any errors
 
-      echo "IMAGE:$IMAGE"
-      echo "TAG:$TAG"
-      echo "GIT_COMMIT:$GIT_COMMIT"
+      APP_NAME=${{ parameters.appName }}
+      REPO=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
+      GIT_COMMIT=$(resources.pipeline.build.sourceCommit)
+      IMAGE_NAME="$REPO:$GIT_COMMIT"
+
+      echo "Deploying image: $IMAGE_NAME to $APP_NAME"
 
       echo "logging into az"
+      # use container registry subscription
       az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
       az acr login --name $(azurecrName) || { echo "##vso[task.logissue type=error]Login to container registry failed."; exit 1; }
 
-      echo "##[command]Checking image $IMAGE:$TAG exists in registry..."
-      docker manifest inspect $IMAGE:$TAG > /dev/null
+      echo "##[command]Checking image $IMAGE_NAME exists in registry..."
+      docker manifest inspect $IMAGE_NAME > /dev/null
       if [[ $? -ne 0 ]]; then
-        echo "##vso[task.logissue type=error]Image/tag not found in registry."
+        echo "##vso[task.logissue type=error]Image not found in registry."
         exit 1
       fi
+      echo "##[command]Image exists"
 
+      # switch to app service subscription
       az account set -s $(SUBSCRIPTION_ID)
-      args=("--name" "$APPNAME" "--resource-group" "${{ parameters.appResourceGroup }}" "--slot" "staging")
-
-      echo "##[command]App Service currently running image:"
+      args=("--name" "$APP_NAME" "--resource-group" "${{ parameters.appResourceGroup }}")
+      if [[ ${{ parameters.slot}} != "default" ]]; then
+        args+=( "--slot" "${{parameters.slot}}")
+      fi
+      
+      echo "##[command]Checking current image (args: ${args[@]})"
       CURRENT_IMAGE_NAME=$(az webapp config container show "${args[@]}" | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value')
       CURRENT_TAG=${CURRENT_IMAGE_NAME#*:}
-      echo "$CURRENT_IMAGE_NAME"
+      echo "##[command]App Service currently running image:$CURRENT_IMAGE_NAME"
 
-      echo "##[command]Pull image and set environment tag..."
-      docker pull $IMAGE:$TAG
-      docker tag $IMAGE:$TAG $IMAGE:$GIT_COMMIT
-      docker push $IMAGE:$GIT_COMMIT
+      echo "##[command]Swapping App Service container: $IMAGE_NAME"
+      az webapp config container set --container-image-name $IMAGE_NAME "${args[@]}"
 
-      echo "##[command]Swapping App Service container to tag: $IMAGE:$GIT_COMMIT..."
-      az webapp config container set --container-image-name $IMAGE:$GIT_COMMIT "${args[@]}"
-
-      echo "##[command]Restarting App Service slot"
+      echo "##[command]Restarting App Service slot (${{parameters.slot}})"
       az webapp restart "${args[@]}"
 
       APP_URL=$(az webapp show "${args[@]}" --query defaultHostName --output tsv)
