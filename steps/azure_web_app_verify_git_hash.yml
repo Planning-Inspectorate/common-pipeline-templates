@@ -1,0 +1,99 @@
+parameters:
+  - name: appName
+    type: string
+  - name: appUrl
+    type: string
+  - name: buildCommit
+    type: string
+  - name: retries
+    type: number
+    default: 6
+  - name: sleepTime
+    type: number
+    default: 30
+  - name: resource
+    type: string
+    default: ""
+  - name: auth_enabled
+    type: string 
+    default: "false"
+  - name: env
+    type: string
+    default: "dev"
+
+steps:
+  - script: |
+      verify_commit_hash() {
+        service_name=$1
+        service_url=$2
+        build_commit=$3
+        max_attempts=$4
+        sleep_time=$5
+
+        if [ -z "$max_attempts" ]; then
+          max_attempts=5
+        fi
+
+        attempt=0
+
+        while [ $attempt -lt $max_attempts ]; do
+          echo "Waiting for $service_name to start..."
+          sleep $(($sleep_time*attempt))
+          
+          echo "Calling $service_name /health endpoint (Attempt $(($attempt+1))/$max_attempts)"
+          echo "Service URL: $service_url"
+
+          if [[ "${{ parameters.env}}" != "prod"  && "${{ parameters.auth_enabled}}" == "true" ]]; then
+            echo "..........Non-Prod environment and Auth is enabled..........."
+            echo "##[command]Generating TOKEN"
+            TOKEN=$(az account get-access-token --query accessToken -o tsv --resource "${{ parameters.resource}}")
+            # Get both the HTTP response and the status code
+            response=$(curl -s -w "\n%{http_code}" --connect-timeout 10 $service_url -H "Authorization: Bearer $TOKEN"|| echo "error")
+            http_status=$(echo "$response" | tail -n 1)
+            body=$(echo "$response" | sed '$d')
+          else
+            echo "....................Auth Disabled..............."
+            # Get both the HTTP response and the status code
+            response=$(curl -s -w "\n%{http_code}" --connect-timeout 10 $service_url || echo "error")
+            http_status=$(echo "$response" | tail -n 1)
+            body=$(echo "$response" | sed '$d')
+          fi
+
+          # Log the full response and status code for debugging
+          echo "HTTP Status Code: $http_status"
+          echo "Response Body: $body"
+
+          if [[ "$http_status" == "200" ]]; then
+            commit=$(echo "$body" | grep -o '"commit":"[^"]*"' | sed 's/"commit":"\([^"]*\)"/\1/')
+            if [[ "$commit" == "$build_commit" ]]; then
+              echo "$service_name commit hash matches: $commit"
+              return 0
+            else
+              echo "$service_name commit hash mismatch. Health: $commit, Build: $build_commit"
+            fi
+          else
+            echo "$service_name /health check failed with status code: $http_status. Retrying in $sleep_time seconds..."
+          fi
+          
+          attempt=$((attempt+1))
+        done
+
+        echo "$service_name /health check failed after $max_attempts attempts"
+        return 1
+      }
+
+      echo "${{ parameters.appName }}"
+      echo "${{ parameters.appUrl }}"
+      echo "${{ parameters.buildCommit }}"
+      echo ${{ parameters.retries }}
+      echo ${{ parameters.sleepTime }}
+      echo "${{ parameters.resource}}"
+      echo "${{ parameters.auth_enabled}}"
+      echo "${{ parameters.env}}"
+
+      verify_commit_hash "${{ parameters.appName }}" "${{ parameters.appUrl }}" "${{ parameters.buildCommit }}" ${{ parameters.retries }} ${{ parameters.sleepTime }}
+    displayName: Verify deployed git hash
+    workingDirectory: $(Build.Repository.LocalPath)
+    env:
+      AZURE_SERVICE_PRINCIPAL_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
+      AZURE_SERVICE_PRINCIPAL_SECRET: $(AZURE_SERVICE_PRINCIPAL_SECRET)

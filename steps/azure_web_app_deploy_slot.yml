@@ -1,0 +1,65 @@
+# Deploy to an Azure Web App by updating the docker container image tag to the git commit
+
+parameters:
+  - name: appName
+    type: string
+  - name: appResourceGroup
+    type: string
+  - name: azurecrName
+    type: string
+  - name: repository
+    type: string
+  - name: slot
+    type: string
+    default: "staging"
+
+steps:
+  - script: |
+      set -e # exit if there are any errors
+
+      APP_NAME=${{ parameters.appName }}
+      REPO=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
+      GIT_COMMIT=$(resources.pipeline.build.sourceCommit)
+      IMAGE_NAME="$REPO:$GIT_COMMIT"
+
+      echo "Deploying image: $IMAGE_NAME to $APP_NAME"
+
+      echo "logging into az"
+      # use container registry subscription
+      az account set -s $(CONTAINER_REGISTRY_SUBSCRIPTION_ID)
+      az acr login --name $(azurecrName) || { echo "##vso[task.logissue type=error]Login to container registry failed."; exit 1; }
+
+      echo "##[command]Checking image $IMAGE_NAME exists in registry..."
+      docker manifest inspect $IMAGE_NAME > /dev/null
+      if [[ $? -ne 0 ]]; then
+        echo "##vso[task.logissue type=error]Image not found in registry."
+        exit 1
+      fi
+      echo "##[command]Image exists"
+
+      # switch to app service subscription
+      az account set -s $(SUBSCRIPTION_ID)
+      args=("--name" "$APP_NAME" "--resource-group" "${{ parameters.appResourceGroup }}")
+      if [[ ${{ parameters.slot}} != "default" ]]; then
+        args+=( "--slot" "${{parameters.slot}}")
+      fi
+      
+      echo "##[command]Checking current image (args: ${args[@]})"
+      CURRENT_IMAGE_NAME=$(az webapp config container show "${args[@]}" | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value')
+      CURRENT_TAG=${CURRENT_IMAGE_NAME#*:}
+      echo "##[command]App Service currently running image:$CURRENT_IMAGE_NAME"
+
+      echo "##[command]Swapping App Service container: $IMAGE_NAME"
+      az webapp config container set --container-image-name $IMAGE_NAME "${args[@]}"
+
+      echo "##[command]Restarting App Service slot (${{parameters.slot}})"
+      az webapp restart "${args[@]}"
+
+      APP_URL=$(az webapp show "${args[@]}" --query defaultHostName --output tsv)
+      FULL_URL="https://$APP_URL"
+      echo "##vso[task.setvariable variable=slotUrl;isOutput=true]$FULL_URL"
+    name: deploySlotOutputs
+    displayName: Deploy Container to Azure Web App Slot
+    env:
+      AZURE_SERVICE_PRINCIPAL_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
+      AZURE_SERVICE_PRINCIPAL_SECRET: $(AZURE_SERVICE_PRINCIPAL_SECRET)

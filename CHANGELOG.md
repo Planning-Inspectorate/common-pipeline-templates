@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.20.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.18.2...release/3.20.0) (2025-01-22)
+
+
+### Features
+
+* add purge image for repo script ([7e530cf](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/7e530cfb87a9dd9192abfaef6e3a2b097bb1d987))
+* add slot deploy and verify scripts ([419d758](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/419d7582cd34d990a5a5a520a533de850973bd80))
+* deploy existing git commit tag to app service ([6e6ad1e](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/6e6ad1e48a587423e8ea843757abd64cb2af2bb9))
+* tag image builds with the git commit ([eb8e2f5](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/eb8e2f5a9633b243d3e0d8d1c5bc0d89d064f020))
+
+
+### Bug Fixes
+
+* update deprecated image name command ([78ae110](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/78ae1102d019f78e05173e85bb5b8c3f81cd6239))
+
+## [3.19.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.18.2...release/3.19.0) (2025-01-22)
+
+
+### Features
+
+* add purge image for repo script ([7e530cf](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/7e530cfb87a9dd9192abfaef6e3a2b097bb1d987))
+* add slot deploy and verify scripts ([419d758](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/419d7582cd34d990a5a5a520a533de850973bd80))
+
+
+### Bug Fixes
+
+* update deprecated image name command ([78ae110](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/78ae1102d019f78e05173e85bb5b8c3f81cd6239))
+
+### [3.18.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.18.1...release/3.18.2) (2024-10-14)
+
 ### [3.18.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.18.0...release/3.18.1) (2024-09-19)
 
 

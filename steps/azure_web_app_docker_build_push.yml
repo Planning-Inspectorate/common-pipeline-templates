@@ -30,6 +30,7 @@ steps:
       git fetch --tags
 
       git_tags=$(git tag -l --points-at HEAD)
+      git_commit=$(Build.SourceVersion)
 
       build_args="${{ join(' ', parameters.buildArgs) }}"
 
@@ -42,6 +43,11 @@ steps:
       for git_tag in $git_tags; do
         additional_tags+=(-t "$IMAGE:$git_tag")
       done
+      
+      # tag images with the git commit hash
+      additional_tags+=(-t "$IMAGE:$git_commit")
+      
+      echo "Image tags for build: $TAG, ci-build, ${git_tags[@]}, $git_commit"
       
       docker build . \
       -f ${{ parameters.dockerfilePath }} \
@@ -57,8 +63,11 @@ steps:
         docker push $IMAGE:$TAG || { echo "##vso[task.logissue type=error]Push failed..."; exit 1; }
         
         for git_tag in $git_tags; do
-          docker push $IMAGE:$git_tag || { echo "##vso[task.logissue type=error]Push failed..."; exit 1; }
+          docker push $IMAGE:$git_tag || { echo "##vso[task.logissue type=error]Push failed for git tag..."; exit 1; }
         done
+        
+        # push image with git commit tag
+        docker push $IMAGE:$git_commit || { echo "##vso[task.logissue type=error]Push failed for git commit tag..."; exit 1; }
 
         docker save $IMAGE:ci-build -o $(Build.ArtifactStagingDirectory)/image.tar
       else
