@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.20.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.20.0...release/3.20.1) (2025-01-31)
+
+
+### Bug Fixes
+
+* adding token authentication for git verify ([d38ce79](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/d38ce7952cf490785b418cdb1eacda82f79a2706))
+
 ## [3.20.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.18.2...release/3.20.0) (2025-01-22)
 
 
