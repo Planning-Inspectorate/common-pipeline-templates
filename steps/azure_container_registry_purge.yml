@@ -44,7 +44,7 @@ steps:
                 exit 1
             fi
 
-            container_image=$(echo $container_image_name | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value' | awk -F'|' '{print $2}')
+            container_image=$(echo "$container_image_name" | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value' | awk -F'|' '{print $2}')
             if [ -n "$container_image" ]; then
                 in_use_images+=("$container_image")
                 echo "Container Tag Name: $container_image"
@@ -57,7 +57,7 @@ steps:
                 exit 1
             fi
 
-            slot_image=$(echo $slot_image_name | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value' | awk -F'|' '{print $2}')
+            slot_image=$(echo "$slot_image_name" | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value' | awk -F'|' '{print $2}')
             if [ -n "$slot_image" ]; then
                 in_use_images+=("$slot_image")
                 echo "Slot Tag Name: $slot_image"
@@ -72,34 +72,55 @@ steps:
           echo "Error: Failed to set ACR subscription $ACR_SUBSCRIPTION"
           exit 1
       fi
-      az acr login --name ${{ parameters.azurecrName }}
+      az acr login --name "${{ parameters.azurecrName }}"
 
+      in_use_digests=()
+      # Loop through each image in the in_use_images array
+      for image in "${in_use_images[@]}"; do
+        # Extract the repository and tag from the image
+        repository=$(echo "$image" | awk -F'[/:]' '{print $2}')
+        tag=$(echo "$image" | awk -F':' '{print $2}')
+
+        # Get the manifest digest for the tag
+        digest=$(az acr repository show-manifests --name "${{ parameters.azurecrName }}" --repository "$repository" --query "[?tags[?contains(@, '$tag')]].digest" --output tsv)
+
+        if [ -n "$digest" ]; then
+          echo "Image: $image, Digest: $digest"
+          in_use_digests+=("$digest")
+        else
+          echo "Failed to get digest for image: $image"
+          exit 1
+        fi
+      done
+      # Output the array of in-use digests
+      echo "In-use digests: ${in_use_digests[@]}"
 
       for repository in ${REPOS[@]}; do
-        all_tags=$(az acr repository show-tags --name ${{ parameters.azurecrName }} --repository "$repository" --output tsv)
-        # Convert all_tags to an array
-        IFS=$'\n' read -r -d '' -a all_tags_array <<< "$all_tags"
+        all_manifests=$(az acr repository show-manifests --name "${{ parameters.azurecrName }}" --repository "$repository" --query "[].digest" --output tsv)
+        # Convert all_manifests to an array
+        IFS=$'\n' read -r -d '' -a all_manifests_array <<< "$all_manifests"
 
-        images_to_purge=()
-        for tag in "${all_tags_array[@]}"; do
+        manifests_to_purge=()
+        for manifest in "${all_manifests_array[@]}"; do
           in_use=false
-          for image in "${in_use_images[@]}"; do
-            if [[ "$image" == "${{ parameters.azurecrName }}.azurecr.io/$repository:$tag" ]]; then
+          for inUseDigest in "${in_use_digests[@]}"; do
+            if [[ "$inUseDigest" == "$manifest" ]]; then
               in_use=true
               break
             fi
           done
           if [ "$in_use" = false ]; then
-            images_to_purge+=("$repository:$tag")
+            manifests_to_purge+=("$manifest")
           fi
         done
 
-        echo "$repository include: ${images_to_purge[@]}"
+        echo "$repository include: ${manifests_to_purge[@]}"
 
-        for tag in "${images_to_purge[@]}"; do
-            az acr repository delete --name "${{ parameters.azurecrName }}" --image "$tag" --yes
+        for digest in "${manifests_to_purge[@]}"; do
+            echo "deleting $repository@$digest"
+            # az acr repository delete --name "${{ parameters.azurecrName }}" --image "$repository@$digest" --yes
             if [ $? -ne 0 ]; then
-              echo "Error: Failed to delete ACR $tag"
+              echo "Error: Failed to delete ACR $digest"
               exit 1
             fi
         done
