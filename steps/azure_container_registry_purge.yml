@@ -84,9 +84,9 @@ steps:
       echo "Getting manifests for in use images"
       for image in "${in_use_images[@]}"; do
         # Extract the repository and tag from the image
-        # n.b. this relies on the repo name being service/package e.g. appeals/api
-        repository=$(echo "$image" | awk -F'[/:]' '{print $2"/"$3}')
-        tag=$(echo "$image" | awk -F':' '{print $2}')
+        # e.g. pinscrsharedtoolinguks.domain/service/package:tag
+        repository=$(echo "$image" | cut -d'/' -f2- | cut -d':' -f1) # take all after 1st / | take all before 1st :
+        tag=$(echo "$image" | awk -F':' '{print $2}') # take all after 1st :
 
         if [ -z "${acr_outputs[$repository]}" ]; then
           echo "Getting manifest for $repository"
