@@ -166,7 +166,7 @@ steps:
             $manifests=Invoke-Command -ScriptBlock {
                 az acr manifest list-metadata --registry "pinscrsharedtoolinguks" --name "$repo" --output json
             }
-            $manifests = manifests | ConvertFrom-Json
+            $manifests = $manifests | ConvertFrom-Json
 
             $inUseTags = $tagsByRepo[$repo]
 
