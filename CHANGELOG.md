@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.20.3](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.20.2...release/3.20.3) (2025-03-04)
+
+
+### Bug Fixes
+
+* remove (redundant) webapp restart from deployment ([bcfa78d](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/bcfa78de1d68436ff76e207dd6d3308c0f455075))
+
 ### [3.20.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.20.1...release/3.20.2) (2025-02-17)
 
 ### [3.20.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.20.0...release/3.20.1) (2025-01-31)
