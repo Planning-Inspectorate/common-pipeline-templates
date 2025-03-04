@@ -5,6 +5,3 @@ steps:
       filePath: $(Build.SourcesDirectory)/templates/steps/purge.ps1
       name: purgeImagesForRepo
       displayName: Purge Images For Repo
-      env:
-        AZURE_SERVICE_PRINCIPAL_ID: $(AZURE_SERVICE_PRINCIPAL_ID)
-        AZURE_SERVICE_PRINCIPAL_SECRET: $(AZURE_SERVICE_PRINCIPAL_SECRET)
