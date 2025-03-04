@@ -138,7 +138,6 @@ steps:
         Write-Host "Images in use by repo: "
         $tagsByRepo | Out-String | Write-Host
 
-
         Write-Host "Switching to ACR sub"
 
         Invoke-Command -ScriptBlock {
@@ -155,20 +154,40 @@ steps:
 
         # keyed by repo name
         $inUseDigests=@{}
+        $notInUseDigests=@{}
         foreach ($repo in $repos) {
-            $inUseDigests[$repo]=@() # initialise an array per repo
+            # initialise an array per repo
+            $inUseDigests[$repo]=@()
+            $notInUseDigests[$repo]=@()
         }
-
-        $repositoryManifests=@{}
 
         # fetch manifests for each repo
         foreach ($repo in $repos) {
-            $repositoryManifests[$repo]=Invoke-Command -ScriptBlock {
+            $manifests=Invoke-Command -ScriptBlock {
                 az acr manifest list-metadata --registry "pinscrsharedtoolinguks" --name "$repo" --output json
             }
-            $repositoryManifests[$repo]=$repositoryManifests[$repo] | ConvertFrom-Json
-            $repositoryManifests[$repo] | Out-String | Write-Host
+            $manifests = manifests | ConvertFrom-Json
+
+            $inUseTags = $tagsByRepo[$repo]
+
+            foreach ($manifest in $manifests) {
+                $digest = $manifest.digest
+                $tags = $manifest.tags
+                foreach ($tag in $tags) {
+                    if ($inUseTags -contains $tag) {
+                        $inUseDigests[$repo] += $digest
+                    } else {
+                        $notInUseDigests[$repo] += $digest
+                    }
+                }
+            }
         }
+
+        Write-Host "Digests to keep:"
+        $inUseDigests | Out-String | Write-Host
+
+        Write-Host "Digests to delete:"
+        $notInUseDigests | Out-String | Write-Host
 
 
     name: purgeImagesForRepo
