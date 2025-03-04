@@ -53,6 +53,8 @@ function GetImageTag {
     return $imageWithTag.Split(":")[1]
 }
 
+$keepDays=30
+$keepFromDate=(Get-Date).AddDays(-$keepDays)
 $repos=@("crown/manage", "crown/portal")
 $resourceGroupsBySub=@{
     "dev" = @("pins-rg-crown-dev");
@@ -166,6 +168,12 @@ foreach ($repo in $repos) {
     $inUseTags = $tagsByRepo[$repo]
 
     foreach ($manifest in $manifests) {
+        $lastModified = [datetime]::ParseExact($manifest.lastUpdateTime, "dd/MMMM/yyyy", $null)
+        Write-Host "manifest modified:" $lastModified  "(" $manifest.lastUpdateTime ")"
+        if ($lastModified -gt $keepFromDate) {
+            $inUseDigests[$repo] += $digest # keep this one as its not old
+            continue
+        }
         $digest = $manifest.digest
         $tags = $manifest.tags
         foreach ($tag in $tags) {
