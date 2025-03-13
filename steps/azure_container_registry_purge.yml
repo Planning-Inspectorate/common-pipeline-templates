@@ -33,9 +33,11 @@ steps:
             echo "Failed to list web apps for subscription: $subscription_id"
             exit 1
         fi
+        echo ""
         echo "$app_services"
 
         while IFS=$'\t' read -r name resourceGroup; do
+            echo ""
             echo "$name:$resourceGroup"
             # Get image for the main app service
             container_image_name=$(az webapp config container show --name "$name" --resource-group "$resourceGroup")
@@ -44,7 +46,7 @@ steps:
                 exit 1
             fi
 
-            container_image=$(echo $container_image_name | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value' | awk -F'|' '{print $2}')
+            container_image=$(echo "$container_image_name" | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value' | awk -F'|' '{print $2}')
             if [ -n "$container_image" ]; then
                 in_use_images+=("$container_image")
                 echo "Container Tag Name: $container_image"
@@ -57,7 +59,7 @@ steps:
                 exit 1
             fi
 
-            slot_image=$(echo $slot_image_name | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value' | awk -F'|' '{print $2}')
+            slot_image=$(echo "$slot_image_name" | jq -r '.[] | select(.name == "DOCKER_CUSTOM_IMAGE_NAME").value' | awk -F'|' '{print $2}')
             if [ -n "$slot_image" ]; then
                 in_use_images+=("$slot_image")
                 echo "Slot Tag Name: $slot_image"
@@ -66,58 +68,82 @@ steps:
       done
 
       # Filter out in-use images
+      echo ""
       echo "switching to acr subscription"
       az account set --subscription "$ACR_SUBSCRIPTION"
       if [ $? -ne 0 ]; then
           echo "Error: Failed to set ACR subscription $ACR_SUBSCRIPTION"
           exit 1
       fi
-      az acr login --name ${{ parameters.azurecrName }}
+      az acr login --name "${{ parameters.azurecrName }}"
 
+      declare -A acr_outputs
+      in_use_digests=()
+      # Loop through each image in the in_use_images array
+      echo ""
+      echo "Getting manifests for in use images"
+      for image in "${in_use_images[@]}"; do
+        # Extract the repository and tag from the image
+        # e.g. pinscrsharedtoolinguks.domain/service/package:tag
+        repository=$(echo "$image" | cut -d'/' -f2- | cut -d':' -f1) # take all after 1st / | take all before 1st :
+        tag=$(echo "$image" | awk -F':' '{print $2}') # take all after 1st :
 
+        if [ -z "${acr_outputs[$repository]}" ]; then
+          echo "Getting manifest for $repository"
+          acr_output=$(az acr manifest list-metadata --registry "${{ parameters.azurecrName }}" --name "$repository" --output json)
+          acr_outputs[$repository]="$acr_output"
+          # echo "ACR Output for $repository: ${acr_outputs[$repository]}"
+        fi
+
+        # Use jq to get the digest associated with our tag
+        digest=$(echo "${acr_outputs[$repository]}" | jq -r '.[] | select(.tags and (.tags[] == "'"$tag"'")) | .digest')
+
+        if [ -n "$digest" ]; then
+          echo "Image: $image, Digest: $digest"
+          in_use_digests+=("$digest")
+        else
+          echo "Failed to get digest for image: $image"
+          exit 1
+        fi
+      done
+      # Output the array of in-use digests
+      echo ""
+      echo "In-use digests: ${in_use_digests[@]}"
+
+      echo ""
+      echo "Getting a list of manifests to purge"
       for repository in ${REPOS[@]}; do
-        all_tags=$(az acr repository show-tags --name ${{ parameters.azurecrName }} --repository "$repository" --output tsv)
-        # Convert all_tags to an array
-        IFS=$'\n' read -r -d '' -a all_tags_array <<< "$all_tags"
+        all_manifests=$(az acr manifest list-metadata --registry "${{ parameters.azurecrName }}" --name "$repository" --output json | jq -r '.[].digest')
+        # Convert all_manifests to an array
+        mapfile -t all_manifests_array <<< "$all_manifests"
 
-        images_to_purge=()
-        for tag in "${all_tags_array[@]}"; do
+        # todo: could we get duplicates here?
+        manifests_to_purge=()
+        for manifest in "${all_manifests_array[@]}"; do
           in_use=false
-          for image in "${in_use_images[@]}"; do
-            if [[ "$image" == "${{ parameters.azurecrName }}.azurecr.io/$repository:$tag" ]]; then
+          for inUseDigest in "${in_use_digests[@]}"; do
+            if [[ "$inUseDigest" == "$manifest" ]]; then
               in_use=true
               break
             fi
           done
           if [ "$in_use" = false ]; then
-            images_to_purge+=("$repository:$tag")
+            manifests_to_purge+=("$manifest")
           fi
         done
+        echo "$repository include: ${manifests_to_purge[@]}"
 
-        echo "$repository include: ${images_to_purge[@]}"
-
-        for tag in "${images_to_purge[@]}"; do
-            az acr repository delete --name "${{ parameters.azurecrName }}" --image "$tag" --yes
-            if [ $? -ne 0 ]; then
-              echo "Error: Failed to delete ACR $tag"
-              exit 1
-            fi
+        echo ""
+        echo "deleting for $repository"
+        for digest in "${manifests_to_purge[@]}"; do
+          echo "deleting $repository@$digest"
+          az acr repository delete --name "${{ parameters.azurecrName }}" --image "$repository@$digest" --yes
+          if [ $? -ne 0 ]; then
+            echo "Error: Failed to delete ACR $digest"
+            exit 1
+          fi
         done
       done
-
-      # Convert images to purge to a regex pattern
-      # include_images=$(IFS='|'; echo "${images_to_purge[*]}")
-      # purge images in include list
-      # filters="^(${include_images})$"
-      # PURGE_CMD="acr purge --ago 14d --dry-run --untagged --filter '$filters'"
-      # az acr run --cmd "$PURGE_CMD" --registry ${{ parameters.azurecrName }} /dev/null
-      # if [ $? -ne 0 ]; then
-      #   echo "Error: Failed to execute purge command"
-      #   exit 1
-      # fi
-      # todo: resolve purge permissions to use purge
-      # ERROR: The resource with name 'pinscrsharedtoolinguks' and type 'Microsoft.ContainerRegistry/registries' could not be found in subscription 'pins-odt-tooling-shared-sub (edb1ff78-90da-4901-a497-7e79f966f8e2)'.
-
 
       echo "Cleanup completed."
     name: purgeImagesForRepo
