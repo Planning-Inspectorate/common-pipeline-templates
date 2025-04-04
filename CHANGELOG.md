@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.21.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.20.3...release/3.21.0) (2025-04-04)
+
+
+### Features
+
+* azure_container_registry_purge.yml ([841b36a](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/841b36a8709a00fd96b0dde8b85b9e236825290f))
+
 ### [3.20.3](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.20.2...release/3.20.3) (2025-03-04)
 
 
