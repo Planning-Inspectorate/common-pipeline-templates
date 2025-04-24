@@ -139,10 +139,11 @@ foreach ($sub in $appSubsByName.GetEnumerator()) {
 # group in-use image tags by repository
 $tagsByRepo=@{}
 # list of apps using each tag
-$appsByTag=@{}
+$appsByRepoByTag=@{}
 
 foreach ($repo in $repos) {
     $tagsByRepo[$repo]=@() # initialise an array per repo
+    $appsByRepoByTag[$repo]=@{} # initialise a hash table per repo
 }
 
 foreach ($image in $inUseImages) {
@@ -152,7 +153,7 @@ foreach ($image in $inUseImages) {
         continue
     }
     $tagsByRepo[$repo] += $hash
-    $appsByTag[$hash] = $inUseImageAppNames[$image]
+    $appsByRepoByTag[$repo][$hash] = $inUseImageAppNames[$image]
 }
 
 Write-Host "##[debug]switching to ACR sub"
@@ -187,6 +188,7 @@ foreach ($repo in $repos) {
     $manifests = $manifests | ConvertFrom-Json
 
     $inUseTags = $tagsByRepo[$repo]
+    $appsByTag = $appsByRepoByTag[$repo]
 
     foreach ($manifest in $manifests) {
         $digest = $manifest.digest
