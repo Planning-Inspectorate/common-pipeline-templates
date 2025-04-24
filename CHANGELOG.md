@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.21.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.21.0...release/3.21.1) (2025-04-24)
+
+
+### Bug Fixes
+
+* match images by tag correctly, must be grouped by repo ([483da3d](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/483da3df948eeed381c66226ead2119f862302f7))
+
 ## [3.21.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.20.3...release/3.21.0) (2025-04-04)
 
 
