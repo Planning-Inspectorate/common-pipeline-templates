@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.21.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.21.1...release/3.21.2) (2025-06-04)
+
+
+### Bug Fixes
+
+* output the results of checkov to the cli ([ad1e079](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/ad1e0792c01d10fb0e5378ee9e237785d09b8ddb))
+
 ### [3.21.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.21.0...release/3.21.1) (2025-04-24)
 
 
