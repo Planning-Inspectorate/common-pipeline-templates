@@ -16,21 +16,15 @@ steps:
 - script: |
     echo "Running checkov version `checkov -v` in `pwd`"
     checkov -d . \
-     --skip-check '${{ join(',',parameters.checksToSkip) }}' \
-     --framework terraform \
-     -o junitxml > checkov.xml
+      --skip-check '${{ join(',',parameters.checksToSkip) }}' \
+      --framework terraform \
+      --download-external-modules true \
+      -o cli --quiet
 
-     if [[ $? -ne 0 ]]; then
-       echo "##vso[task.logissue type=error]Checkov Test Reported Failures"
-     fi
+    if [[ $? -ne 0 ]]; then
+      echo "##vso[task.logissue type=error]Checkov Test Reported Failures"
+      exit 1
+    fi
   condition: ${{ parameters.condition }}
   displayName: Run Checkov
   workingDirectory: ${{ parameters.workingDirectory }}
-- task: PublishTestResults@2
-  inputs:
-    testResultsFormat: JUnit
-    testResultsFiles: checkov.xml
-    failTaskOnFailedTests: ${{ parameters.failTaskOnFailure }}
-    testRunTitle:  Checkov Analysis
-  condition: ${{ parameters.condition }}
-  displayName: Publish Checkov results
