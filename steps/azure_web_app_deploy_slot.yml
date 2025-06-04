@@ -12,6 +12,9 @@ parameters:
   - name: slot
     type: string
     default: "staging"
+  - name: gitCommitHash
+    type: string
+    default: $(resources.pipeline.build.sourceCommit)
 
 steps:
   - script: |
@@ -19,7 +22,7 @@ steps:
 
       APP_NAME=${{ parameters.appName }}
       REPO=${{ parameters.azurecrName }}.azurecr.io/${{ parameters.repository }}
-      GIT_COMMIT=$(resources.pipeline.build.sourceCommit)
+      GIT_COMMIT=${{ parameters.gitCommitHash }}
       IMAGE_NAME="$REPO:$GIT_COMMIT"
 
       echo "Deploying image: $IMAGE_NAME to $APP_NAME"
