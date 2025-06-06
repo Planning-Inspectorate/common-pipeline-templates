@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.22.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.22.0...release/3.22.1) (2025-06-06)
+
+
+### Bug Fixes
+
+* remove docker build publish steps ([3e101eb](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/3e101eb3ba83794e02688467cf2c9b0f5bf0198c))
+
 ## [3.22.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.21.2...release/3.22.0) (2025-06-06)
 
 
