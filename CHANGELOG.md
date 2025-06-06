@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.22.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.21.2...release/3.22.0) (2025-06-06)
+
+
+### Features
+
+* allow configuring git commit hash for slot deploy ([0d48b39](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/0d48b399bc2de667ac97f9d9518e993816955876))
+
 ### [3.21.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.21.1...release/3.21.2) (2025-06-04)
 
 
