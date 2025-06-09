@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.22.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.22.1...release/3.22.2) (2025-06-09)
+
+
+### Bug Fixes
+
+* add purge configuration to ignore staging slots ([5301d13](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/5301d13b9b7381bd647eecab32a8a514a9cc2379))
+
 ### [3.22.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.22.0...release/3.22.1) (2025-06-06)
 
 
