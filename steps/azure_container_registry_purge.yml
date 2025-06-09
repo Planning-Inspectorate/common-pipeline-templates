@@ -12,6 +12,9 @@ parameters:
   - name: dryRun
     type: boolean
     default: true
+  - name: hasStagingSlots
+    type: boolean
+    default: true
 
 steps:
   - task: PowerShell@2
@@ -21,6 +24,7 @@ steps:
       filePath: $(Build.SourcesDirectory)/common-pipeline-templates/steps/azure_container_registry_purge.ps1
     env:
       DRY_RUN: ${{ parameters.dryRun }}
+      HAS_STAGING_SLOTS: ${{ parameters.hasStagingSlots }}
       KEEP_LAST_X_DAYS: ${{ parameters.keepLastXDays }}
       REPOSITORIES: ${{ parameters.repositories }}
       RESOURCE_GROUP_BY_SUB: ${{ parameters.resourceGroupsBySub }}
