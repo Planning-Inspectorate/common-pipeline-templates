@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.22.3](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.22.2...release/3.22.3) (2025-06-09)
+
+
+### Bug Fixes
+
+* use azurecrName parameter instead of variable ([b481e17](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/b481e17f0593619e0688ac51faab6aa2c4a43a62))
+
 ### [3.22.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.22.1...release/3.22.2) (2025-06-09)
 
 
