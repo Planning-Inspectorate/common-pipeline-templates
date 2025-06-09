@@ -55,6 +55,7 @@ function GetImageTag {
 
 # pull in configuration from environment
 $dryRun=$env:DRY_RUN
+$hasStagingSlots=$env:HAS_STAGING_SLOTS
 $keepDays=[int]::Parse($env:KEEP_LAST_X_DAYS)
 $keepFromDate=(Get-Date).AddDays(-$keepDays)
 $repos= $env:REPOSITORIES | ConvertFrom-Json
@@ -77,6 +78,7 @@ $appSubsByName=@{
 Write-Host "##[group]Configuration"
 
 Write-Host "Dry run" $dryRun
+Write-Host "Has staging slots" $hasStagingSlots
 Write-Host "Keep images from" $keepFromDate.ToString("yyyy/MM/dd HH:mm")
 $subsStr = $appSubsByName | Out-String
 Write-Host "Subscriptions:" $subsStr
@@ -124,13 +126,15 @@ foreach ($sub in $appSubsByName.GetEnumerator()) {
             }
             $inUseImageAppNames[$imageName] += $app
 
-            $imageName = GetImageName -AppName $app -ResourceGroup $rg -Slot "staging"
-            $inUseImages+=$imageName
+            if ($hasStagingSlots -eq $true) {
+                $imageName = GetImageName -AppName $app -ResourceGroup $rg -Slot "staging"
+                $inUseImages+=$imageName
 
-            if ($inUseImageAppNames[$imageName] -isnot [array]) {
-                $inUseImageAppNames[$imageName]=@() # initialise an array for this image name
+                if ($inUseImageAppNames[$imageName] -isnot [array]) {
+                    $inUseImageAppNames[$imageName]=@() # initialise an array for this image name
+                }
+                $inUseImageAppNames[$imageName] += $app + "(staging)"
             }
-            $inUseImageAppNames[$imageName] += $app + "(staging)"
         }
     }
     Write-Host "##[endgroup]"
