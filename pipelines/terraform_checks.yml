@@ -34,7 +34,6 @@ stages:
                 persistCredentials: true
                 fetchDepth: ${{ parameters.gitFetchDepth }}
               - template: ../steps/check_branch_name.yml
-              - template: ../steps/git_tagging.yml
               - template: ../steps/terraform_format.yml@templates
               - template: ../steps/terraform_validate.yml@templates
                 parameters:
