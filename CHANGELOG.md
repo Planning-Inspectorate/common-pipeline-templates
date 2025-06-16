@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.23.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.22.3...release/3.23.0) (2025-06-16)
+
+
+### Features
+
+* option to skip git tagging for wrapper_ci.yml ([c194724](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/c194724aa5e6ffaec83559a28fa74173865b9bd0))
+
 ### [3.22.3](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.22.2...release/3.22.3) (2025-06-09)
 
 
