@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.24.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.23.0...release/3.24.0) (2025-07-29)
+
+
+### Features
+
+* **infrastructure:** adding staging environment variable yaml file ([bd1ca22](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/bd1ca224b35d86758ec17e4c5f5378aaca8dfc58))
+
 ## [3.23.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.22.3...release/3.23.0) (2025-06-16)
 
 
