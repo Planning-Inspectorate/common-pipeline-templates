@@ -37,6 +37,9 @@ parameters:
   - name: environmentVarFilePath
     type: string
     default: ''
+  - name: extraVariables
+    type: object
+    default: []
 
 variables:
   - name: environmentsSource
@@ -44,6 +47,8 @@ variables:
       value: automaticDeploymentEnvironments
     ${{ else }}:
       value: environments
+  - ${{ each v in parameters.extraVariables }}:
+      - ${{ v }}
 
 stages:
   - ${{ each environment in parameters[variables.environmentsSource] }}:
