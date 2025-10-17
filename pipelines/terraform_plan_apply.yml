@@ -37,6 +37,9 @@ parameters:
   - name: environmentVarFilePath
     type: string
     default: ''
+  - name: extraVariables
+    type: object
+    default: []
 
 variables:
   - name: environmentsSource
@@ -44,6 +47,8 @@ variables:
       value: automaticDeploymentEnvironments
     ${{ else }}:
       value: environments
+  - ${{ each v in parameters.extraVariables }}:
+      - ${{ v }}
 
 stages:
   - ${{ each environment in parameters[variables.environmentsSource] }}:
@@ -75,6 +80,8 @@ stages:
                 env:
                   ARM_USE_OIDC: true
                   ARM_USE_AZUREAD: true
+                  ${{ each var in parameters.extraVariables }}:
+                    ${{ var.name }}: ${{ var.value }}
               - task: TerraformTaskV4@4
                 name: terraformPlan${{ environment.name }}
                 displayName: Create Terraform Plan
@@ -92,6 +99,8 @@ stages:
                 env:
                   ARM_USE_OIDC: true
                   ARM_USE_AZUREAD: true
+                  ${{ each var in parameters.extraVariables }}:
+                    ${{ var.name }}: ${{ var.value }}
               - task: CopyFiles@2
                 displayName: Create plan artifact
                 inputs:
@@ -150,3 +159,5 @@ stages:
                       env:
                         ARM_USE_OIDC: true
                         ARM_USE_AZUREAD: true
+                        ${{ each var in parameters.extraVariables }}:
+                          ${{ var.name }}: ${{ var.value }}
