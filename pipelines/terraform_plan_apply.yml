@@ -40,6 +40,9 @@ parameters:
   - name: extraVariables
     type: object
     default: []
+  - name: extraEnvironmentVariables
+    type: object
+    default: []
 
 variables:
   - name: environmentsSource
@@ -80,7 +83,7 @@ stages:
                 env:
                   ARM_USE_OIDC: true
                   ARM_USE_AZUREAD: true
-                  ${{ each var in parameters.extraVariables }}:
+                  ${{ each var in parameters.extraEnvironmentVariables }}:
                     ${{ var.name }}: ${{ var.value }}
               - task: TerraformTaskV4@4
                 name: terraformPlan${{ environment.name }}
@@ -99,7 +102,7 @@ stages:
                 env:
                   ARM_USE_OIDC: true
                   ARM_USE_AZUREAD: true
-                  ${{ each var in parameters.extraVariables }}:
+                  ${{ each var in parameters.extraEnvironmentVariables }}:
                     ${{ var.name }}: ${{ var.value }}
               - task: CopyFiles@2
                 displayName: Create plan artifact
@@ -159,5 +162,5 @@ stages:
                       env:
                         ARM_USE_OIDC: true
                         ARM_USE_AZUREAD: true
-                        ${{ each var in parameters.extraVariables }}:
+                        ${{ each var in parameters.extraEnvironmentVariables }}:
                           ${{ var.name }}: ${{ var.value }}
