@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.24.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.24.0...release/3.24.1) (2025-10-20)
+
+
+### Bug Fixes
+
+* adding extra vars on pipeline that call this ([228c32d](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/228c32dd8e6998cefa0cc6ac713b9cb069a9bd7c))
+
 ## [3.24.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.23.0...release/3.24.0) (2025-07-29)
 
 
