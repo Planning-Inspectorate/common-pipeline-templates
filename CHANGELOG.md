@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.24.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.24.1...release/3.24.2) (2025-11-10)
+
+
+### Bug Fixes
+
+* remove git tagging from wrapper_ci ([4402e7c](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/4402e7c4f5055a91c6ef2b398badf10669f07576))
+
 ### [3.24.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.24.0...release/3.24.1) (2025-10-20)
 
 
