@@ -78,7 +78,7 @@ stages:
                             source: current
                           preferTriggeringPipeline: true
                           project: $(System.TeamProject)
-                          tags: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), 'ref/tags/', '') }}
+                          tags: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), 'refs/tags/', '') }}
                           targetPath: $(System.DefaultWorkingDirectory)/${{ app.artifact }}
                       - task: AzureWebApp@1
                         displayName: "Deploy ${{ app.name }}"
