@@ -43,6 +43,9 @@ parameters:
   - name: extraEnvironmentVariables
     type: object
     default: []
+  - name: preliminarySteps
+    type: stepList
+    default: []
 
 variables:
   - name: environmentsSource
@@ -69,6 +72,8 @@ stages:
               clean: all  
             timeoutInMinutes: 30
             steps:
+              - ${{ each step in parameters.preliminarySteps }}:
+                  - ${{ step }}
               - task: TerraformTaskV4@4
                 displayName: Initialize Terraform
                 inputs:
