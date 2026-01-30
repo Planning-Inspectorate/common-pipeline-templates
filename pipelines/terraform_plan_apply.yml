@@ -155,6 +155,8 @@ stages:
                       # see https://learn.microsoft.com/en-us/azure/devops/pipelines/artifacts/build-artifacts?view=azure-devops&tabs=yaml#tips
                       # "Build artifacts are stored on a Windows filesystem, which causes all UNIX permissions to be lost, including the execution bit."
                       displayName: Set File Perms
+                    - ${{ each step in parameters.preliminarySteps }}:
+                        - ${{ step }}
                     - task: TerraformTaskV4@4
                       displayName: Apply Terraform Plan
                       inputs:
