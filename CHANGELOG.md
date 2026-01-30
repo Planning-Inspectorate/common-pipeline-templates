@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.25.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.25.0...release/3.25.1) (2026-01-30)
+
+
+### Bug Fixes
+
+* **tooling:** adding prestep to apply stage as optional step ([39c868f](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/39c868fef8fab45ffffd594ab915ca7d7c58480b))
+
 ## [3.25.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.24.2...release/3.25.0) (2026-01-30)
 
 
