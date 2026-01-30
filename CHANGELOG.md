@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.25.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.24.2...release/3.25.0) (2026-01-30)
+
+
+### Features
+
+* **tooling:** adding download secure files as optional step ([97d7795](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/97d779590c7e24b596d0dccba50b552c91450772))
+
 ### [3.24.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.24.1...release/3.24.2) (2025-11-10)
 
 
