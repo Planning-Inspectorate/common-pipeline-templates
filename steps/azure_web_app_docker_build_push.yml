@@ -11,7 +11,7 @@ parameters:
     type: string
   - name: tag
     type: string
-    default: ''
+    default: ""
   - name: workingDirectory
     type: string
     default: $(Build.Repository.LocalPath)
@@ -43,12 +43,12 @@ steps:
       for git_tag in $git_tags; do
         additional_tags+=(-t "$IMAGE:$git_tag")
       done
-      
+
       # tag images with the git commit hash
       additional_tags+=(-t "$IMAGE:$git_commit")
-      
+
       echo "Image tags for build: $TAG, ci-build, ${git_tags[@]}, $git_commit"
-      
+
       echo "##[command]docker build"
       docker build . \
       -f ${{ parameters.dockerfilePath }} \
@@ -56,6 +56,17 @@ steps:
       -t $IMAGE:ci-build \
       "${additional_tags[@]}" \
       "${args[@]}"
+
+      IMAGE_SIZE=$(docker image inspect $IMAGE:$TAG --format='{{.Size}}')
+      if [[ -n "$IMAGE_SIZE" ]]; then
+        IMAGE_SIZE_MB=$((IMAGE_SIZE / 1024 / 1024))
+        echo "Final image size: ${IMAGE_SIZE_MB}MB"
+        if (( IMAGE_SIZE_MB > 1024 )); then
+          echo "##[warning]Docker image size exceeds 1GB (${IMAGE_SIZE_MB}MB)"
+        fi
+      else
+        echo "##[warning]Could not determine image size for $IMAGE:$TAG"
+      fi
 
       if [[ "$IS_PR" != "true" ]]; then
         echo "##[command]docker login"
