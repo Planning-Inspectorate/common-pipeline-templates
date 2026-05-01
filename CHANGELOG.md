@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.26.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.25.2...release/3.26.0) (2026-05-01)
+
+
+### Features
+
+* add docker image size to build logs ([f3b6e23](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/f3b6e238ccebc6765912d9612b66a4b84402b6b7))
+
 ### [3.25.2](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.25.1...release/3.25.2) (2026-03-02)
 
 ### [3.25.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.25.0...release/3.25.1) (2026-01-30)
