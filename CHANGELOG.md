@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.27.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.26.0...release/3.27.0) (2026-06-16)
+
+
+### Features
+
+* add a print plan step to terraform_plan_apply.yml ([8ab89b2](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/8ab89b20dfe29cf5802d664264c9178a17a4e092))
+
 ## [3.26.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.25.2...release/3.26.0) (2026-05-01)
 
 
