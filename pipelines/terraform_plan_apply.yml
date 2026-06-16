@@ -109,6 +109,15 @@ stages:
                   ARM_USE_AZUREAD: true
                   ${{ each var in parameters.extraEnvironmentVariables }}:
                     ${{ var.name }}: ${{ var.value }}
+              - task: TerraformTaskV4@4
+                name: terraformPrintPlan${{ environment.name }}
+                displayName: Print Terraform Plan
+                inputs:
+                  workingDirectory: ${{ parameters.workingDirectory }}
+                  provider: 'azurerm'
+                  command: 'show'
+                  commandOptions: '${{ parameters.planFileName }}'
+                  environmentServiceNameAzureRM: ${{ format('{0} {1}', parameters.serviceConnectionPrefix, environment.name) }}
               - task: CopyFiles@2
                 displayName: Create plan artifact
                 inputs:
