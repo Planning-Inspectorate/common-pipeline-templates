@@ -50,6 +50,9 @@ parameters:
   - name: extraEnvironmentVariables
     type: object
     default: []
+  - name: planStageExtraEnvironmentVariables
+    type: object
+    default: []
   - name: preliminarySteps
     type: stepList
     default: []
@@ -130,6 +133,8 @@ stages:
                   ARM_USE_OIDC: true
                   ARM_USE_AZUREAD: true
                   ${{ each var in parameters.extraEnvironmentVariables }}:
+                    ${{ var.name }}: ${{ var.value }}
+                  ${{ each var in parameters.planStageExtraEnvironmentVariables }}:
                     ${{ var.name }}: ${{ var.value }}
               - task: TerraformTaskV4@4
                 name: terraformPrintPlan${{ environment.name }}
