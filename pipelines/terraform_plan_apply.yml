@@ -24,6 +24,10 @@ parameters:
     default: $(System.DefaultWorkingDirectory)
   - name: serviceConnectionPrefix
     type: string
+    default: ''
+  - name: serviceConnectionCustomFormatString # the format string will have the environment given as the first argument
+    type: string
+    default: ''
   - name: storageAccountName
     type: string
   - name: resourceGroupName
@@ -58,6 +62,11 @@ variables:
       value: environments
   - ${{ each v in parameters.extraVariables }}:
       - ${{ v }}
+  - name: serviceConnectionFormatString
+    ${{ if ne(parameters.serviceConnectionCustomFormatString, '') }}:
+      value: ${{ parameters.serviceConnectionCustomFormatString }}
+    ${{ else }}:
+      value: ${{ parameters.serviceConnectionPrefix }} {0}
 
 stages:
   - ${{ each environment in parameters[variables.environmentsSource] }}:
@@ -84,7 +93,7 @@ stages:
                   workingDirectory: ${{ parameters.workingDirectory }}
                   provider: 'azurerm'
                   command: 'init'
-                  backendServiceArm: ${{ format('{0} {1}', parameters.serviceConnectionPrefix, environment.name) }}
+                  backendServiceArm: ${{ format(variables.serviceConnectionFormatString, environment.name) }}
                   backendAzureRmStorageAccountName: ${{ parameters.storageAccountName }}
                   backendAzureRmResourceGroupName: ${{ parameters.resourceGroupName }}
                   ${{ if ne(parameters.containerFormatString, '') }}:
@@ -110,7 +119,7 @@ stages:
                   ${{ else }}:
                     # add a var file for each environment, if configured
                     commandOptions: ${{ format('-input=false -out {0} -var-file={1}/{2}.tfvars', parameters.planFileName, parameters.environmentVarFilePath, lower(environment.name)) }}
-                  environmentServiceNameAzureRM: ${{ format('{0} {1}', parameters.serviceConnectionPrefix, environment.name) }}
+                  environmentServiceNameAzureRM: ${{ format(variables.serviceConnectionFormatString, environment.name) }}
                 env:
                   ARM_USE_OIDC: true
                   ARM_USE_AZUREAD: true
@@ -124,7 +133,7 @@ stages:
                   provider: 'azurerm'
                   command: 'show'
                   commandOptions: '${{ parameters.planFileName }}'
-                  environmentServiceNameAzureRM: ${{ format('{0} {1}', parameters.serviceConnectionPrefix, environment.name) }}
+                  environmentServiceNameAzureRM: ${{ format(variables.serviceConnectionFormatString, environment.name) }}
               - task: CopyFiles@2
                 displayName: Create plan artifact
                 inputs:
@@ -182,7 +191,7 @@ stages:
                         command: 'apply'
                         # use -input=false so terraform doesn't prompt for input
                         commandOptions: '-input=false ${{ parameters.planFileName }}'
-                        environmentServiceNameAzureRM: ${{ format('{0} {1}', parameters.serviceConnectionPrefix, environment.name) }}
+                        environmentServiceNameAzureRM: ${{ format(variables.serviceConnectionFormatString, environment.name) }}
                       env:
                         ARM_USE_OIDC: true
                         ARM_USE_AZUREAD: true
