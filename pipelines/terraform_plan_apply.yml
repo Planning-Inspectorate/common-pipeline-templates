@@ -30,6 +30,10 @@ parameters:
     type: string
   - name: containerPrefix
     type: string
+    default: ''
+  - name: containerFormatString # the format string will have the environment given as the first argument
+    type: string
+    default: ''
   - name: planFileName
     type: string
     default: main.tfplan
@@ -83,7 +87,10 @@ stages:
                   backendServiceArm: ${{ format('{0} {1}', parameters.serviceConnectionPrefix, environment.name) }}
                   backendAzureRmStorageAccountName: ${{ parameters.storageAccountName }}
                   backendAzureRmResourceGroupName: ${{ parameters.resourceGroupName }}
-                  backendAzureRmContainerName: ${{ parameters.containerPrefix }}${{ lower(environment.name) }}
+                  ${{ if ne(parameters.containerFormatString, '') }}:
+                    backendAzureRmContainerName: ${{ format(parameters.containerFormatString, environment.name) }}
+                  ${{ else }}:
+                    backendAzureRmContainerName: ${{ parameters.containerPrefix }}${{ lower(environment.name) }}
                   backendAzureRmKey: ${{ format('{0}.tfstate', lower(environment.name)) }}
                 env:
                   ARM_USE_OIDC: true
