@@ -53,6 +53,9 @@ parameters:
   - name: preliminarySteps
     type: stepList
     default: []
+  - name: planStageVariableGroupFormatString # the format string will have the environment given as the first argument
+    type: string
+    default: ''
 
 variables:
   - name: environmentsSource
@@ -78,6 +81,9 @@ stages:
         dependsOn:
           - ${{ each dependsOn in environment.dependsOn }}:
             - terraform_plan_${{ lower(dependsOn) }}
+        ${{ if ne(parameters.planStageVariableGroupFormatString, '') }}:
+          variables:
+            - group: ${{ format(parameters.planStageVariableGroupFormatString, environment.name) }}
         jobs:
           - job: plan
             displayName: Plan
