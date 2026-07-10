@@ -16,10 +16,9 @@ parameters:
       - name: Prod
         dependsOn:
           - Test
-  - name: pool
-    type: object
-    default:
-      name: pins-odt-agent-pool
+  - name: poolNameFormatString # the format string will have the environment given as the first argument
+    type: string
+    default: pins-odt-agent-pool
   - name: workingDirectory
     type: string
     default: $(System.DefaultWorkingDirectory)
@@ -61,7 +60,8 @@ stages:
     - template: ../stages/wrapper_stage.yml
       parameters:
         name: Terraform Plan ${{ environment.name }}
-        pool: ${{ parameters.pool }}
+        pool:
+          name: ${{ format(parameters.poolNameFormatString, environment.name) }}
         dependsOn:
           - ${{ each dependsOn in environment.dependsOn }}:
             - terraform_plan_${{ lower(dependsOn) }}
@@ -133,7 +133,8 @@ stages:
     - template: ../stages/wrapper_stage.yml
       parameters:
         name: Terraform Apply ${{ environment.name }}
-        pool: ${{ parameters.pool }}
+        pool:
+          name: ${{ format(parameters.poolNameFormatString, environment.name) }}
         condition: eq(stageDependencies.terraform_plan_${{ lower(environment.name) }}.outputs['plan.terraformPlan${{ environment.name }}.changesPresent'], 'true')
         dependsOn:
           - ${{ each dependsOn in environment.dependsOn }}:
