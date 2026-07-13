@@ -56,6 +56,9 @@ parameters:
   - name: preliminarySteps
     type: stepList
     default: []
+  - name: postApplySteps
+    type: stepList
+    default: []
   - name: planStageVariableGroupFormatString # the format string will have the environment given as the first argument
     type: string
     default: ''
@@ -208,3 +211,5 @@ stages:
                         ARM_USE_AZUREAD: true
                         ${{ each var in parameters.extraEnvironmentVariables }}:
                           ${{ var.name }}: ${{ var.value }}
+                    - ${{ each step in parameters.postApplySteps }}:
+                        - ${{ step }}
