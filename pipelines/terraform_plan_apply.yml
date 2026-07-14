@@ -97,6 +97,9 @@ stages:
               clean: all  
             timeoutInMinutes: 30
             steps:
+              - script: |
+                  echo "##vso[build.addbuildtag]${{ environment.name }}Plan"
+                displayName: Add build tags
               - ${{ each step in parameters.preliminarySteps }}:
                   - ${{ step }}
               - task: TerraformTaskV4@4
@@ -181,6 +184,9 @@ stages:
               runOnce:
                 deploy:
                   steps:
+                    - script: |
+                        echo "##vso[build.addbuildtag]${{ environment.name }}Apply"
+                      displayName: Add build tags
                     - download: current
                       artifact: terraform-plan-${{ lower(environment.name) }}
                     - task: CopyFiles@2
