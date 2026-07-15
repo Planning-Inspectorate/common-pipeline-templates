@@ -20,7 +20,7 @@ steps:
     workingDirectory: $(Pipeline.Workspace)
   - script: |
       chmod -R +x .
-      terraform apply -input=false tfplan
+      terraform apply -input=false -refresh-only tfplan
     condition: ne(variables['skipApply'], 'true')
     displayName: Terraform Apply
     env:
