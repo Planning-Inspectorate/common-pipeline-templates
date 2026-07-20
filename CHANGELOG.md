@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.28.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.27.0...release/3.28.0) (2026-07-20)
+
+
+### Features
+
+* add environment tags to pipeline for terraform_plan_apply.yml ([46084fc](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/46084fcdb63cfd24295d07fd8ede304fcff05773))
+* support dynamic container names for terraform_plan_apply.yml ([ffec392](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/ffec392a2284fd8a4f953a2bcbda19c1039aa4a4))
+* support dynamic plan stage variable group for terraform_plan_apply.yml ([91c0ba5](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/91c0ba561153437765f611bc7463d39017f8d054))
+* support dynamic pool names for terraform_plan_apply.yml ([5516c72](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/5516c72fb3a664a47d5bb7a14317a82879908444))
+* support dynamic service connection names for terraform_plan_apply.yml ([0e67453](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/0e67453e50555d7401db2dcb6e663de0510c5084))
+* support plan stage environment variables for terraform_plan_apply.yml ([881bf01](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/881bf019063c25d62e5fd68450e798d5602cceda))
+* support post apply steps for terraform_plan_apply.yml ([5e24b82](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/5e24b822f0ac52936240cf77a23e72c5a7266f9a))
+
 ## [3.27.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.26.0...release/3.27.0) (2026-06-16)
 
 
