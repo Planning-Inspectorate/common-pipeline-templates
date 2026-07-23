@@ -62,6 +62,9 @@ parameters:
   - name: planStageVariableGroupFormatString # the format string will have the environment given as the first argument
     type: string
     default: ''
+  - name: applyStageVariableGroupFormatString # the format string will have the environment given as the first argument
+    type: string
+    default: ''
 
 variables:
   - name: environmentsSource
@@ -173,6 +176,9 @@ stages:
           - ${{ each dependsOn in environment.dependsOn }}:
             - terraform_apply_${{ lower(dependsOn) }}
           - terraform_plan_${{ lower(environment.name) }}
+        ${{ if ne(parameters.applyStageVariableGroupFormatString, '') }}:
+          variables:
+            - group: ${{ format(parameters.applyStageVariableGroupFormatString, environment.name) }}
         jobs:
           - deployment: apply
             displayName: Apply
