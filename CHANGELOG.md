@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.29.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.28.0...release/3.29.0) (2026-07-23)
+
+
+### Features
+
+* support apply stage environment variables for terraform_plan_apply.yml ([334c8ed](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/334c8ed498f7534a49a08a06296030d851102c8e))
+
 ## [3.28.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.27.0...release/3.28.0) (2026-07-20)
 
 
