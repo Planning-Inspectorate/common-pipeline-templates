@@ -13,13 +13,33 @@ parameters:
   - name: workingDirectory
     type: string
     default: $(Build.Repository.LocalPath)
+  - name: gitCommitHash
+    type: string
+    default: $(resources.pipeline.build.sourceCommit)
 
 steps:
   - script: |
       source ~/.bashrc
       nvm use ${{ parameters.nodeVersion }} || nvm install ${{ parameters.nodeVersion }}
-      ${{ parameters.script }}
+      
+      # Pin execution to the commit used by build pipeline
+      TARGET_COMMIT="${{ parameters.gitCommitHash }}"
 
+      # If TARGET_COMMIT is empty or not resolved, fall back to latest commit on the current branch
+      if [[ -z "$TARGET_COMMIT" || "$TARGET_COMMIT" =~ ^\$\(.+\)$ ]]; then
+        echo "No build commit, falling back to latest commit on current branch"
+        git fetch --no-tags origin
+        TARGET_COMMIT=$(git rev-parse HEAD)
+      else
+        git fetch --no-tags origin "$TARGET_COMMIT"
+      fi
+
+      git checkout --detach "$TARGET_COMMIT"
+      git reset --hard "$TARGET_COMMIT"
+      echo "Running script at commit $(git rev-parse HEAD) / $TARGET_COMMIT"
+
+      ${{ parameters.script }}
+      
       if [[ $? -ne 0 ]]; then
         exit 1
       fi
