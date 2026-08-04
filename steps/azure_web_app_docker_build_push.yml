@@ -19,6 +19,8 @@ parameters:
 steps:
   - script: |
       export DOCKER_BUILDKIT=1
+      docker version
+      docker buildx version
 
       IS_PR=${{ contains(variables['Build.SourceBranch'], 'refs/pull') }}
 
