@@ -18,6 +18,8 @@ parameters:
 
 steps:
   - script: |
+      export DOCKER_BUILDKIT=1
+
       IS_PR=${{ contains(variables['Build.SourceBranch'], 'refs/pull') }}
 
       if [[ "$IS_PR" != "true" ]]; then
