@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.30.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.29.0...release/3.30.0) (2026-08-18)
+
+
+### Features
+
+* **infrastructure:** add displayname to the node script for stage to be named better ([65a32c7](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/65a32c71d369ccc50532f216224a4f2b88bbdc79))
+
 ## [3.29.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.28.0...release/3.29.0) (2026-07-23)
 
 
