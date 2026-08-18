@@ -13,18 +13,20 @@ parameters:
   - name: workingDirectory
     type: string
     default: $(Build.Repository.LocalPath)
+  - name: displayName
+    type: string
+    default: 'Script'
 
 steps:
   - script: |
       source ~/.bashrc
       nvm use ${{ parameters.nodeVersion }} || nvm install ${{ parameters.nodeVersion }}
       ${{ parameters.script }}
-
       if [[ $? -ne 0 ]]; then
         exit 1
       fi
     condition: ${{ parameters.condition }}
-    displayName: 'Script: ${{ parameters.script }}'
+    displayName: ${{ parameters.displayName }}
     env:
       ${{ each envVar in parameters.environmentVariables }}:
         ${{ envVar.key }}: ${{ envVar.value }}
