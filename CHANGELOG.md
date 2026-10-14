@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.30.1](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.30.0...release/3.30.1) (2026-10-14)
+
+
+### Bug Fixes
+
+* use default displayName for node_script if not set ([ed3440b](https://github.com/Planning-Inspectorate/common-pipeline-templates/commit/ed3440b1972d68ecc13120858ad7ce339e18050c))
+
 ## [3.30.0](https://github.com/Planning-Inspectorate/common-pipeline-templates/compare/release/3.29.0...release/3.30.0) (2026-08-18)
 
 
