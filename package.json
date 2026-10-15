@@ -1,6 +1,5 @@
 {
   "name": "common-pipeline-templates",
-  "version": "3.30.0",
   "description": "Azure Pipeline templates that can be used in any PINS pipeline",
   "repository": {
     "type": "git",
@@ -12,7 +11,7 @@
     "commit-amend": "git commit --amend -m \"$(git log --format=%B -n1)\" -m \"[skip ci]\"",
     "commitlint": "commitlint --from=$(git merge-base main --fork-point)",
     "commitlint:ci": "commitlint --from=$(git merge-base remotes/origin/main --fork-point)",
-    "release": "standard-version -t \"release/\"; git push --follow-tags origin HEAD:main"
+    "release": "standard-version -t \"release/\"; git push origin --tags"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.3",
@@ -23,8 +22,9 @@
     "standard-version": "^9.3.2"
   },
   "standard-version": {
-    "scripts": {
-      "postcommit": "npm run commit-amend"
+    "skip": {
+      "changelog": true,
+      "commit": true
     }
   },
   "config": {
