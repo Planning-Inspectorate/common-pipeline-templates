@@ -58,10 +58,10 @@ If not using these templates, please include the above lines in your consuming p
 
 ## Contributing
 
-This repository makes use of simple semantic versioning via the following npm tools:
-- [commitizen](https://github.com/commitizen/cz-cli) - CLI tool to construct commit messages in a format to enable automatically populating the changelog.
+This repository makes use of simple semantic versioning via the following tools:
+- [commitizen](https://github.com/commitizen/cz-cli) - CLI tool to construct commit messages in a consistent format.
 - [commitlint](https://github.com/conventional-changelog/commitlint) - Linting tool to enforce commites in the correct style
-- [standard-version](https://github.com/conventional-changelog/standard-version) - CLI tool responsible for creating versions and updating changelog.
+- `scripts/release.js` - release helper that reads the latest `release/*` git tag and creates the next release tag from conventional commits.
 
 ### Setup
 
@@ -71,16 +71,18 @@ Once these are installed just run `npm install` in the root directory and these 
 
 This repo contains pre-commit hooks with Husky. To activate these run `npx husky install`.
 
-The repo uses `commitizen` and `commitlint`, so to ensure commits are in thr right format so the changelog can be updated automatically, please run `npm run commit` from the root directory and follow the interactive CLI.
+The repo uses `commitizen` and `commitlint`, so to ensure commits are in the correct format for automated release tagging, please run `npm run commit` from the root directory and follow the interactive CLI.
 
 ### Versioning 
 
-All commits to a feature branch are used to determine what updates should be made to the changelog. This is why they must be in the format enforced by `commitizen` and `commitlint`. The changelog will be updated when a Pull Request is merged to `main`, and the `standard-version` release task runs.
+The latest `release/*` git tag is the source of truth for the current version.
 
-**IMPORTANT:** When raising Pull Requests make sure the "Rebase & Merge" option is selected. This will ensure that all commits are added to the `main` branch, so the release task can update the changelog correctly.
+All commits to a feature branch are used to determine what release bump should be made, so they must be in the format enforced by `commitizen` and `commitlint`.
 
-The release task is run in the release pipeline, and will run whenever there is a commit to the `main` branch. This task will bump the version number in the `package.json` files, and add the release details to the changelog based on the commits.
+**IMPORTANT:** When raising Pull Requests make sure the "Rebase & Merge" option is selected. This will ensure that all commits are added to the `main` branch, so the release task can evaluate the full commit history correctly.
 
-After the release task has run, a new commit should appear in the `main` branch and this commit should be tagged with `release/<version_number>`.
+The release task is run in the release pipeline, and will run whenever there is a commit to the `main` branch. This task finds the latest release tag, inspects the commits since that tag, calculates the next semantic version, and creates a new `release/<version_number>` git tag.
 
-**Note:** Due to a limitation within GitHub, it is not possible to provide the Azure Pipelines app permission to push to a protected branch. Therefore, the pipelines make use of a Personal Access Token (PAT) to perform the final push to GitHub that updates version numbers. This PAT is tied to an individual user account, so may expire or become invalid whenever that user is removed from the project. The PAT can be updated by an admin user on the repository by generating a new PAT for their account, and updating the value in the `pipeline_secrets` variable group within Azure Pipelines.
+After the release task has run, the new release tag should appear in GitHub as `release/<version_number>`.
+
+**Note:** Due to a limitation within GitHub, it is not possible to provide the Azure Pipelines app permission to push to a protected branch. Therefore, the pipelines make use of a Personal Access Token (PAT) to perform the final push to GitHub that publishes release tags. This PAT is tied to an individual user account, so may expire or become invalid whenever that user is removed from the project. The PAT can be updated by an admin user on the repository by generating a new PAT for their account, and updating the value in the `pipeline_secrets` variable group within Azure Pipelines.

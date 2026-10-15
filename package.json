@@ -11,21 +11,15 @@
     "commit-amend": "git commit --amend -m \"$(git log --format=%B -n1)\" -m \"[skip ci]\"",
     "commitlint": "commitlint --from=$(git merge-base main --fork-point)",
     "commitlint:ci": "commitlint --from=$(git merge-base remotes/origin/main --fork-point)",
-    "release": "standard-version -t \"release/\"; git push origin --tags"
+    "release": "node ./scripts/release.js && git push origin --tags",
+    "release:dry-run": "node ./scripts/release.js --dry-run"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.3",
     "@commitlint/config-conventional": "^16.2.1",
     "commitizen": "^4.3.2",
     "cz-conventional-changelog": "^3.3.0",
-    "husky": "^7.0.4",
-    "standard-version": "^9.3.2"
-  },
-  "standard-version": {
-    "skip": {
-      "changelog": true,
-      "commit": true
-    }
+    "husky": "^7.0.4"
   },
   "config": {
     "commitizen": {
