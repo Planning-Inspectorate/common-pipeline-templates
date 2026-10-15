@@ -24,7 +24,7 @@ parameters:
 
 steps:
   - script: |
-      docker-compose -f ${{ parameters.dockerComposeFilePath }} up -d
+      docker compose -f ${{ parameters.dockerComposeFilePath }} up -d
     displayName: Start the world
   - script: |
       docker container ls -a
